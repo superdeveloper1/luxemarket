@@ -1,0 +1,11 @@
+When implementing Product Detail UI
+- Rule 1: Bidirectional synchronization between Color and Image is mandatory.
+  - When a user selects a color option, the main product image must update to the corresponding variant image.
+  - When a user selects/clicks an image from the gallery that corresponds to a specific color variant, the color selection option and description text must automatically update to match that color.
+  - Fallback: If no explicit mapping exists, the first color option defaults to linking with the main product image, and the main product image defaults to linking with the first color.
+- Rule 2: Ensure data consistency for variants.
+  - Variant image mappings must be editable in the Admin interface via dynamic input fields (not raw text/JSON) to prevent formatting errors.
+  - Changes to variant mappings in Admin must persist and reflect immediately on the Product Detail page.
+- Rule 3: Color Definitions
+  - Colors must be stored as objects `{ name: string, hex: string }` to ensure consistent visual representation across devices.
+  - Legacy string-based colors must be normalized to objects on read in data utilities to prevent UI crashes.

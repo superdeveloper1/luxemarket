@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeMarket - Admin Dashboard</title>
+
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react@18/umd/react.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://resource.trickle.so/vendor_lib/unpkg/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://resource.trickle.so/vendor_lib/unpkg/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+        @layer theme {
+        :root {
+            --primary-color: #2563EB;
+            --primary-hover: #1D4ED8;
+            --secondary-color: #F3F4F6;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --bg-body: #F9FAFB;
+        }
+    }
+    @layer base {
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); }
+    }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const INITIAL_PRODUCTS = [
+            {
+                id: 1,
+                name: "Premium Wireless Headphones",
+                price: 299.99,
+                category: "Electronics",
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.8,
+                reviews: 124,
+                colors: [
+                    { name: "Black", hex: "#000000" },
+                    { name: "Silver", hex: "#C0C0C0" },
+                    { name: "Navy", hex: "#000080" }
+                ],
+                sizes: ["One Size"],
+                description: "Immerse yourself in pure sound with our active noise-cancelling technology. Features 30-hour battery life and ultra-comfortable ear cushions.",
+                images: [
+                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "Black": [
+                        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    ],
+                    "Silver": [
+                        "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                        "https://images.unsplash.com/photo-1577174881658-0f30ed549adc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    ],
+                    "Navy": [
+                        "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    ]
+                }
+            },
+            {
+                id: 2,
+                name: "Minimalist Watch Series 5",
+                price: 159.50,
+                category: "Accessories",
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.6,
+                reviews: 89,
+                colors: [
+                    { name: "Black", hex: "#000000" },
+                    { name: "Gold", hex: "#FFD700" },
+                    { name: "Rose Gold", hex: "#B76E79" }
+                ],
+                sizes: ["40mm", "44mm"],
+                description: "A timeless piece for the modern individual. Features a genuine leather strap, water resistance up to 50m, and a scratch-resistant sapphire crystal glass.",
+                images: [
+                    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "Black": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Gold": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Rose Gold": "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                }
+            },
+            {
+                id: 3,
+                name: "Ergonomic Office Chair",
+                price: 499.00,
+                category: "Furniture",
+                image: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.9,
+                reviews: 215,
+                colors: [
+                    { name: "Black", hex: "#111827" },
+                    { name: "Grey", hex: "#6B7280" },
+                    { name: "Blue", hex: "#2563EB" }
+                ],
+                sizes: ["Standard", "Large"],
+                description: "Work in comfort with adjustable lumbar support, 4D armrests, and breathable mesh back. Designed to support your posture during long working hours.",
+                images: [
+                    "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "Black": "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Grey": "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Blue": "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                }
+            },
+            {
+                id: 4,
+                name: "Smart Home Speaker",
+                price: 89.99,
+                category: "Electronics",
+                image: "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.5,
+                reviews: 67,
+                colors: [
+                    { name: "White", hex: "#F3F4F6" },
+                    { name: "Black", hex: "#111827" },
+                    { name: "Charcoal", hex: "#374151" }
+                ],
+                sizes: ["Mini", "Standard"],
+                description: "Fill your room with rich, 360-degree sound. Compatible with all major voice assistants and features multi-room audio synchronization.",
+                images: [
+                    "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1543512214-318c77a07298?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "White": "https://images.unsplash.com/photo-1589492477829-5e65395b66cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Black": "https://images.unsplash.com/photo-1543512214-318c77a07298?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Charcoal": "https://images.unsplash.com/photo-1543512214-318c77a07298?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                }
+            },
+            {
+                id: 5,
+                name: "Classic Leather Backpack",
+                price: 129.95,
+                category: "Fashion",
+                image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.7,
+                reviews: 156,
+                colors: [
+                    { name: "Brown", hex: "#8B4513" },
+                    { name: "Black", hex: "#000000" },
+                    { name: "Tan", hex: "#D2B48C" }
+                ],
+                sizes: ["15L", "20L"],
+                description: "Handcrafted from full-grain leather that ages beautifully. Features a dedicated laptop compartment and multiple organizer pockets for your daily essentials.",
+                images: [
+                    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "Brown": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Black": "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Tan": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                }
+            },
+            {
+                id: 6,
+                name: "Digital Camera 4K",
+                price: 849.00,
+                category: "Electronics",
+                image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4.9,
+                reviews: 342,
+                colors: [
+                    { name: "Black", hex: "#000000" },
+                    { name: "Silver", hex: "#C0C0C0" }
+                ],
+                sizes: ["Body Only", "Kit Lens"],
+                description: "Capture life's moments in stunning detail. Features a 24MP sensor, 4K video recording, and fast hybrid autofocus system.",
+                images: [
+                    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                ],
+                variantImages: {
+                    "Black": "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "Silver": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                }
+            }
+        ];
+
+        const INITIAL_CATEGORIES = [
+            "Electronics",
+            "Fashion",
+            "Furniture",
+            "Accessories"
+        ];
+
+        const PRODUCT_STORAGE_KEY = 'luxemarket_products';
+        const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
+
+        const ProductManager = {
+            init: () => {
+                if (!localStorage.getItem(PRODUCT_STORAGE_KEY)) {
+                    localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
+                }
+            },
+
+            getAll: () => {
+                ProductManager.init();
+                try {
+                    const raw = localStorage.getItem(PRODUCT_STORAGE_KEY);
+                    let stored = JSON.parse(raw) || [];
+                    let modified = false;
+
+                    const migrated = stored.map(p => {
+                        const initial = INITIAL_PRODUCTS.find(ip => ip.id === p.id);
+                        if (initial) {
+                            // Backfill variantImages if missing
+                            if (!p.variantImages && initial.variantImages) {
+                                p.variantImages = initial.variantImages;
+                                modified = true;
+                            }
+                            // Backfill images array if missing or empty
+                            if ((!p.images || p.images.length === 0) && initial.images) {
+                                p.images = initial.images;
+                                modified = true;
+                            }
+                        }
+
+                        // DATA MIGRATION: Normalize variantImages to be arrays
+                        if (p.variantImages) {
+                            let variantModified = false;
+                            Object.keys(p.variantImages).forEach(color => {
+                                if (typeof p.variantImages[color] === 'string') {
+                                    p.variantImages[color] = [p.variantImages[color]];
+                                    variantModified = true;
+                                }
+                            });
+                            if (variantModified) {
+                                modified = true;
+                            }
+                        }
+
+                        // DATA MIGRATION: Normalize Colors
+                        if (p.colors && p.colors.length > 0) {
+                            let colorsModified = false;
+                            const normalizedColors = p.colors.map(c => {
+                                if (typeof c === 'string') {
+                                    colorsModified = true;
+                                    const lower = c.toLowerCase();
+                                    let hex = '#374151'; // Default gray-700
+                                    if (lower === 'black') hex = '#000000';
+                                    if (lower === 'white') hex = '#FFFFFF';
+                                    if (lower === 'silver') hex = '#C0C0C0';
+                                    if (lower === 'gold') hex = '#FFD700';
+                                    if (lower === 'navy') hex = '#000080';
+                                    if (lower === 'red') hex = '#EF4444';
+                                    if (lower === 'blue') hex = '#3B82F6';
+                                    if (lower === 'rose gold') hex = '#B76E79';
+                                    if (lower === 'grey' || lower === 'gray') hex = '#808080';
+                                    if (lower === 'brown') hex = '#8B4513';
+                                    if (lower === 'tan') hex = '#D2B48C';
+
+                                    return { name: c, hex: hex };
+                                }
+                                return c;
+                            });
+                            if (colorsModified) {
+                                p.colors = normalizedColors;
+                                modified = true;
+                            }
+                        }
+
+                        return p;
+                    });
+
+                    if (modified) {
+                        console.log("Persisting migrated data to localStorage");
+                        localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(migrated));
+                    }
+
+                    return migrated;
+                } catch (e) {
+                    console.error("Error loading products from localStorage", e);
+                    return INITIAL_PRODUCTS;
+                }
+            },
+
+            getById: (id) => {
+                const products = ProductManager.getAll();
+                return products.find(p => p.id === Number(id));
+            },
+
+            save: (product) => {
+                console.log("ProductManager.save called with:", product);
+                const products = ProductManager.getAll();
+                if (product.id) {
+                    // Update existing
+                    const index = products.findIndex(p => p.id === Number(product.id));
+                    if (index !== -1) {
+                        products[index] = { ...products[index], ...product, id: Number(product.id) };
+                        console.log("Updated product at index:", index);
+                    } else {
+                        console.warn("Product with ID not found for update, adding as new:", product.id);
+                        const newId = Math.max(...products.map(p => Number(p.id) || 0), 0) + 1;
+                        products.push({ ...product, id: newId, rating: product.rating || 0, reviews: product.reviews || 0 });
+                    }
+                } else {
+                    // Add new
+                    const newId = Math.max(...products.map(p => Number(p.id) || 0), 0) + 1;
+                    products.push({ ...product, id: newId, rating: 0, reviews: 0 });
+                    console.log("Added new product with ID:", newId);
+                }
+                localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(products));
+                console.log("Saved to localStorage. New count:", products.length);
+            },
+
+            delete: (id) => {
+                const products = ProductManager.getAll();
+                const filtered = products.filter(p => p.id !== id);
+                localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(filtered));
+            },
+
+            reorder: (newProducts) => {
+                localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(newProducts));
+            }
+        };
+
+        const CategoryManager = {
+            init: () => {
+                if (!localStorage.getItem(CATEGORY_STORAGE_KEY)) {
+                    localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
+                }
+            },
+
+            getAll: () => {
+                CategoryManager.init();
+                try {
+                    return JSON.parse(localStorage.getItem(CATEGORY_STORAGE_KEY)) || INITIAL_CATEGORIES;
+                } catch (e) {
+                    console.error("Error loading categories", e);
+                    return INITIAL_CATEGORIES;
+                }
+            },
+
+            add: (category) => {
+                const categories = CategoryManager.getAll();
+                if (!categories.includes(category)) {
+                    categories.push(category);
+                    localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(categories));
+                }
+            },
+
+            delete: (category) => {
+                const categories = CategoryManager.getAll();
+                const filtered = categories.filter(c => c !== category);
+                localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(filtered));
+            }
+        };
+
+        try {
+            window.ProductManager = ProductManager;
+            window.CategoryManager = CategoryManager;
+            console.log("Data Managers initialized");
+        } catch (e) {
+            console.warn("Could not attach managers to window", e);
+        }
+
+        // Export initial products for legacy support if needed, though most uses are via ProductManager
+        const PRODUCTS = ProductManager.getAll();
+    </script>
+    <script type="text/babel">
+        function AdminProductForm({ product, onSave, onCancel }) {
+            // Default initial state
+            const [formData, setFormData] = React.useState({
+                name: '',
+                price: '',
+                category: '',
+                image: '',
+                description: '',
+                sizes: '',
+                isDailyDeal: false,
+                dealPrice: '',
+                ...product
+            });
+
+            // Dynamic state for complex fields
+            const [galleryUrls, setGalleryUrls] = React.useState(['']);
+            const [variantMappings, setVariantMappings] = React.useState([{ color: '', urls: [''] }]);
+            // Color Palette: array of { name: 'Red', hex: '#FF0000' }
+            const [colorPalette, setColorPalette] = React.useState([{ name: '', hex: '#000000' }]);
+            const [availableCategories, setAvailableCategories] = React.useState([]);
+
+            React.useEffect(() => {
+                setAvailableCategories(window.CategoryManager.getAll());
+            }, []);
+
+            React.useEffect(() => {
+                if (product) {
+                    // Setup Gallery
+                    const existingGallery = product.images
+                        ? product.images.filter(img => img !== product.image) // Exclude main image if duplicate
+                        : [];
+                    setGalleryUrls(existingGallery.length > 0 ? existingGallery : ['']);
+
+                    // Setup Variants
+                    if (product.variantImages) {
+                        const mappings = Object.entries(product.variantImages).map(([key, val]) => ({
+                            color: key,
+                            urls: Array.isArray(val) ? val : [val]
+                        }));
+                        setVariantMappings(mappings.length > 0 ? mappings : [{ color: '', urls: [''] }]);
+                    }
+
+                    // Setup Color Palette
+                    if (product.colors && product.colors.length > 0) {
+                        // Check if colors are strings or objects
+                        if (typeof product.colors[0] === 'object') {
+                            setColorPalette(product.colors);
+                        } else {
+                            // Normalize old strings
+                            const normalized = product.colors.map(c => ({
+                                name: c,
+                                hex: '#374151' // Default if not found
+                            }));
+                            setColorPalette(normalized);
+                        }
+                    } else {
+                        setColorPalette([{ name: '', hex: '#000000' }]);
+                    }
+
+                    setFormData({
+                        ...product,
+                        sizes: product.sizes ? product.sizes.join(', ') : '',
+                        dealPrice: product.dealPrice || ''
+                    });
+                }
+            }, [product]);
+
+            const handleChange = (e) => {
+                const { name, value, type, checked } = e.target;
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: type === 'checkbox' ? checked : value
+                }));
+            };
+
+            // Gallery Handlers
+            const handleGalleryChange = (index, value) => {
+                const newUrls = [...galleryUrls];
+                newUrls[index] = value;
+                setGalleryUrls(newUrls);
+            };
+
+            const addGalleryField = () => setGalleryUrls([...galleryUrls, '']);
+            const removeGalleryField = (index) => {
+                const newUrls = galleryUrls.filter((_, i) => i !== index);
+                setGalleryUrls(newUrls.length ? newUrls : ['']);
+            };
+
+            // Variant Mapping Handlers
+            const handleVariantChange = (vIndex, field, value) => {
+                const newMappings = [...variantMappings];
+                newMappings[vIndex][field] = value;
+                setVariantMappings(newMappings);
+            };
+
+            const handleVariantUrlChange = (vIndex, uIndex, value) => {
+                const newMappings = [...variantMappings];
+                newMappings[vIndex].urls[uIndex] = value;
+                setVariantMappings(newMappings);
+            };
+
+            const addVariantUrlField = (vIndex) => {
+                const newMappings = [...variantMappings];
+                newMappings[vIndex].urls.push('');
+                setVariantMappings(newMappings);
+            };
+
+            const removeVariantUrlField = (vIndex, uIndex) => {
+                const newMappings = [...variantMappings];
+                newMappings[vIndex].urls = newMappings[vIndex].urls.filter((_, i) => i !== uIndex);
+                if (newMappings[vIndex].urls.length === 0) newMappings[vIndex].urls = [''];
+                setVariantMappings(newMappings);
+            };
+
+            const addVariantField = () => setVariantMappings([...variantMappings, { color: '', urls: [''] }]);
+            const removeVariantField = (index) => {
+                const newMappings = variantMappings.filter((_, i) => i !== index);
+                setVariantMappings(newMappings.length ? newMappings : [{ color: '', urls: [''] }]);
+            };
+
+            // Color Palette Handlers
+            const handleColorChange = (index, field, value) => {
+                const newPalette = [...colorPalette];
+                newPalette[index][field] = value;
+                setColorPalette(newPalette);
+            };
+
+            const addColorField = () => setColorPalette([...colorPalette, { name: '', hex: '#000000' }]);
+            const removeColorField = (index) => {
+                const newPalette = colorPalette.filter((_, i) => i !== index);
+                setColorPalette(newPalette.length ? newPalette : [{ name: '', hex: '#000000' }]);
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+
+                if (!formData.name || !formData.price) {
+                    alert("Please fill in Name and Price");
+                    return;
+                }
+
+                // Process gallery images
+                const cleanGallery = galleryUrls.map(u => u.trim()).filter(Boolean);
+                const finalImages = [formData.image, ...cleanGallery];
+                const uniqueImages = [...new Set(finalImages)];
+
+                // Process variant mapping
+                const variantImages = {};
+                variantMappings.forEach(item => {
+                    const cleanUrls = item.urls.map(u => u.trim()).filter(Boolean);
+                    if (item.color.trim() && cleanUrls.length > 0) {
+                        variantImages[item.color.trim()] = cleanUrls;
+                    }
+                });
+
+                // Process color palette
+                const finalColors = colorPalette.filter(c => c.name.trim() !== '');
+
+                const priceVal = parseFloat(formData.price);
+
+                const submission = {
+                    ...formData,
+                    id: product ? Number(product.id) : undefined,
+                    price: isNaN(priceVal) ? 0 : priceVal,
+                    dealPrice: formData.isDailyDeal && formData.dealPrice ? parseFloat(formData.dealPrice) : null,
+                    colors: finalColors, // Save as array of objects
+                    sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
+                    images: uniqueImages,
+                    variantImages: variantImages
+                };
+
+                console.log("Submitting product:", submission);
+                onSave(submission);
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+                            <h2 className="text-xl font-bold">{product ? 'Edit Product' : 'Add New Product'}</h2>
+                            <button onClick={onCancel} className="text-gray-500 hover:text-gray-700">
+                                <div className="icon-x text-2xl"></div>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="p-6 space-y-8">
+                            {/* Basic Info */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        required
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                                    <input
+                                        type="number"
+                                        name="price"
+                                        step="0.01"
+                                        required
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Daily Deal Toggle */}
+                            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <input
+                                        type="checkbox"
+                                        id="isDailyDeal"
+                                        name="isDailyDeal"
+                                        checked={formData.isDailyDeal}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 text-[var(--primary-color)] rounded border-gray-300 focus:ring-[var(--primary-color)]"
+                                    />
+                                    <label htmlFor="isDailyDeal" className="font-semibold text-gray-900 select-none cursor-pointer">Set as Daily Deal</label>
+                                </div>
+
+                                {formData.isDailyDeal && (
+                                    <div className="ml-6 animate-[fadeIn_0.2s_ease-out]">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Deal Price ($)</label>
+                                        <input
+                                            type="number"
+                                            name="dealPrice"
+                                            step="0.01"
+                                            value={formData.dealPrice}
+                                            onChange={handleChange}
+                                            placeholder="Enter discounted price"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                >
+                                    <option value="">Select Category</option>
+                                    {availableCategories.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Image Management Section */}
+                            <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="icon-image text-gray-500"></div>
+                                    <h3 className="font-semibold text-gray-900">Image Gallery</h3>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL (Required)</label>
+                                    <input
+                                        type="url"
+                                        name="image"
+                                        required
+                                        placeholder="https://..."
+                                        value={formData.image}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Additional Images</label>
+                                    <div className="space-y-3">
+                                        {galleryUrls.map((url, index) => (
+                                            <div key={index} className="flex gap-2">
+                                                <input
+                                                    type="url"
+                                                    placeholder="https://..."
+                                                    value={url}
+                                                    onChange={(e) => handleGalleryChange(index, e.target.value)}
+                                                    className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGalleryField(index)}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
+                                                    title="Remove image"
+                                                >
+                                                    <div className="icon-trash text-lg"></div>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={addGalleryField}
+                                        className="mt-3 text-sm text-[var(--primary-color)] font-medium flex items-center gap-1 hover:underline"
+                                    >
+                                        <div className="icon-plus text-xs"></div> Add another image
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* COLOR PALETTE SECTION */}
+                            <div className="bg-purple-50 p-5 rounded-lg border border-purple-100 space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="icon-palette text-purple-600"></div>
+                                    <h3 className="font-semibold text-gray-900">Color Palette</h3>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">Define available colors and their visual representation.</p>
+
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase">
+                                        <div className="col-span-6">Name</div>
+                                        <div className="col-span-4">Display Color</div>
+                                        <div className="col-span-2"></div>
+                                    </div>
+                                    {colorPalette.map((item, index) => (
+                                        <div key={index} className="grid grid-cols-12 gap-3 items-center">
+                                            <div className="col-span-6">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Color Name (e.g. Navy)"
+                                                    value={item.name}
+                                                    onChange={(e) => handleColorChange(index, 'name', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none bg-white"
+                                                />
+                                            </div>
+                                            <div className="col-span-4 flex items-center gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={item.hex}
+                                                    onChange={(e) => handleColorChange(index, 'hex', e.target.value)}
+                                                    className="h-9 w-12 p-0.5 border border-gray-300 rounded bg-white cursor-pointer"
+                                                />
+                                                <span className="text-xs text-gray-500 font-mono hidden sm:block">{item.hex}</span>
+                                            </div>
+                                            <div className="col-span-2 flex justify-end">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeColorField(index)}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md"
+                                                >
+                                                    <div className="icon-trash text-lg"></div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={addColorField}
+                                    className="mt-3 text-sm text-purple-600 font-medium flex items-center gap-1 hover:underline"
+                                >
+                                    <div className="icon-plus text-xs"></div> Add Color
+                                </button>
+                            </div>
+
+                            {/* Variant Mapping Section */}
+                            <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 space-y-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="icon-layers text-blue-600"></div>
+                                        <h3 className="font-semibold text-gray-900">Variant Images</h3>
+                                    </div>
+                                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Optional</span>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">Link specific colors to images so the photo updates when a user selects a color.</p>
+
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase">
+                                        <div className="col-span-4">Color Name</div>
+                                        <div className="col-span-7">Specific Image URL</div>
+                                        <div className="col-span-1"></div>
+                                    </div>
+                                    {variantMappings.map((mapping, vIndex) => (
+                                        <div key={vIndex} className="bg-white p-4 rounded-md border border-blue-100 space-y-3 relative group">
+                                            <button
+                                                type="button"
+                                                onClick={() => removeVariantField(vIndex)}
+                                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Remove this color variant"
+                                            >
+                                                <div className="icon-x text-xs"></div>
+                                            </button>
+
+                                            <div className="flex gap-4 items-center">
+                                                <div className="w-1/3">
+                                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Color Name</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="e.g. Black"
+                                                        value={mapping.color}
+                                                        list={`color-suggestions-${vIndex}`}
+                                                        onChange={(e) => handleVariantChange(vIndex, 'color', e.target.value)}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+                                                    />
+                                                    <datalist id={`color-suggestions-${vIndex}`}>
+                                                        {colorPalette.filter(c => c.name).map(c => (
+                                                            <option key={c.name} value={c.name} />
+                                                        ))}
+                                                    </datalist>
+                                                </div>
+                                                <div className="flex-grow">
+                                                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Images for this color</label>
+                                                    <div className="space-y-2">
+                                                        {mapping.urls.map((url, uIndex) => (
+                                                            <div key={uIndex} className="flex gap-2">
+                                                                <input
+                                                                    type="url"
+                                                                    placeholder="https://..."
+                                                                    value={url}
+                                                                    onChange={(e) => handleVariantUrlChange(vIndex, uIndex, e.target.value)}
+                                                                    className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeVariantUrlField(vIndex, uIndex)}
+                                                                    className="p-2 text-gray-400 hover:text-red-500"
+                                                                >
+                                                                    <div className="icon-trash"></div>
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addVariantUrlField(vIndex)}
+                                                        className="mt-2 text-xs text-blue-600 font-medium flex items-center gap-1 hover:underline"
+                                                    >
+                                                        <div className="icon-plus text-[10px]"></div> Add Image Angle
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={addVariantField}
+                                    className="mt-3 text-sm text-blue-600 font-medium flex items-center gap-1 hover:underline"
+                                >
+                                    <div className="icon-plus text-xs"></div> Add Mapping
+                                </button>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Available Sizes (comma separated)</label>
+                                <input
+                                    type="text"
+                                    name="sizes"
+                                    placeholder="S, M, L, XL"
+                                    value={formData.sizes}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea
+                                    name="description"
+                                    rows="4"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                ></textarea>
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 sticky bottom-0 bg-white pb-2">
+                                <button
+                                    type="button"
+                                    onClick={onCancel}
+                                    className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 text-white bg-[var(--primary-color)] rounded-md hover:bg-[var(--primary-hover)] shadow-sm"
+                                >
+                                    Save Product
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+    </script>
+    <script type="text/babel">
+        function CategoryManagerModal({ onClose }) {
+            const [categories, setCategories] = React.useState([]);
+            const [newCategory, setNewCategory] = React.useState('');
+
+            React.useEffect(() => {
+                loadCategories();
+            }, []);
+
+            const loadCategories = () => {
+                setCategories(window.CategoryManager.getAll());
+            };
+
+            const handleAdd = (e) => {
+                e.preventDefault();
+                if (newCategory.trim()) {
+                    window.CategoryManager.add(newCategory.trim());
+                    setNewCategory('');
+                    loadCategories();
+                }
+            };
+
+            const handleDelete = (category) => {
+                if (confirm(`Are you sure you want to delete category "${category}"?`)) {
+                    window.CategoryManager.delete(category);
+                    loadCategories();
+                }
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <div className="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+                            <h2 className="text-xl font-bold">Manage Categories</h2>
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                                <div className="icon-x text-2xl"></div>
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            <form onSubmit={handleAdd} className="flex gap-2 mb-6">
+                                <input
+                                    type="text"
+                                    placeholder="New Category Name"
+                                    value={newCategory}
+                                    onChange={(e) => setNewCategory(e.target.value)}
+                                    className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!newCategory.trim()}
+                                    className="px-4 py-2 bg-[var(--primary-color)] text-white rounded-md hover:bg-[var(--primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Add
+                                </button>
+                            </form>
+
+                            <div className="space-y-2">
+                                <h3 className="font-medium text-gray-700 mb-2">Existing Categories</h3>
+                                {categories.length === 0 ? (
+                                    <p className="text-gray-500 text-center py-4">No categories found.</p>
+                                ) : (
+                                    <div className="border rounded-lg divide-y">
+                                        {categories.map(cat => (
+                                            <div key={cat} className="flex justify-between items-center p-3 hover:bg-gray-50">
+                                                <span className="font-medium">{cat}</span>
+                                                <button
+                                                    onClick={() => handleDelete(cat)}
+                                                    className="text-gray-400 hover:text-red-500 p-1 rounded hover:bg-red-50"
+                                                    title="Delete Category"
+                                                >
+                                                    <div className="icon-trash text-lg"></div>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    </script>
+    <script type="text/babel">
+        function AdminApp() {
+            const [products, setProducts] = React.useState([]);
+            const [isFormOpen, setIsFormOpen] = React.useState(false);
+            const [isCategoryManagerOpen, setIsCategoryManagerOpen] = React.useState(false);
+            const [editingProduct, setEditingProduct] = React.useState(null);
+
+            // Initial load
+            React.useEffect(() => {
+                refreshData();
+            }, []);
+
+            const refreshData = () => {
+                setProducts(window.ProductManager.getAll());
+            };
+
+            const handleEdit = (product) => {
+                setEditingProduct(product);
+                setIsFormOpen(true);
+            };
+
+            const handleDelete = (id) => {
+                if (confirm('Are you sure you want to delete this product?')) {
+                    window.ProductManager.delete(id);
+                    refreshData();
+                }
+            };
+
+            const handleAddNew = () => {
+                setEditingProduct(null);
+                setIsFormOpen(true);
+            };
+
+            const handleSave = (product) => {
+                window.ProductManager.save(product);
+                setIsFormOpen(false);
+                refreshData();
+            };
+
+            const handleMove = (index, direction) => {
+                const newProducts = [...products];
+                const newIndex = index + direction;
+
+                if (newIndex >= 0 && newIndex < newProducts.length) {
+                    // Swap items
+                    [newProducts[index], newProducts[newIndex]] = [newProducts[newIndex], newProducts[index]];
+                    setProducts(newProducts);
+                    window.ProductManager.reorder(newProducts);
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Admin Header */}
+                    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                                    <div className="icon-layout-dashboard text-white text-lg"></div>
+                                </div>
+                                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <a href="index-portable.html" className="text-sm font-medium text-gray-500 hover:text-[var(--primary-color)] flex items-center gap-1">
+                                    <div className="icon-external-link text-xs"></div> View Site
+                                </a>
+                                <button
+                                    onClick={() => setIsCategoryManagerOpen(true)}
+                                    className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-50 transition-colors"
+                                >
+                                    Manage Categories
+                                </button>
+                                <button
+                                    onClick={handleAddNew}
+                                    className="bg-[var(--primary-color)] text-white px-4 py-2 rounded-md font-medium text-sm flex items-center gap-2 hover:bg-[var(--primary-hover)] transition-colors"
+                                >
+                                    <div className="icon-plus text-base"></div> Add Product
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {/* Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-gray-500 font-medium">Total Products</h3>
+                                    <div className="p-2 bg-blue-50 rounded-lg text-blue-600 icon-package"></div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900">{products.length}</div>
+                            </div>
+                            {/* Placeholder Stats */}
+                            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-gray-500 font-medium">Total Revenue</h3>
+                                    <div className="p-2 bg-green-50 rounded-lg text-green-600 icon-dollar-sign"></div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900">$12,450</div>
+                            </div>
+                            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-gray-500 font-medium">Orders</h3>
+                                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600 icon-shopping-bag"></div>
+                                </div>
+                                <div className="text-3xl font-bold text-gray-900">145</div>
+                            </div>
+                        </div>
+
+                        {/* Table */}
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                                <h2 className="text-lg font-semibold text-gray-900">Inventory</h2>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search products..."
+                                        className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] w-64"
+                                    />
+                                    <div className="absolute left-3 top-2.5 text-gray-400 icon-search text-sm"></div>
+                                </div>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                            <th className="px-6 py-3 font-semibold">Product</th>
+                                            <th className="px-6 py-3 font-semibold">Category</th>
+                                            <th className="px-6 py-3 font-semibold">Price</th>
+                                            <th className="px-6 py-3 font-semibold">Stock</th>
+                                            <th className="px-6 py-3 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {products.map(product => (
+                                            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={product.image} alt="" className="w-10 h-10 rounded-md object-cover bg-gray-100 border border-gray-200" />
+                                                        <div className="font-medium text-gray-900">{product.name}</div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-500">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        {product.category}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                                    ${(product.price || 0).toFixed(2)}
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-500">
+                                                    <div className="flex items-center gap-1.5 text-green-600">
+                                                        <div className="icon-circle-check text-xs"></div>
+                                                        In Stock
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <div className="flex flex-col gap-1 mr-2 border-r pr-2 border-gray-100">
+                                                            <button
+                                                                onClick={() => handleMove(products.indexOf(product), -1)}
+                                                                disabled={products.indexOf(product) === 0}
+                                                                className={`p-1 rounded hover:bg-gray-100 transition-colors ${products.indexOf(product) === 0 ? 'text-gray-300' : 'text-gray-500'}`}
+                                                                title="Move Up"
+                                                            >
+                                                                <div className="icon-chevron-up text-xs"></div>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleMove(products.indexOf(product), 1)}
+                                                                disabled={products.indexOf(product) === products.length - 1}
+                                                                className={`p-1 rounded hover:bg-gray-100 transition-colors ${products.indexOf(product) === products.length - 1 ? 'text-gray-300' : 'text-gray-500'}`}
+                                                                title="Move Down"
+                                                            >
+                                                                <div className="icon-chevron-down text-xs"></div>
+                                                            </button>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleEdit(product)}
+                                                            className="p-1.5 text-gray-500 hover:text-[var(--primary-color)] hover:bg-blue-50 rounded-md transition-colors"
+                                                        >
+                                                            <div className="icon-pencil text-sm"></div>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(product.id)}
+                                                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                                        >
+                                                            <div className="icon-trash text-sm"></div>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {products.length === 0 && (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                                                    No products found. Add one to get started.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </main>
+
+                    {isFormOpen && (
+                        <AdminProductForm
+                            product={editingProduct}
+                            onSave={handleSave}
+                            onCancel={() => setIsFormOpen(false)}
+                        />
+                    )}
+
+                    {isCategoryManagerOpen && (
+                        <CategoryManagerModal
+                            onClose={() => setIsCategoryManagerOpen(false)}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AdminApp />);
+    </script>
+</body>
+
+</html>
