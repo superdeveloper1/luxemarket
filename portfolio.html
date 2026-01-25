@@ -142,8 +142,9 @@
                 }
             }, []);
 
-            const demoLink = isFileProtocol ? "index-portable.html" : "index.html";
+            const demoLink = "https://superdeveloper1.github.io/luxemarket-portfolio/";
             const adminLink = isFileProtocol ? "admin-portable.html" : "admin.html";
+            const resumeLink = "resume.html";
 
             return (
                 <div className="min-h-screen">
@@ -158,6 +159,7 @@
                                 <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
                                 <a href="#preview" className="hover:text-blue-400 transition-colors">Showcase</a>
                                 <a href="#tech" className="hover:text-blue-400 transition-colors">Tech Stack</a>
+                                <a href={resumeLink} className="hover:text-blue-400 transition-colors">Resume</a>
                                 <a href={demoLink} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full transition-all">Live Demo</a>
                             </div>
                         </div>
@@ -420,9 +422,9 @@
                         <div className="container mx-auto px-6 text-center">
                             <p className="text-gray-500 text-sm mb-4">Developed as a technical showcase for modern web standards.</p>
                             <div className="flex gap-4 justify-center">
-                                <a href="index.html" className="text-blue-500 hover:text-blue-400 transition-colors">Launch Demo</a>
+                                <a href={demoLink} className="text-blue-500 hover:text-blue-400 transition-colors">Launch Demo</a>
                                 <span className="text-gray-700">|</span>
-                                <a href="admin.html" className="text-blue-500 hover:text-blue-400 transition-colors">Admin Portal</a>
+                                <a href={adminLink} className="text-blue-500 hover:text-blue-400 transition-colors">Admin Portal</a>
                             </div>
                         </div>
                     </footer>

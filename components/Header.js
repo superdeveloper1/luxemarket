@@ -22,7 +22,8 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
 
     // Dynamic Category Loading
     const [categories, setCategories] = React.useState([
-        "Electronics", "Fashion", "Furniture", "Accessories", "Sporting Goods"
+        "Electronics", "Fashion", "Furniture", "Accessories",
+        "Sporting Goods", "Industrial", "Motors", "Deals"
     ]);
 
     React.useEffect(() => {

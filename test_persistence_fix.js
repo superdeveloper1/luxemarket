@@ -10,6 +10,8 @@ const localStorage = {
 global.localStorage = localStorage;
 
 const fs = require('fs');
+global.PRODUCT_STORAGE_KEY = 'luxemarket_products';
+global.CATEGORY_STORAGE_KEY = 'luxemarket_categories';
 const content = fs.readFileSync('utils/data.js', 'utf8');
 
 try {

@@ -217,16 +217,25 @@
             "Electronics",
             "Fashion",
             "Furniture",
-            "Accessories"
+            "Accessories",
+            "Sporting Goods",
+            "Industrial",
+            "Motors",
+            "Deals"
         ];
 
         const PRODUCT_STORAGE_KEY = 'luxemarket_products';
         const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
+        const CURRENT_DATA_VERSION = 'v1.3'; // Increment this to force a reset for all users
 
         const ProductManager = {
             init: () => {
-                if (!localStorage.getItem(PRODUCT_STORAGE_KEY)) {
+                const storedVersion = localStorage.getItem('luxemarket_data_version');
+                if (!localStorage.getItem(PRODUCT_STORAGE_KEY) || storedVersion !== CURRENT_DATA_VERSION) {
+                    console.log("Initializing/Resetting data to version:", CURRENT_DATA_VERSION);
                     localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
+                    localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
+                    localStorage.setItem('luxemarket_data_version', CURRENT_DATA_VERSION);
                 }
             },
 
