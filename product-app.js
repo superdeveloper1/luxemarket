@@ -49,9 +49,6 @@ function ProductApp() {
 
   const { addToast } = useToast();
 
-  // Debug: Check the console to see if the latest version is loaded
-  React.useEffect(() => console.log('ProductApp Version: v1.0 (Cache Check) - Loaded at:', new Date().toISOString()), []);
-
   React.useEffect(() => {
     // Load User
     const savedUser = sessionStorage.getItem('luxemarket_user');

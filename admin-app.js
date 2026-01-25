@@ -5,9 +5,6 @@ function AdminApp() {
     const [editingProduct, setEditingProduct] = React.useState(null);
     const [searchTerm, setSearchTerm] = React.useState('');
 
-    // Debug: Check the console to see if the latest version is loaded
-    React.useEffect(() => console.log('AdminApp Version: v1.0 (Cache Check) - Loaded at:', new Date().toISOString()), []);
-
     // Initial load
     React.useEffect(() => {
         refreshData();
