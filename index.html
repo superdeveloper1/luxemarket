@@ -134,17 +134,26 @@
     <div id="root"></div>
 
     <!-- App Scripts -->
-    <script type="text/babel" src="utils/data.js?v=1.4"></script>
-    <script type="text/babel" src="utils/cart.js?v=1.4"></script>
-    <script type="text/babel" src="components/Toast.js?v=1.4"></script>
-    <script type="text/babel" src="components/Header.js?v=1.4"></script>
-    <script type="text/babel" src="components/Footer.js?v=1.4"></script>
-    <script type="text/babel" src="components/ProductCard.js?v=1.4"></script>
-    <script type="text/babel" src="components/Hero.js?v=1.4"></script>
-    <script type="text/babel" src="components/FeaturedProducts.js?v=1.4"></script>
-    <script type="text/babel" src="components/Newsletter.js?v=1.4"></script>
-    <script type="text/babel" src="components/AuthModal.js?v=1.4"></script>
-    <script type="text/babel" src="app.js?v=1.4"></script>
+    <script>
+        // Force clear old data to ensure new updates appear
+        if (localStorage.getItem('luxemarket_data_version') !== 'v1.5') {
+            localStorage.removeItem('luxemarket_products');
+            localStorage.removeItem('luxemarket_categories');
+            localStorage.setItem('luxemarket_data_version', 'v1.5');
+            console.log('Local Data Reset to v1.5');
+        }
+    </script>
+    <script type="text/babel" src="utils/data.js?v=1.5"></script>
+    <script type="text/babel" src="utils/cart.js?v=1.5"></script>
+    <script type="text/babel" src="components/Toast.js?v=1.5"></script>
+    <script type="text/babel" src="components/Header.js?v=1.5"></script>
+    <script type="text/babel" src="components/Footer.js?v=1.5"></script>
+    <script type="text/babel" src="components/ProductCard.js?v=1.5"></script>
+    <script type="text/babel" src="components/Hero.js?v=1.5"></script>
+    <script type="text/babel" src="components/FeaturedProducts.js?v=1.5"></script>
+    <script type="text/babel" src="components/Newsletter.js?v=1.5"></script>
+    <script type="text/babel" src="components/AuthModal.js?v=1.5"></script>
+    <script type="text/babel" src="app.js?v=1.5"></script>
 </body>
 
 </html>
