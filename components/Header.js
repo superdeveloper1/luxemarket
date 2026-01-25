@@ -4,6 +4,9 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     const searchRef = React.useRef(null);
     const { addToast } = useToast();
 
+    // Debug: Check the console to see if the latest version is loaded
+    React.useEffect(() => console.log('Header Component Version: v1.0 (Cache Check)'), []);
+
     // Clicking outside closes the dropdowns
     React.useEffect(() => {
         const handleClickOutside = (event) => {

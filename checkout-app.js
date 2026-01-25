@@ -38,6 +38,9 @@ function CheckoutApp() {
   const [currentUser, setCurrentUser] = React.useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
 
+  // Debug: Check the console to see if the latest version is loaded
+  React.useEffect(() => console.log('CheckoutApp Version: v1.0 (Cache Check) - Loaded at:', new Date().toISOString()), []);
+
   React.useEffect(() => {
     // Auth Check
     const savedUser = sessionStorage.getItem('luxemarket_user');
