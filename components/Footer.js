@@ -82,6 +82,7 @@ function Footer() {
                         </div>
                         <div className="flex items-center gap-1">
                             <span>Copyright © 1995-{currentYear} LuxeMarket Inc. All Rights Reserved.</span>
+                            <span className="text-gray-300 ml-2 text-[10px]">v1.1</span>
                         </div>
                     </div>
                 </div>

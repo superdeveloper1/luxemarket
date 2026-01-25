@@ -43,7 +43,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   // Debug: Check the console to see if the latest version is loaded
-  React.useEffect(() => console.log('App Version: v1.0 (Cache Check) - Loaded at:', new Date().toISOString()), []);
+  React.useEffect(() => console.log('App Version: v1.1 (Cache Check) - Loaded at:', new Date().toISOString()), []);
 
   const [products, setProducts] = React.useState([]);
   const [filteredProducts, setFilteredProducts] = React.useState([]);
