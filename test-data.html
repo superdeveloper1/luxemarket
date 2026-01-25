@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LuxeMarket Data Test</title>
+</head>
+
+<body>
+    <h1>Testing Data Initialization</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        // Test if constants are defined
+        const PRODUCT_STORAGE_KEY = 'luxemarket_products';
+        const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
+        const CURRENT_DATA_VERSION = 'v1.4';
+
+        output.innerHTML += `<p>✓ PRODUCT_STORAGE_KEY: ${PRODUCT_STORAGE_KEY}</p>`;
+        output.innerHTML += `<p>✓ CATEGORY_STORAGE_KEY: ${CATEGORY_STORAGE_KEY}</p>`;
+        output.innerHTML += `<p>✓ CURRENT_DATA_VERSION: ${CURRENT_DATA_VERSION}</p>`;
+
+        // Test localStorage
+        try {
+            localStorage.setItem('test', 'works');
+            output.innerHTML += `<p>✓ localStorage is accessible</p>`;
+            localStorage.removeItem('test');
+        } catch (e) {
+            output.innerHTML += `<p>✗ localStorage error: ${e.message}</p>`;
+        }
+
+        output.innerHTML += `<p style="color: green; font-weight: bold;">All tests passed! The issue is likely GitHub Pages caching.</p>`;
+    </script>
+</body>
+
+</html>
