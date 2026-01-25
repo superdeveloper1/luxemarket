@@ -172,7 +172,9 @@ const INITIAL_CATEGORIES = [
     "Deals"
 ];
 
-const CURRENT_DATA_VERSION = 'v1.3'; // Increment this to force a reset for all users
+const PRODUCT_STORAGE_KEY = 'luxemarket_products';
+const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
+const CURRENT_DATA_VERSION = 'v1.4'; // Increment this to force a reset for all users
 
 const ProductManager = {
     init: () => {
