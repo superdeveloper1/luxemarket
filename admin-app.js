@@ -3,6 +3,7 @@ function AdminApp() {
     const [isFormOpen, setIsFormOpen] = React.useState(false);
     const [isCategoryManagerOpen, setIsCategoryManagerOpen] = React.useState(false);
     const [editingProduct, setEditingProduct] = React.useState(null);
+    const [searchTerm, setSearchTerm] = React.useState('');
 
     // Initial load
     React.useEffect(() => {
@@ -115,6 +116,8 @@ function AdminApp() {
                             <input
                                 type="text"
                                 placeholder="Search products..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)] w-64"
                             />
                             <div className="absolute left-3 top-2.5 text-gray-400 icon-search text-sm"></div>
@@ -132,7 +135,13 @@ function AdminApp() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {products.map(product => (
+                                {products.filter(p => {
+                                    if (!searchTerm) return true;
+                                    const lowerTerm = searchTerm.toLowerCase();
+                                    return p.name.toLowerCase().includes(lowerTerm) ||
+                                        p.category.toLowerCase().includes(lowerTerm) ||
+                                        (p.id && p.id.toString().includes(lowerTerm));
+                                }).map(product => (
                                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">

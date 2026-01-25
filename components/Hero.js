@@ -32,7 +32,7 @@ function Hero() {
         },
         {
             id: 3,
-            image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+            image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
             subtitle: "COMFORT & DESIGN",
             title: "Modern Furniture For Modern Living",
             description: "Transform your workspace and living area with our ergonomic furniture collection.",
@@ -59,7 +59,7 @@ function Hero() {
     };
 
     return (
-        <div className="relative bg-gray-900 overflow-hidden h-[500px] md:h-[600px] group" data-name="hero-carousel" data-file="components/Hero.js">
+        <div className="relative bg-gray-900 overflow-hidden h-[200px] md:h-[300px] group" data-name="hero-carousel" data-file="components/Hero.js">
             {slides.map((slide, index) => (
                 <div
                     key={slide.id}
@@ -67,11 +67,11 @@ function Hero() {
                 >
                     <div className="absolute inset-0">
                         <img
-                            className="w-full h-full object-cover opacity-50"
+                            className={`w-full h-full object-cover opacity-60 transition-opacity duration-1000 ${index === currentSlide ? 'animate-zoom' : ''}`}
                             src={slide.image}
                             alt={slide.title}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/60 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/40 to-transparent"></div>
                     </div>
 
                     <div className="relative container-custom h-full flex items-center">
@@ -79,22 +79,22 @@ function Hero() {
                             <span className="inline-block py-1 px-3 rounded bg-[var(--primary-color)] bg-opacity-20 text-[var(--accent-color)] text-sm font-semibold tracking-wider mb-4 border border-[var(--primary-color)] border-opacity-30">
                                 {slide.subtitle}
                             </span>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg">
                                 {slide.title}
                             </h1>
-                            <p className="text-lg text-gray-300 mb-8 leading-relaxed max-w-xl">
+                            <p className="text-xl text-gray-200 mb-8 leading-relaxed max-w-xl drop-shadow-md">
                                 {slide.description}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <a href={slide.linkPrimary} className="btn btn-primary text-lg px-8 py-3 rounded-full text-center">
+                                <a href={slide.linkPrimary} className="btn bg-white text-gray-900 hover:bg-gray-100 text-lg px-10 py-4 rounded-full font-bold shadow-xl transition-all hover:scale-105 active:scale-95">
                                     {slide.ctaPrimary}
                                 </a>
                                 {slide.linkSecondary === "#" ? (
-                                    <button onClick={(e) => handleComingSoon(e, slide.ctaSecondary)} className="btn bg-white bg-opacity-10 text-white hover:bg-opacity-20 border border-white border-opacity-20 text-lg px-8 py-3 rounded-full backdrop-blur-sm text-center">
+                                    <button onClick={(e) => handleComingSoon(e, slide.ctaSecondary)} className="btn bg-white/10 text-white hover:bg-white/20 border-2 border-white/30 text-lg px-10 py-4 rounded-full backdrop-blur-md font-semibold transition-all hover:border-white/60">
                                         {slide.ctaSecondary}
                                     </button>
                                 ) : (
-                                    <a href={slide.linkSecondary} className="btn bg-white bg-opacity-10 text-white hover:bg-opacity-20 border border-white border-opacity-20 text-lg px-8 py-3 rounded-full backdrop-blur-sm text-center">
+                                    <a href={slide.linkSecondary} className="btn bg-white/10 text-white hover:bg-white/20 border-2 border-white/30 text-lg px-10 py-4 rounded-full backdrop-blur-md font-semibold transition-all hover:border-white/60">
                                         {slide.ctaSecondary}
                                     </a>
                                 )}

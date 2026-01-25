@@ -51,7 +51,7 @@ function ProductApp() {
 
   React.useEffect(() => {
     // Load User
-    const savedUser = localStorage.getItem('luxemarket_user');
+    const savedUser = sessionStorage.getItem('luxemarket_user');
     if (savedUser) {
       setCurrentUser(JSON.parse(savedUser));
     }
@@ -117,7 +117,7 @@ function ProductApp() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('luxemarket_user');
+    sessionStorage.removeItem('luxemarket_user');
     setCurrentUser(null);
     addToast('Successfully logged out', 'info');
     setTimeout(() => window.location.reload(), 1000);
@@ -135,10 +135,47 @@ function ProductApp() {
           onLogout={handleLogout}
         />
 
-        <main className="flex-grow bg-gray-50 py-12">
+        <main className="flex-grow bg-gray-50 py-6">
           <div className="container-custom">
             {currentProduct ? (
-              <ProductDetail product={currentProduct} onAddToCart={addToCart} />
+              <>
+                <ProductDetail product={currentProduct} onAddToCart={addToCart} />
+
+                {/* Related Items Section */}
+                <div className="mt-16 animate-[fadeIn_0.5s_ease-out]">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Items</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                    {window.ProductManager.getAll()
+                      .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id)
+                      .slice(0, 6)
+                      .map(product => (
+                        <div key={product.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden group hover:shadow-lg transition-shadow">
+                          <div className="relative pt-[100%] bg-gray-100 overflow-hidden">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                            <a
+                              href={`product.html?id=${product.id}`}
+                              className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <span className="bg-white text-gray-900 px-4 py-2 rounded-full font-medium text-sm hover:bg-[var(--primary-color)] hover:text-white transition-colors">
+                                View Details
+                              </span>
+                            </a>
+                          </div>
+                          <div className="p-3">
+                            <div className="text-[10px] text-gray-500 mb-0.5">{product.category}</div>
+                            <h4 className="font-semibold text-gray-900 truncate text-sm mb-1">{product.name}</h4>
+                            <div className="font-bold text-[var(--primary-color)] text-sm">${product.price.toFixed(2)}</div>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="text-center py-24">
                 <div className="icon-loader animate-spin text-4xl text-[var(--primary-color)] mx-auto mb-4"></div>

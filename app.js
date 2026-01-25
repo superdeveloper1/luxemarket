@@ -44,6 +44,7 @@ function App() {
   const [products, setProducts] = React.useState([]);
   const [filteredProducts, setFilteredProducts] = React.useState([]);
   const [activeCategory, setActiveCategory] = React.useState(null);
+  const [visibleCount, setVisibleCount] = React.useState(6);
 
   // Auth State
   const [currentUser, setCurrentUser] = React.useState(null);
@@ -53,7 +54,7 @@ function App() {
 
   React.useEffect(() => {
     // Load User
-    const savedUser = localStorage.getItem('luxemarket_user');
+    const savedUser = sessionStorage.getItem('luxemarket_user');
     if (savedUser) {
       setCurrentUser(JSON.parse(savedUser));
     }
@@ -97,27 +98,54 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     const category = params.get('category');
     const filter = params.get('filter');
+    const search = params.get('search');
 
+    let current = allProducts;
+    let label = null;
+
+    // 1. Filter by Daily Deals
     if (filter === 'deals') {
-      setActiveCategory('Daily Deals');
-      setFilteredProducts(allProducts.filter(p => p.isDailyDeal));
-    } else if (category) {
-      setActiveCategory(category);
-      setFilteredProducts(allProducts.filter(p => p.category === category));
-    } else {
-      setActiveCategory(null);
-      setFilteredProducts(allProducts);
+      current = current.filter(p => p.isDailyDeal);
+      label = 'Daily Deals';
     }
+
+    // 2. Filter by Category
+    if (category && category !== 'All Categories') {
+      current = current.filter(p => p.category === category);
+      label = category;
+    }
+
+    // 3. Filter by Search Term
+    if (search) {
+      const lower = search.toLowerCase();
+      current = current.filter(p =>
+        p.name.toLowerCase().includes(lower) ||
+        p.description.toLowerCase().includes(lower)
+      );
+      label = `Search: "${search}"` + (label ? ` in ${label}` : '');
+    }
+
+    setActiveCategory(label);
+    setFilteredProducts(current);
+    // Reset visible count when filter changes to ensure consistent view
+    setVisibleCount(6);
+
+    // Scrolling is handled by the useEffect on activeCategory
   };
 
   // Scroll to products when category changes
   React.useEffect(() => {
-    if (activeCategory) {
+    const params = new URLSearchParams(window.location.search);
+    const isFiltered = params.get('search') || params.get('category') || params.get('filter');
+
+    if (activeCategory && isFiltered) {
       const section = document.getElementById('featured-products');
       if (section) {
         setTimeout(() => {
-          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+          const yOffset = -200; // Increased offset for better visibility
+          const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }, 300);
       }
     }
   }, [activeCategory]);
@@ -146,7 +174,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('luxemarket_user');
+    sessionStorage.removeItem('luxemarket_user');
     setCurrentUser(null);
     addToast('Successfully logged out', 'info');
     setTimeout(() => window.location.reload(), 1000);
@@ -174,18 +202,22 @@ function App() {
                   <h2 className="text-2xl font-bold text-gray-900">
                     {activeCategory ? `${activeCategory}` : 'Featured Products'}
                   </h2>
-                  {activeCategory && (
+                  {activeCategory ? (
                     <a href="index.html" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 mt-1 group">
                       <div className="icon-arrow-left text-xs transition-transform group-hover:-translate-x-1"></div>
                       Go back to all products
                     </a>
+                  ) : (
+                    <p className="text-gray-500 text-sm mt-1">
+                      Showing {Math.min(visibleCount, filteredProducts.length)} of {filteredProducts.length} products
+                    </p>
                   )}
                 </div>
 
-                {!activeCategory && (
+                {!activeCategory && visibleCount < filteredProducts.length && (
                   <button
                     onClick={() => {
-                      window.scrollTo({ top: document.getElementById('featured-products').offsetTop - 100, behavior: 'smooth' });
+                      setVisibleCount(filteredProducts.length);
                       addToast('Viewing all available products', 'info');
                     }}
                     className="text-[var(--primary-color)] font-medium hover:text-[var(--primary-hover)] flex items-center gap-1"
@@ -196,7 +228,10 @@ function App() {
               </div>
 
               {filteredProducts.length > 0 ? (
-                <FeaturedProducts products={filteredProducts} addToCart={addToCart} />
+                <FeaturedProducts
+                  products={activeCategory ? filteredProducts : filteredProducts.slice(0, visibleCount)}
+                  addToCart={addToCart}
+                />
               ) : (
                 <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
                   <div className="icon-search text-4xl text-gray-300 mx-auto mb-3"></div>

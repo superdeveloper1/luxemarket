@@ -9,6 +9,7 @@ function AdminProductForm({ product, onSave, onCancel }) {
         sizes: '',
         isDailyDeal: false,
         dealPrice: '',
+        video: '',
         ...product
     });
 
@@ -256,6 +257,19 @@ function AdminProductForm({ product, onSave, onCancel }) {
                         </select>
                     </div>
 
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Video URL (Optional)</label>
+                        <input
+                            type="url"
+                            name="video"
+                            placeholder="https://www.youtube.com/embed/..."
+                            value={formData.video || ''}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Accepts YouTube embeds or direct video links.</p>
+                    </div>
+
                     {/* Image Management Section */}
                     <div className="bg-gray-50 p-5 rounded-lg border border-gray-200 space-y-4">
                         <div className="flex items-center gap-2 mb-2">
@@ -265,15 +279,25 @@ function AdminProductForm({ product, onSave, onCancel }) {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL (Required)</label>
-                            <input
-                                type="url"
-                                name="image"
-                                required
-                                placeholder="https://..."
-                                value={formData.image}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
-                            />
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    name="image"
+                                    required
+                                    placeholder="https://..."
+                                    value={formData.image}
+                                    onChange={handleChange}
+                                    className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
+                                />
+                                {formData.image && (
+                                    <img
+                                        src={formData.image}
+                                        alt="Main Preview"
+                                        className="w-10 h-10 rounded-md object-cover border border-gray-200 bg-gray-100 flex-shrink-0"
+                                        onError={(e) => e.target.style.display = 'none'}
+                                    />
+                                )}
+                            </div>
                         </div>
 
                         <div>
@@ -288,6 +312,14 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                             onChange={(e) => handleGalleryChange(index, e.target.value)}
                                             className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
                                         />
+                                        {url && (
+                                            <img
+                                                src={url}
+                                                alt={`Gallery ${index + 1}`}
+                                                className="w-10 h-10 rounded-md object-cover border border-gray-200 bg-gray-100 flex-shrink-0"
+                                                onError={(e) => e.target.style.display = 'none'}
+                                            />
+                                        )}
                                         <button
                                             type="button"
                                             onClick={() => removeGalleryField(index)}
@@ -421,6 +453,14 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                                             onChange={(e) => handleVariantUrlChange(vIndex, uIndex, e.target.value)}
                                                             className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                                         />
+                                                        {url && (
+                                                            <img
+                                                                src={url}
+                                                                alt={`Variant ${mapping.color} ${uIndex + 1}`}
+                                                                className="w-10 h-10 rounded-md object-cover border border-gray-200 bg-gray-100 flex-shrink-0"
+                                                                onError={(e) => e.target.style.display = 'none'}
+                                                            />
+                                                        )}
                                                         <button
                                                             type="button"
                                                             onClick={() => removeVariantUrlField(vIndex, uIndex)}

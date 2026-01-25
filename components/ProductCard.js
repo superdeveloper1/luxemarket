@@ -46,14 +46,14 @@ function ProductCard({ product, addToCart }) {
                 </div>
             </div>
 
-            <div className="p-4 flex flex-col flex-grow">
+            <div className="p-3 flex flex-col flex-grow">
                 <a
                     href={`index.html?category=${encodeURIComponent(product.category)}#featured-products`}
                     className="text-xs text-gray-500 mb-1 hover:text-[var(--primary-color)] hover:underline"
                 >
                     {product.category}
                 </a>
-                <a href={`product.html?id=${product.id}`} className="text-gray-900 font-semibold text-lg mb-1 line-clamp-2 hover:text-[var(--primary-color)] cursor-pointer">
+                <a href={`product.html?id=${product.id}`} className="text-gray-900 font-semibold text-sm mb-1 line-clamp-2 hover:text-[var(--primary-color)] cursor-pointer leading-tight h-10">
                     {product.name}
                 </a>
 
@@ -70,11 +70,11 @@ function ProductCard({ product, addToCart }) {
                     <div className="flex flex-col">
                         {isDeal && product.dealPrice ? (
                             <>
-                                <span className="text-lg font-bold text-red-600">${product.dealPrice.toFixed(2)}</span>
-                                <span className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</span>
+                                <span className="text-base font-bold text-red-600">${product.dealPrice.toFixed(2)}</span>
+                                <span className="text-[10px] text-gray-400 line-through">${product.price.toFixed(2)}</span>
                             </>
                         ) : (
-                            <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                            <span className="text-base font-bold text-gray-900">${product.price.toFixed(2)}</span>
                         )}
                     </div>
 

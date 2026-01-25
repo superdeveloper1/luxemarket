@@ -40,13 +40,13 @@ function CheckoutApp() {
 
   React.useEffect(() => {
     // Auth Check
-    const savedUser = localStorage.getItem('luxemarket_user');
+    const savedUser = sessionStorage.getItem('luxemarket_user');
     if (savedUser) {
       try {
         setCurrentUser(JSON.parse(savedUser));
       } catch (e) {
         console.error('Failed to parse user data:', e);
-        localStorage.removeItem('luxemarket_user');
+        sessionStorage.removeItem('luxemarket_user');
       }
     } else {
       // Redirect to home if not logged in (simplified protection)
@@ -71,7 +71,7 @@ function CheckoutApp() {
 
   const handleLogin = (user) => setCurrentUser(user);
   const handleLogout = () => {
-    localStorage.removeItem('luxemarket_user');
+    sessionStorage.removeItem('luxemarket_user');
     setCurrentUser(null);
     window.location.href = 'index.html';
   };

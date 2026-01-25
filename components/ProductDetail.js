@@ -26,67 +26,65 @@ function ProductDetail({ product, onAddToCart }) {
         return imgs;
     }, [product]);
 
-    // Current images based on selected color
-    const currentImages = React.useMemo(() => {
-        if (!selectedColor || !product.variantImages) return defaultImages;
-
-        let variantImgs = null;
-
-        // Direct match
-        if (product.variantImages[selectedColor]) {
-            variantImgs = product.variantImages[selectedColor];
+    // Current images based on selected color + Video integration
+    const currentMedia = React.useMemo(() => {
+        let media = [];
+        if (!selectedColor || !product.variantImages) {
+            media = [...defaultImages];
         } else {
-            // Case-insensitive match
-            const match = Object.keys(product.variantImages).find(
-                k => k.toLowerCase() === selectedColor.toLowerCase()
-            );
-            if (match) {
-                variantImgs = product.variantImages[match];
+            let variantImgs = null;
+            if (product.variantImages[selectedColor]) {
+                variantImgs = product.variantImages[selectedColor];
+            } else {
+                const match = Object.keys(product.variantImages).find(
+                    k => k.toLowerCase() === selectedColor.toLowerCase()
+                );
+                if (match) variantImgs = product.variantImages[match];
+            }
+
+            if (variantImgs) {
+                media = Array.isArray(variantImgs) ? [...variantImgs] : [variantImgs];
+            } else {
+                media = [...defaultImages];
             }
         }
 
-        if (variantImgs) {
-            return Array.isArray(variantImgs) ? variantImgs : [variantImgs];
+        // Append video if it exists
+        if (product.video) {
+            media.push({ type: 'video', url: product.video });
         }
-
-        return defaultImages;
+        return media;
     }, [selectedColor, product, defaultImages]);
 
-    // Effect: reset active image when color changes (to the first image of the new set)
+    // Effect: reset active media when color changes (to the first image of the new set)
     React.useEffect(() => {
-        if (currentImages.length > 0) {
-            setActiveImage(currentImages[0]);
+        if (currentMedia.length > 0) {
+            setActiveImage(currentMedia[0]);
         }
-    }, [currentImages]);
+    }, [currentMedia]);
 
-    const handleImageClick = (img) => {
-        setActiveImage(img);
+    const handleMediaClick = (m) => {
+        setActiveImage(m);
 
+        // Update selected color if clicking a variant image
+        const imgUrl = (typeof m === 'object') ? m.url : m;
         let targetColor = null;
 
-        // 1. Check explicit variant mappings
         if (product.variantImages) {
             const matchedColorKey = Object.keys(product.variantImages).find(
-                color => product.variantImages[color] === img
+                color => {
+                    const v = product.variantImages[color];
+                    return Array.isArray(v) ? v.includes(imgUrl) : v === imgUrl;
+                }
             );
-            if (matchedColorKey) {
-                targetColor = matchedColorKey;
-            }
-        }
-
-        // 2. Fallback: If no mapping found, and this is the main image
-        if (!targetColor && img === product.image && product.colors && product.colors.length > 0) {
-            targetColor = getColorName(product.colors[0]);
+            if (matchedColorKey) targetColor = matchedColorKey;
         }
 
         if (targetColor && product.colors) {
-            // Find valid color option
             const availableColor = product.colors.find(
                 c => getColorName(c).toLowerCase() === targetColor.toLowerCase()
             );
-            if (availableColor) {
-                setSelectedColor(getColorName(availableColor));
-            }
+            if (availableColor) setSelectedColor(getColorName(availableColor));
         }
     };
 
@@ -102,35 +100,98 @@ function ProductDetail({ product, onAddToCart }) {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" data-name="product-detail" data-file="components/ProductDetail.js">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                 {/* Image Section */}
-                <div className="bg-gray-100 p-8 flex flex-col items-center justify-center min-h-[500px] lg:min-h-[700px] relative">
-                    <div className="flex-grow flex items-center justify-center w-full mb-6 py-4">
-                        <img
-                            key={activeImage}
-                            src={activeImage}
-                            alt={product.name}
-                            className="max-w-full max-h-[500px] object-contain mix-blend-multiply transition-all duration-300 animate-[fadeIn_0.3s_ease-out]"
-                        />
+                <div className="bg-gray-100 p-4 flex flex-col items-center justify-center min-h-[350px] lg:min-h-[450px] relative">
+                    <div
+                        className="flex-grow flex items-center justify-center w-full mb-4 py-2 relative group overflow-hidden"
+                    >
+                        {typeof activeImage === 'object' && activeImage.type === 'video' ? (
+                            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-2xl bg-black">
+                                <iframe
+                                    src={activeImage.url}
+                                    className="w-full h-full"
+                                    frameBorder="0"
+                                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        ) : (
+                            <img
+                                key={typeof activeImage === 'object' ? activeImage.url : activeImage}
+                                src={typeof activeImage === 'object' ? activeImage.url : activeImage}
+                                alt={product.name}
+                                className="max-w-full max-h-[300px] lg:max-h-[380px] object-contain mix-blend-multiply transition-transform duration-200 hover:scale-[1.5] animate-[fadeIn_0.3s_ease-out] cursor-zoom-in"
+                                onMouseMove={(e) => {
+                                    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                                    const x = ((e.clientX - left) / width) * 100;
+                                    const y = ((e.clientY - top) / height) * 100;
+                                    e.currentTarget.style.setProperty('transform-origin', `${x}% ${y}%`);
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.removeProperty('transform-origin');
+                                }}
+                            />
+                        )}
+
+                        {/* Carousel Arrows */}
+                        {currentMedia.length > 1 && (
+                            <>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentIndex = currentMedia.indexOf(activeImage);
+                                        const prevIndex = (currentIndex - 1 + currentMedia.length) % currentMedia.length;
+                                        handleMediaClick(currentMedia[prevIndex]);
+                                    }}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-r-lg shadow-md opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0"
+                                >
+                                    <div className="icon-chevron-left text-xl"></div>
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentIndex = currentMedia.indexOf(activeImage);
+                                        const nextIndex = (currentIndex + 1) % currentMedia.length;
+                                        handleMediaClick(currentMedia[nextIndex]);
+                                    }}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-l-lg shadow-md opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0"
+                                >
+                                    <div className="icon-chevron-right text-xl"></div>
+                                </button>
+                            </>
+                        )}
                     </div>
 
                     {/* Carousel Thumbnails */}
-                    {currentImages.length > 1 && (
-                        <div className="flex gap-4 overflow-x-auto max-w-full pb-4 px-2 scrollbar-hide">
-                            {currentImages.map((img, index) => (
-                                <button
-                                    key={`${selectedColor}-${index}`}
-                                    onClick={() => handleImageClick(img)}
-                                    onMouseEnter={() => handleImageClick(img)}
-                                    className={`flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-lg border-2 overflow-hidden bg-white transition-all shadow-sm ${activeImage === img ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)] ring-opacity-30 scale-105' : 'border-transparent hover:border-gray-300'}`}
-                                >
-                                    <img src={img} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
-                                </button>
-                            ))}
+                    {currentMedia.length > 1 && (
+                        <div className="flex gap-2 overflow-x-auto max-w-full pb-2 px-1 scrollbar-hide">
+                            {currentMedia.map((m, index) => {
+                                const isVideo = typeof m === 'object' && m.type === 'video';
+                                const mediaUrl = isVideo ? m.url : m;
+                                const activeMediaUrl = typeof activeImage === 'object' ? activeImage.url : activeImage;
+                                const isActive = mediaUrl === activeMediaUrl;
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleMediaClick(m)}
+                                        onMouseEnter={() => handleMediaClick(m)}
+                                        className={`flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-lg border-2 overflow-hidden bg-white transition-all shadow-sm relative ${isActive ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)] ring-opacity-20 scale-105' : 'border-transparent hover:border-gray-300'}`}
+                                    >
+                                        {isVideo ? (
+                                            <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                                                <div className="icon-play text-white text-xl"></div>
+                                            </div>
+                                        ) : (
+                                            <img src={m} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
                 {/* Info Section */}
-                <div className="p-8 lg:p-12 flex flex-col">
+                <div className="p-6 lg:p-8 flex flex-col">
                     <div className="mb-2">
                         <a
                             href={`index.html?category=${encodeURIComponent(product.category)}#featured-products`}
@@ -169,6 +230,8 @@ function ProductDetail({ product, onAddToCart }) {
                     <p className="text-gray-600 leading-relaxed mb-8">
                         {product.description || "Experience premium quality with this meticulously crafted item."}
                     </p>
+
+                    {/* Video was here, now in carousel */}
 
                     <hr className="border-gray-100 mb-8" />
 

@@ -6,7 +6,7 @@ function ToastProvider({ children }) {
     const addToast = (message, type = 'success') => {
         const id = Date.now();
         setToasts(prev => [...prev, { id, message, type }]);
-        
+
         // Auto remove after 3 seconds
         setTimeout(() => {
             setToasts(prev => prev.filter(t => t.id !== id));
@@ -22,17 +22,16 @@ function ToastProvider({ children }) {
             {children}
             <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
                 {toasts.map(toast => (
-                    <div 
+                    <div
                         key={toast.id}
-                        className={`pointer-events-auto min-w-[300px] max-w-sm p-4 rounded-lg shadow-lg flex items-center justify-between animate-[fadeIn_0.3s_ease-out] ${
-                            toast.type === 'success' ? 'bg-gray-900 text-white' : 
-                            toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'
-                        }`}
+                        className={`pointer-events-auto min-w-[300px] max-w-sm p-4 rounded-lg shadow-lg flex items-center justify-between animate-[fadeIn_0.3s_ease-out] ${toast.type === 'success' ? 'bg-gray-900 text-white' :
+                                toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'
+                            }`}
                     >
                         <div className="flex items-center gap-3">
                             <div className={
                                 toast.type === 'success' ? 'icon-circle-check text-xl' :
-                                toast.type === 'error' ? 'icon-circle-alert text-xl' : 'icon-info text-xl'
+                                    toast.type === 'error' ? 'icon-circle-alert text-xl' : 'icon-info text-xl'
                             }></div>
                             <span className="text-sm font-medium">{toast.message}</span>
                         </div>
@@ -54,3 +53,8 @@ const useToast = () => {
     }
     return context;
 };
+
+// Make globally available
+window.ToastProvider = ToastProvider;
+window.useToast = useToast;
+window.ToastContext = ToastContext;
