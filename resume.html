@@ -47,7 +47,41 @@
         }
     </script>
     <script>
+        // Dynamic link generation based on environment
+        function getPortfolioLink() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
+            
+            if (isFileProtocol) {
+                return 'portfolio.html';
+            } else if (isGitHubPages) {
+                return 'https://superdeveloper1.github.io/luxemarket/portfolio.html';
+            } else {
+                return 'portfolio.html';
+            }
+        }
+
+        // Update links when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const portfolioLink = getPortfolioLink();
+            
+            // Update navigation link
+            const navLink = document.querySelector('nav a[href*="portfolio"]');
+            if (navLink) {
+                navLink.href = portfolioLink;
+            }
+            
+            // Update all portfolio links in the content
+            const portfolioLinks = document.querySelectorAll('a[href*="portfolio"]');
+            portfolioLinks.forEach(link => {
+                if (link.href.includes('portfolio.html')) {
+                    link.href = portfolioLink;
+                }
+            });
+        });
+
         function exportToWord() {
+            const portfolioLink = getPortfolioLink();
             const resumeContent = document.querySelector('main').innerHTML;
             const html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -55,14 +89,14 @@
                 <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
                     <h1 style="color: #1e293b; margin-bottom: 5px;">Isaias Geronimo</h1>
                     <p style="color: #2563eb; font-size: 18px; margin-top: 0;">Frontend Developer</p>
-                    <p style="color: #666; font-size: 14px;">Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • <a href="https://superdeveloper1.github.io/luxemarket/portfolio.html" style="color: #2563eb; text-decoration: none;">Portfolio</a></p>
+                    <p style="color: #666; font-size: 14px;">Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • <a href="${portfolioLink}" style="color: #2563eb; text-decoration: none;">Portfolio</a></p>
                     <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
                     
                     <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Professional Summary</h2>
                     <p style="color: #4b5563; line-height: 1.6;">Frontend Developer specializing in JavaScript (ES6+), responsive UI, and mobile-first design. Experienced in DOM manipulation, state management, async workflows, and Tailwind CSS.</p>
                     
                     <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Featured Projects</h2>
-                    <p style="color: #1e293b; margin-bottom: 5px;"><strong>LuxeMarket (Project Vanta)</strong> — React e-commerce with portable storefront & admin dashboard — <a href="https://superdeveloper1.github.io/luxemarket/portfolio.html">Portfolio</a></p>
+                    <p style="color: #1e293b; margin-bottom: 5px;"><strong>LuxeMarket (Project Vanta)</strong> — React e-commerce with portable storefront & admin dashboard — <a href="${portfolioLink}">Portfolio</a></p>
                     
                     <p style="color: #1e293b; margin-bottom: 15px;"><strong>Lumina E-Commerce Store</strong> — Responsive e-commerce with filtering & LocalStorage — <a href="https://superdeveloper1.github.io/lumina-store/">Live Demo</a></p>
                     
@@ -112,7 +146,7 @@
     <!-- Sticky Navigation -->
     <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="https://superdeveloper1.github.io/luxemarket/portfolio.html"
+            <a href="portfolio.html"
                 class="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors font-medium">
                 <i class="icon-arrow-left text-lg"></i>
                 Back to Portfolio
@@ -138,7 +172,7 @@
         <header class="mb-4 pb-4 border-b border-gray-200">
             <h1 class="text-2xl font-bold text-gray-900">Isaias Geronimo</h1>
             <p class="text-base text-primary font-medium">Frontend Developer</p>
-            <p class="text-sm text-gray-500 mt-1">Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • <a href="https://superdeveloper1.github.io/luxemarket/portfolio.html" class="text-primary hover:underline">Portfolio</a></p>
+            <p class="text-sm text-gray-500 mt-1">Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • <a href="portfolio.html" class="text-primary hover:underline">Portfolio</a></p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -161,7 +195,7 @@
                     <div class="text-sm text-gray-700 space-y-2">
                         <p><strong>LuxeMarket (Project Vanta)</strong> — React e-commerce with portable storefront &
                             admin dashboard — <a
-                                href="https://superdeveloper1.github.io/luxemarket/portfolio.html"
+                                href="portfolio.html"
                                 class="text-primary hover:underline">Portfolio</a></p>
                         <p><strong>Lumina E-Commerce Store</strong> — Responsive e-commerce with filtering &
                             LocalStorage — <a href="https://superdeveloper1.github.io/lumina-store/" target="_blank"
