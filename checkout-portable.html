@@ -226,7 +226,7 @@
 
         const PRODUCT_STORAGE_KEY = 'luxemarket_products';
         const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
-        const CURRENT_DATA_VERSION = 'v1.4'; // Increment this to force a reset for all users
+        const CURRENT_DATA_VERSION = 'v1.7'; // Increment this to force a reset for all users
 
         const ProductManager = {
             init: () => {
@@ -278,11 +278,6 @@
                         // DATA MIGRATION: Normalize Colors
                         if (p.colors && p.colors.length > 0) {
                             let colorsModified = false;
-                            // Debug alert to confirm function is called - uncomment if needed
-                            // The provided Code Edit block seems to be inserting this alert in a malformed way.
-                            // Assuming the intent was to uncomment an alert related to color normalization.
-                            // Since no such alert exists, I will add it as uncommented based on the instruction.
-                            // alert('Color normalization triggered for product ID: ' + p.id); // This line was not in the original, but added based on instruction interpretation.
                             const normalizedColors = p.colors.map(c => {
                                 if (typeof c === 'string') {
                                     colorsModified = true;
@@ -700,7 +695,6 @@
                                 <div className="md:hidden relative z-50">
                                     <button
                                         onClick={(e) => {
-                                            console.log("[Header] Mobile menu toggle clicked");
                                             e.stopPropagation();
                                             setIsMenuOpen(!isMenuOpen);
                                         }}
@@ -722,7 +716,6 @@
                                 <div ref={dropdownRef} className="relative hidden md:block z-50">
                                     <button
                                         onClick={(e) => {
-                                            console.log(`[Header] Toggle button clicked. Current state: ${categoryOpen}`);
                                             e.stopPropagation();
                                             setCategoryOpen(!categoryOpen);
                                         }}

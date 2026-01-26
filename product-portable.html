@@ -277,7 +277,7 @@
 
         const PRODUCT_STORAGE_KEY = 'luxemarket_products';
         const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
-        const CURRENT_DATA_VERSION = 'v1.4'; // Increment this to force a reset for all users
+        const CURRENT_DATA_VERSION = 'v1.7'; // Increment this to force a reset for all users
 
         const ProductManager = {
             init: () => {
@@ -754,7 +754,6 @@
                                 <div className="md:hidden relative z-50">
                                     <button
                                         onClick={(e) => {
-                                            console.log("[Header] Mobile menu toggle clicked");
                                             e.stopPropagation();
                                             setIsMenuOpen(!isMenuOpen);
                                         }}
@@ -776,7 +775,6 @@
                                 <div ref={dropdownRef} className="relative hidden md:block z-50">
                                     <button
                                         onClick={(e) => {
-                                            console.log(`[Header] Toggle button clicked. Current state: ${categoryOpen}`);
                                             e.stopPropagation();
                                             setCategoryOpen(!categoryOpen);
                                         }}

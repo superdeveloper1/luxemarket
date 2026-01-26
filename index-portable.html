@@ -312,7 +312,7 @@
 
         const PRODUCT_STORAGE_KEY = 'luxemarket_products';
         const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
-        const CURRENT_DATA_VERSION = 'v1.6'; // Increment this to force a reset for all users
+        const CURRENT_DATA_VERSION = 'v1.7'; // Increment this to force a reset for all users
 
         const ProductManager = {
             init: () => {
@@ -629,14 +629,7 @@
         window.useToast = useToast;
         window.ToastContext = ToastContext;
     </script>
-    <script>
-        console.log("[Non-Babel Alpha] Script block reached");
-        window.addEventListener('click', (e) => console.log("[Non-Babel Click] Hitting:", e.target), true);
-    </script>
     <script type="text/babel">
-        // Global click capture outside of React to test baseline execution
-        window.addEventListener('click', (e) => console.log("[Outer Global] Click hitting:", e.target), true);
-
         function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth, onLogout }) {
             const [categoryOpen, setCategoryOpen] = React.useState(false);
             const dropdownRef = React.useRef(null);
