@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Resume Links</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .debug { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .link { display: block; margin: 10px 0; padding: 10px; background: #e0e0e0; text-decoration: none; color: #333; }
+        .link:hover { background: #d0d0d0; }
+    </style>
+</head>
+<body>
+    <h1>Debug Resume Links</h1>
+    
+    <div class="debug">
+        <h3>Environment Detection:</h3>
+        <p id="protocol">Protocol: Loading...</p>
+        <p id="hostname">Hostname: Loading...</p>
+        <p id="href">Full URL: Loading...</p>
+        <p id="isFile">Is File Protocol: Loading...</p>
+        <p id="isGitHub">Is GitHub Pages: Loading...</p>
+    </div>
+    
+    <div class="debug">
+        <h3>Generated Links:</h3>
+        <p>Portfolio Link: <span id="portfolioLink">Loading...</span></p>
+        <a href="#" id="testLink" class="link">Test Portfolio Link (Click to Test)</a>
+    </div>
+    
+    <div class="debug">
+        <h3>Direct Links for Testing:</h3>
+        <a href="portfolio.html" class="link">Direct Local Portfolio Link</a>
+        <a href="index-portable.html" class="link">Direct Local Demo Link</a>
+        <a href="admin-portable.html" class="link">Direct Local Admin Link</a>
+    </div>
+
+    <script>
+        function updateDebugInfo() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
+            
+            document.getElementById('protocol').textContent = 'Protocol: ' + window.location.protocol;
+            document.getElementById('hostname').textContent = 'Hostname: ' + window.location.hostname;
+            document.getElementById('href').textContent = 'Full URL: ' + window.location.href;
+            document.getElementById('isFile').textContent = 'Is File Protocol: ' + isFileProtocol;
+            document.getElementById('isGitHub').textContent = 'Is GitHub Pages: ' + isGitHubPages;
+            
+            let portfolioLink;
+            if (isFileProtocol) {
+                portfolioLink = 'portfolio.html';
+            } else if (isGitHubPages) {
+                portfolioLink = 'https://superdeveloper1.github.io/luxemarket/portfolio.html';
+            } else {
+                portfolioLink = 'portfolio.html';
+            }
+            
+            document.getElementById('portfolioLink').textContent = portfolioLink;
+            document.getElementById('testLink').href = portfolioLink;
+        }
+        
+        // Run when page loads
+        document.addEventListener('DOMContentLoaded', updateDebugInfo);
+        
+        // Also run immediately in case DOMContentLoaded already fired
+        updateDebugInfo();
+    </script>
+</body>
+</html>

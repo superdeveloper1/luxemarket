@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Cache & Test Data</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .section { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .success { color: green; font-weight: bold; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Clear Cache & Test Data</h1>
+    
+    <div class="section">
+        <h3>Current Data Status:</h3>
+        <p id="dataVersion">Data Version: <span id="versionSpan">Loading...</span></p>
+        <p id="productCount">Product Count: <span id="countSpan">Loading...</span></p>
+        <p id="storageSize">Storage Size: <span id="sizeSpan">Loading...</span></p>
+    </div>
+    
+    <div class="section">
+        <h3>Actions:</h3>
+        <button onclick="clearAllData()">Clear All LuxeMarket Data</button>
+        <button onclick="forceDataReset()">Force Data Reset to v1.7</button>
+        <button onclick="checkData()">Refresh Data Status</button>
+    </div>
+    
+    <div class="section">
+        <h3>Test Links:</h3>
+        <p><a href="portfolio.html" target="_blank">Open Local Portfolio</a></p>
+        <p><a href="index-portable.html" target="_blank">Open Local Demo</a></p>
+        <p><a href="resume.html" target="_blank">Open Local Resume</a></p>
+    </div>
+    
+    <div id="messages" class="section">
+        <h3>Messages:</h3>
+    </div>
+
+    <script>
+        function addMessage(msg, type = 'info') {
+            const messages = document.getElementById('messages');
+            const p = document.createElement('p');
+            p.className = type;
+            p.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+            messages.appendChild(p);
+        }
+        
+        function clearAllData() {
+            // Clear all LuxeMarket related localStorage
+            const keys = Object.keys(localStorage);
+            let cleared = 0;
+            keys.forEach(key => {
+                if (key.includes('luxemarket')) {
+                    localStorage.removeItem(key);
+                    cleared++;
+                }
+            });
+            addMessage(`Cleared ${cleared} LuxeMarket localStorage items`, 'success');
+            checkData();
+        }
+        
+        function forceDataReset() {
+            localStorage.removeItem('luxemarket_products');
+            localStorage.removeItem('luxemarket_categories');
+            localStorage.setItem('luxemarket_data_version', 'v1.7');
+            addMessage('Forced data reset to v1.7', 'success');
+            checkData();
+        }
+        
+        function checkData() {
+            const version = localStorage.getItem('luxemarket_data_version') || 'Not set';
+            const products = localStorage.getItem('luxemarket_products');
+            const productCount = products ? JSON.parse(products).length : 0;
+            const storageSize = JSON.stringify(localStorage).length;
+            
+            document.getElementById('versionSpan').textContent = version;
+            document.getElementById('countSpan').textContent = productCount;
+            document.getElementById('sizeSpan').textContent = (storageSize / 1024).toFixed(2) + ' KB';
+            
+            addMessage(`Data check complete: v${version}, ${productCount} products`);
+        }
+        
+        // Check data on load
+        checkData();
+    </script>
+</body>
+</html>

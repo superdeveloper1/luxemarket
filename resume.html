@@ -47,42 +47,37 @@
         }
     </script>
     <script>
-        // Dynamic link generation based on environment
-        function getPortfolioLink() {
-            const isFileProtocol = window.location.protocol === 'file:';
-            const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
+        // Simple and direct link management
+        (function() {
+            const isLocal = window.location.protocol === 'file:';
+            const portfolioUrl = isLocal ? 'portfolio.html' : 'https://superdeveloper1.github.io/luxemarket/portfolio.html';
             
-            if (isFileProtocol) {
-                return 'portfolio.html';
-            } else if (isGitHubPages) {
-                return 'https://superdeveloper1.github.io/luxemarket/portfolio.html';
+            // Function to update all portfolio links
+            function updatePortfolioLinks() {
+                // Update navigation link
+                const navLinks = document.querySelectorAll('a[href*="portfolio"]');
+                navLinks.forEach(link => {
+                    link.href = portfolioUrl;
+                });
+                
+                console.log('Updated ' + navLinks.length + ' portfolio links to: ' + portfolioUrl);
+            }
+            
+            // Update links when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', updatePortfolioLinks);
             } else {
-                return 'portfolio.html';
-            }
-        }
-
-        // Update links when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const portfolioLink = getPortfolioLink();
-            
-            // Update navigation link
-            const navLink = document.querySelector('nav a[href*="portfolio"]');
-            if (navLink) {
-                navLink.href = portfolioLink;
+                updatePortfolioLinks();
             }
             
-            // Update all portfolio links in the content
-            const portfolioLinks = document.querySelectorAll('a[href*="portfolio"]');
-            portfolioLinks.forEach(link => {
-                if (link.href.includes('portfolio.html')) {
-                    link.href = portfolioLink;
-                }
-            });
-        });
+            // Also update after a short delay to catch any late-loading elements
+            setTimeout(updatePortfolioLinks, 100);
+        })();
 
         function exportToWord() {
-            const portfolioLink = getPortfolioLink();
-            const resumeContent = document.querySelector('main').innerHTML;
+            const isLocal = window.location.protocol === 'file:';
+            const portfolioLink = isLocal ? 'portfolio.html' : 'https://superdeveloper1.github.io/luxemarket/portfolio.html';
+            
             const html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head><meta charset='utf-8'><title>Resume - Isaias Geronimo</title></head>
