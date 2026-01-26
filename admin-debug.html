@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Debug - LuxeMarket</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div id="debug-info" class="bg-white p-4 rounded mb-4">
+        <h2 class="text-lg font-bold mb-2">Debug Information</h2>
+        <div id="status">Loading...</div>
+    </div>
+    
+    <div id="root"></div>
+
+    <script>
+        // Debug logging
+        console.log("=== ADMIN DEBUG START ===");
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML += '<br>' + message;
+            console.log(message);
+        }
+        
+        updateStatus("1. HTML loaded");
+        
+        // Check if React is available
+        if (typeof React !== 'undefined') {
+            updateStatus("2. ✅ React loaded");
+        } else {
+            updateStatus("2. ❌ React not loaded");
+        }
+        
+        if (typeof ReactDOM !== 'undefined') {
+            updateStatus("3. ✅ ReactDOM loaded");
+        } else {
+            updateStatus("3. ❌ ReactDOM not loaded");
+        }
+        
+        if (typeof Babel !== 'undefined') {
+            updateStatus("4. ✅ Babel loaded");
+        } else {
+            updateStatus("4. ❌ Babel not loaded");
+        }
+    </script>
+
+    <!-- Load data.js first -->
+    <script type="text/babel">
+        updateStatus("5. Loading data.js...");
+        
+        // Inline a minimal version of ProductManager for testing
+        const INITIAL_PRODUCTS = [];
+        const INITIAL_CATEGORIES = ["Electronics", "Fashion", "Furniture"];
+        const PRODUCT_STORAGE_KEY = 'luxemarket_products';
+        const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
+        const CURRENT_DATA_VERSION = 'v1.9';
+
+        const ProductManager = {
+            _initialized: false,
+            
+            init: () => {
+                if (ProductManager._initialized) return;
+                
+                const storedVersion = localStorage.getItem('luxemarket_data_version');
+                if (!localStorage.getItem(PRODUCT_STORAGE_KEY) || storedVersion !== CURRENT_DATA_VERSION) {
+                    localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
+                    localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
+                    localStorage.setItem('luxemarket_data_version', CURRENT_DATA_VERSION);
+                }
+                ProductManager._initialized = true;
+            },
+
+            getAll: () => {
+                ProductManager.init();
+                try {
+                    return JSON.parse(localStorage.getItem(PRODUCT_STORAGE_KEY)) || [];
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            save: (product) => {
+                const products = ProductManager.getAll();
+                if (product.id) {
+                    const index = products.findIndex(p => p.id === Number(product.id));
+                    if (index !== -1) {
+                        products[index] = { ...products[index], ...product, id: Number(product.id) };
+                    }
+                } else {
+                    const newId = Math.max(...products.map(p => Number(p.id) || 0), 0) + 1;
+                    products.push({ ...product, id: newId, rating: 0, reviews: 0 });
+                }
+                localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(products));
+            },
+
+            delete: (id) => {
+                const products = ProductManager.getAll();
+                const filtered = products.filter(p => p.id !== id);
+                localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(filtered));
+            }
+        };
+
+        window.ProductManager = ProductManager;
+        updateStatus("6. ✅ ProductManager created");
+    </script>
+
+    <!-- Simple Admin App -->
+    <script type="text/babel">
+        updateStatus("7. Loading Admin App...");
+        
+        function SimpleAdminApp() {
+            const [products, setProducts] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+            
+            React.useEffect(() => {
+                try {
+                    updateStatus("8. Loading products...");
+                    const allProducts = window.ProductManager.getAll();
+                    setProducts(allProducts);
+                    updateStatus(`9. ✅ Loaded ${allProducts.length} products`);
+                    setLoading(false);
+                } catch (error) {
+                    updateStatus(`9. ❌ Error loading products: ${error.message}`);
+                    setLoading(false);
+                }
+            }, []);
+            
+            const addTestProduct = () => {
+                const testProduct = {
+                    name: "Test Product",
+                    price: 99.99,
+                    category: "Electronics",
+                    description: "A test product",
+                    image: "https://via.placeholder.com/300"
+                };
+                
+                try {
+                    window.ProductManager.save(testProduct);
+                    const allProducts = window.ProductManager.getAll();
+                    setProducts(allProducts);
+                    updateStatus(`✅ Added test product. Total: ${allProducts.length}`);
+                } catch (error) {
+                    updateStatus(`❌ Error adding product: ${error.message}`);
+                }
+            };
+            
+            if (loading) {
+                return React.createElement('div', { className: 'text-center p-8' }, 'Loading...');
+            }
+            
+            return React.createElement('div', { className: 'bg-white p-6 rounded shadow' },
+                React.createElement('h1', { className: 'text-2xl font-bold mb-4' }, 'Simple Admin Test'),
+                React.createElement('button', { 
+                    onClick: addTestProduct,
+                    className: 'bg-blue-500 text-white px-4 py-2 rounded mb-4'
+                }, 'Add Test Product'),
+                React.createElement('p', null, `Products: ${products.length}`),
+                React.createElement('ul', { className: 'mt-4' },
+                    products.map(p => 
+                        React.createElement('li', { key: p.id, className: 'border-b py-2' }, 
+                            `${p.name} - $${p.price}`
+                        )
+                    )
+                )
+            );
+        }
+        
+        updateStatus("10. Rendering app...");
+        
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(SimpleAdminApp));
+            updateStatus("11. ✅ App rendered successfully!");
+        } catch (error) {
+            updateStatus(`11. ❌ Error rendering app: ${error.message}`);
+        }
+    </script>
+</body>
+</html>
