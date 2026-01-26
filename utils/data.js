@@ -18,17 +18,29 @@ const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
 const CURRENT_DATA_VERSION = 'v1.9'; // Increment this to force a reset for all users
 
 const ProductManager = {
+    _initialized: false,
+    
     init: () => {
+        if (ProductManager._initialized) return; // Only run once
+        
         const storedVersion = localStorage.getItem('luxemarket_data_version');
         const urlParams = new URLSearchParams(window.location.search);
-        const forceReset = urlParams.get('v') === '1.8' || urlParams.get('reset') === 'true';
+        const forceReset = urlParams.get('reset') === 'true' || urlParams.get('v') === '1.8';
         
         if (!localStorage.getItem(PRODUCT_STORAGE_KEY) || storedVersion !== CURRENT_DATA_VERSION || forceReset) {
             console.log("Initializing/Resetting data to version:", CURRENT_DATA_VERSION, forceReset ? "(forced by URL parameter)" : "");
             localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
             localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
             localStorage.setItem('luxemarket_data_version', CURRENT_DATA_VERSION);
+            
+            // Remove reset parameter from URL after reset to prevent repeated resets
+            if (forceReset && window.history && window.history.replaceState) {
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, newUrl);
+            }
         }
+        
+        ProductManager._initialized = true;
     },
 
     getAll: () => {
@@ -119,7 +131,15 @@ const ProductManager = {
 
     save: (product) => {
         console.log("ProductManager.save called with:", product);
+        
+        // Ensure we're initialized but don't reset
+        if (!ProductManager._initialized) {
+            ProductManager._initialized = true; // Mark as initialized without running full init
+        }
+        
         const products = ProductManager.getAll();
+        console.log("Current products count before save:", products.length);
+        
         if (product.id) {
             // Update existing
             const index = products.findIndex(p => p.id === Number(product.id));
@@ -137,8 +157,17 @@ const ProductManager = {
             products.push({ ...product, id: newId, rating: 0, reviews: 0 });
             console.log("Added new product with ID:", newId);
         }
-        localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(products));
-        console.log("Saved to localStorage. New count:", products.length);
+        
+        try {
+            localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(products));
+            console.log("✅ Successfully saved to localStorage. New count:", products.length);
+            
+            // Verify the save worked
+            const verification = JSON.parse(localStorage.getItem(PRODUCT_STORAGE_KEY));
+            console.log("✅ Verification: localStorage now contains", verification.length, "products");
+        } catch (error) {
+            console.error("❌ Error saving to localStorage:", error);
+        }
     },
 
     delete: (id) => {
