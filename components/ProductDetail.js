@@ -286,22 +286,77 @@ function ProductDetail({ product, onAddToCart }) {
                         {product.sizes && product.sizes.length > 0 && (
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <label className="block text-sm font-medium text-gray-900">Size</label>
+                                    <label className="block text-sm font-medium text-gray-900">
+                                        Size
+                                        {product.category && (product.category.toLowerCase().includes('fashion') || 
+                                         product.category.toLowerCase().includes('clothing') || 
+                                         product.category.toLowerCase().includes('apparel')) && 
+                                         <span className="text-xs text-gray-500 ml-1">(Clothing)</span>}
+                                        {product.category && product.category.toLowerCase().includes('shoes') && 
+                                         <span className="text-xs text-gray-500 ml-1">(US Size)</span>}
+                                    </label>
                                     <button onClick={() => addToast('Size guide coming soon!', 'info')} className="text-sm text-[var(--primary-color)] hover:underline">Size Guide</button>
                                 </div>
-                                <div className="flex flex-wrap gap-3">
-                                    {product.sizes.map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(size)}
-                                            className={`min-w-[3rem] h-10 px-3 rounded-md border font-medium text-sm transition-all ${selectedSize === size
-                                                ? 'bg-gray-900 text-white border-gray-900'
-                                                : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                                                }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
+                                
+                                {/* Enhanced Size Selection Grid */}
+                                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-3">
+                                    {product.sizes.map((size) => {
+                                        const isSelected = selectedSize === size;
+                                        const isOutOfStock = false; // You can add stock logic here later
+                                        
+                                        return (
+                                            <button
+                                                key={size}
+                                                onClick={() => !isOutOfStock && setSelectedSize(size)}
+                                                disabled={isOutOfStock}
+                                                className={`
+                                                    h-12 px-2 rounded-lg border-2 font-medium text-sm transition-all duration-200 relative
+                                                    ${isSelected
+                                                        ? 'bg-gray-900 text-white border-gray-900 shadow-md transform scale-105'
+                                                        : isOutOfStock
+                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                        : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'
+                                                    }
+                                                    ${isSelected ? 'ring-2 ring-gray-900 ring-offset-1' : ''}
+                                                `}
+                                                title={isOutOfStock ? `Size ${size} - Out of Stock` : `Select size ${size}`}
+                                            >
+                                                <span className="block truncate">{size}</span>
+                                                {isOutOfStock && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-full h-0.5 bg-gray-400 transform rotate-45"></div>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                
+                                {/* Size Information */}
+                                <div className="bg-gray-50 rounded-lg p-3 text-sm">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-600">Selected Size:</span>
+                                        <span className="font-semibold text-gray-900">{selectedSize || 'None selected'}</span>
+                                    </div>
+                                    
+                                    {/* Category-specific size info */}
+                                    {product.category && product.category.toLowerCase().includes('shoes') && (
+                                        <div className="mt-2 pt-2 border-t border-gray-200">
+                                            <p className="text-xs text-gray-500">
+                                                💡 <strong>Shoe Sizing Tip:</strong> If you're between sizes, we recommend sizing up for comfort.
+                                            </p>
+                                        </div>
+                                    )}
+                                    
+                                    {product.category && (product.category.toLowerCase().includes('fashion') || 
+                                     product.category.toLowerCase().includes('clothing') || 
+                                     product.category.toLowerCase().includes('apparel')) && (
+                                        <div className="mt-2 pt-2 border-t border-gray-200">
+                                            <p className="text-xs text-gray-500">
+                                                📏 <strong>Fit Guide:</strong> Check our size chart for the best fit. Most items run true to size.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
