@@ -32,9 +32,15 @@ function AdminApp() {
     };
 
     const handleSave = (product) => {
-        window.ProductManager.save(product);
-        setIsFormOpen(false);
-        refreshData();
+        try {
+            window.ProductManager.save(product);
+            setIsFormOpen(false);
+            refreshData();
+            console.log("Product saved successfully");
+        } catch (error) {
+            console.error("Failed to save product:", error);
+            alert("Failed to save product. See console for details.");
+        }
     };
 
     const handleMove = (index, direction) => {

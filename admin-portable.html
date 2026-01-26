@@ -211,7 +211,7 @@
 
         const PRODUCT_STORAGE_KEY = 'luxemarket_products';
         const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
-        const CURRENT_DATA_VERSION = 'v1.4'; // Increment this to force a reset for all users
+        const CURRENT_DATA_VERSION = 'v1.5'; // Increment this to force a reset for all users
 
         const ProductManager = {
             init: () => {
@@ -1005,9 +1005,15 @@
             };
 
             const handleSave = (product) => {
-                window.ProductManager.save(product);
-                setIsFormOpen(false);
-                refreshData();
+                try {
+                    window.ProductManager.save(product);
+                    setIsFormOpen(false);
+                    refreshData();
+                    console.log("Product saved successfully");
+                } catch (error) {
+                    console.error("Failed to save product:", error);
+                    alert("Failed to save product. See console for details.");
+                }
             };
 
             const handleMove = (index, direction) => {
