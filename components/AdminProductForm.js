@@ -143,6 +143,18 @@ function AdminProductForm({ product, onSave, onCancel }) {
         setColorPalette(newPalette.length ? newPalette : [{ name: '', hex: '#000000' }]);
     };
 
+    const processFile = (file, callback) => {
+        if (!file) return;
+        // Limit to ~500KB to prevent localStorage quota exceeded errors quickly
+        if (file.size > 500 * 1024) {
+            alert("Image too large! Please use images under 500KB for local storage.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => callback(reader.result);
+        reader.readAsDataURL(file);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -305,6 +317,15 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                     onChange={handleChange}
                                     className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
                                 />
+                                <label className="cursor-pointer px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center justify-center" title="Upload Image">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => processFile(e.target.files[0], (val) => setFormData(prev => ({ ...prev, image: val })))}
+                                    />
+                                    <div className="icon-upload text-gray-600"></div>
+                                </label>
                                 {formData.image && (
                                     <img
                                         src={formData.image}
@@ -328,6 +349,15 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                             onChange={(e) => handleGalleryChange(index, e.target.value)}
                                             className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none bg-white"
                                         />
+                                        <label className="cursor-pointer px-3 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center justify-center" title="Upload Image">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => processFile(e.target.files[0], (val) => handleGalleryChange(index, val))}
+                                            />
+                                            <div className="icon-upload text-gray-600"></div>
+                                        </label>
                                         {url && (
                                             <img
                                                 src={url}
@@ -469,6 +499,15 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                                             onChange={(e) => handleVariantUrlChange(vIndex, uIndex, e.target.value)}
                                                             className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                                         />
+                                                        <label className="cursor-pointer px-2 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex items-center justify-center" title="Upload Image">
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                className="hidden"
+                                                                onChange={(e) => processFile(e.target.files[0], (val) => handleVariantUrlChange(vIndex, uIndex, val))}
+                                                            />
+                                                            <div className="icon-upload text-gray-600"></div>
+                                                        </label>
                                                         {url && (
                                                             <img
                                                                 src={url}
