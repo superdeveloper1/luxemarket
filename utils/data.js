@@ -15,13 +15,16 @@ const INITIAL_CATEGORIES = [
 
 const PRODUCT_STORAGE_KEY = 'luxemarket_products';
 const CATEGORY_STORAGE_KEY = 'luxemarket_categories';
-const CURRENT_DATA_VERSION = 'v1.8'; // Increment this to force a reset for all users
+const CURRENT_DATA_VERSION = 'v1.9'; // Increment this to force a reset for all users
 
 const ProductManager = {
     init: () => {
         const storedVersion = localStorage.getItem('luxemarket_data_version');
-        if (!localStorage.getItem(PRODUCT_STORAGE_KEY) || storedVersion !== CURRENT_DATA_VERSION) {
-            console.log("Initializing/Resetting data to version:", CURRENT_DATA_VERSION);
+        const urlParams = new URLSearchParams(window.location.search);
+        const forceReset = urlParams.get('v') === '1.8' || urlParams.get('reset') === 'true';
+        
+        if (!localStorage.getItem(PRODUCT_STORAGE_KEY) || storedVersion !== CURRENT_DATA_VERSION || forceReset) {
+            console.log("Initializing/Resetting data to version:", CURRENT_DATA_VERSION, forceReset ? "(forced by URL parameter)" : "");
             localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(INITIAL_PRODUCTS));
             localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
             localStorage.setItem('luxemarket_data_version', CURRENT_DATA_VERSION);
