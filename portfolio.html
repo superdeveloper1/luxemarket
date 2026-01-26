@@ -145,6 +145,7 @@
             const demoLink = isFileProtocol ? "index-portable.html" : "https://superdeveloper1.github.io/luxemarket/";
             const adminLink = isFileProtocol ? "admin-portable.html" : "https://superdeveloper1.github.io/luxemarket/admin.html";
             const resumeLink = "resume.html";
+            const githubLink = "https://github.com/superdeveloper1/luxemarket";
 
             return (
                 <div className="min-h-screen">
@@ -197,6 +198,9 @@
                                         <a href={adminLink} className="flex items-center gap-2 glass hover:bg-white/10 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all">
                                             Admin Panel <i data-lucide="settings" className="w-5 h-5"></i>
                                         </a>
+                                    <a href={githubLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 glass hover:bg-white/10 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all">
+                                        GitHub <i data-lucide="github" className="w-5 h-5"></i>
+                                    </a>
                                     </div>
                                 </div>
                                 <div className="relative animate-fade-in delay-200">
