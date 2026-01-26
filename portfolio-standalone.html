@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cache-busting headers -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>LuxeMarket | Project Showcase</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Embedded Styles -->
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #6366f1;
+            --accent: #f43f5e;
+            --dark-bg: #0f172a;
+            --dark-surface: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, .outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 50;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: #3b82f6;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.125rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: bold;
+            letter-spacing: -0.025em;
+        }
+
+        .logo-accent {
+            color: #3b82f6;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        .nav-link {
+            color: #f8fafc;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 1.5rem 5rem;
+        }
+
+        .hero-container {
+            max-width: 96rem;
+            margin: 0 auto;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        @media (min-width: 768px) {
+            .hero-content h1 {
+                font-size: 4.5rem;
+            }
+        }
+
+        .hero-subtitle {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+        }
+
+        .hero-description {
+            color: #94a3b8;
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            max-width: 32rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            inset: -1rem;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 1.5rem;
+            filter: blur(3rem);
+            z-index: -1;
+        }
+
+        .hero-image img {
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 1.5rem;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .features-container {
+            max-width: 96rem;
+            margin: 0 auto;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-header h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .features-header p {
+            color: #94a3b8;
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-0.5rem);
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 6rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-stack::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 24rem;
+            height: 24rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            filter: blur(3rem);
+            margin: -12rem -12rem 0 0;
+        }
+
+        .tech-stack::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 24rem;
+            height: 24rem;
+            background: rgba(147, 51, 234, 0.1);
+            border-radius: 50%;
+            filter: blur(3rem);
+            margin: 0 0 -12rem -12rem;
+        }
+
+        .tech-container {
+            max-width: 96rem;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tech-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .tech-header h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .tech-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .tech-card {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .tech-icon {
+            width: 3rem;
+            height: 3rem;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .tech-card h4 {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .tech-card p {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 3rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-container {
+            max-width: 96rem;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #60a5fa;
+        }
+
+        .footer-divider {
+            color: #374151;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .features-header h2,
+            .tech-header h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav glass">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">L</div>
+                <span class="logo-text outfit">LuxeMarket <span class="logo-accent">Showcase</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#tech" class="nav-link">Tech Stack</a>
+                <a href="resume-standalone.html" class="nav-link">Resume</a>
+                <a href="index-portable.html" class="btn btn-primary">Live Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-container">
+            <div class="hero-grid">
+                <div class="hero-content animate-fade-in">
+                    <span class="hero-subtitle">Full-Stack E-commerce Experience</span>
+                    <h1>
+                        Building the <span class="gradient-text">Future</span> of Luxury Retail.
+                    </h1>
+                    <p class="hero-description">
+                        LuxeMarket is a high-performance e-commerce platform built with React, Tailwind CSS, and advanced data management logic.
+                        Designed for speed, aesthetics, and developer-friendly extensibility.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="index-portable.html" class="btn btn-primary">
+                            Launch Storefront →
+                        </a>
+                        <a href="admin-portable.html" class="btn glass" style="color: white;">
+                            Admin Panel ⚙️
+                        </a>
+                        <a href="https://github.com/superdeveloper1/luxemarket" target="_blank" class="btn glass" style="color: white;">
+                            GitHub 📁
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image animate-fade-in delay-200">
+                    <img src="portfolio-assets/hero-mockup.png" alt="LuxeMarket Storefront" />
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Core Features -->
+    <section id="features" class="features">
+        <div class="features-container">
+            <div class="features-header animate-fade-in">
+                <h2 class="outfit">Architected for Professionalism</h2>
+                <p>
+                    Beyond style, LuxeMarket implements rigorous engineering patterns to handle complex state and user interactions.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card glass animate-fade-in delay-100">
+                    <div class="feature-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+                        📊
+                    </div>
+                    <h3 class="outfit">Dynamic Inventory</h3>
+                    <p>
+                        Enterprise-level CRUD operations with custom reordering logic, allowing admins to curate the storefront sequence effortlessly.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card glass animate-fade-in delay-200">
+                    <div class="feature-icon" style="background: rgba(147, 51, 234, 0.2); color: #9333ea;">
+                        ⚡
+                    </div>
+                    <h3 class="outfit">Interactive UI</h3>
+                    <p>
+                        Advanced UX features like hover-triggered image carousels, smooth auto-scrolling category navigation, and real-time toast feedback.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card glass animate-fade-in delay-300">
+                    <div class="feature-icon" style="background: rgba(244, 63, 94, 0.2); color: #f43f5e;">
+                        🛡️
+                    </div>
+                    <h3 class="outfit">Defensive Engineering</h3>
+                    <p>
+                        Robust error handling and data normalization in the checkout flow and persistence layer to prevent crashes from malformed data.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section id="tech" class="tech-stack">
+        <div class="tech-container">
+            <div class="tech-header">
+                <h2 class="outfit">The Tech Stack</h2>
+                <p style="color: #94a3b8;">Leveraging modern web technologies for a reliable and scalable foundation.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card glass">
+                    <div class="tech-icon">⚛️</div>
+                    <h4>React 18</h4>
+                    <p>Component Architecture</p>
+                </div>
+                <div class="tech-card glass">
+                    <div class="tech-icon">🎨</div>
+                    <h4>Tailwind CSS</h4>
+                    <p>Modern Utility Styling</p>
+                </div>
+                <div class="tech-card glass">
+                    <div class="tech-icon">💾</div>
+                    <h4>LocalStorage</h4>
+                    <p>State Persistence</p>
+                </div>
+                <div class="tech-card glass">
+                    <div class="tech-icon">🔧</div>
+                    <h4>Babel JS</h4>
+                    <p>Modern Compilation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer glass">
+        <div class="footer-container">
+            <p>Developed as a technical showcase for modern web standards.</p>
+            <div class="footer-links">
+                <a href="index-portable.html">Launch Demo</a>
+                <span class="footer-divider">|</span>
+                <a href="admin-portable.html">Admin Portal</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

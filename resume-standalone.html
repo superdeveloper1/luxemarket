@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cache-busting headers -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Resume - Isaias Geronimo</title>
+    
+    <!-- Embedded CSS with Tailwind-like styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .container { padding: 0 1.5rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .container { padding: 0 2rem; }
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #2563eb;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-secondary {
+            color: #374151;
+            background: white;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-primary {
+            color: #1d4ed8;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+        }
+
+        .btn-primary:hover {
+            background: #bfdbfe;
+        }
+
+        /* Main content */
+        .main {
+            padding: 1.5rem 0;
+        }
+
+        .header {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .title {
+            font-size: 1rem;
+            color: #2563eb;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .contact a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .contact a:hover {
+            text-decoration: underline;
+        }
+
+        /* Grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .section {
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.25rem;
+        }
+
+        .section-content {
+            font-size: 0.875rem;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .project {
+            margin-bottom: 0.5rem;
+        }
+
+        .project-name {
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .experience {
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .company {
+            font-size: 0.75rem;
+            color: #2563eb;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-list {
+            list-style: disc;
+            margin-left: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .job-list li {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.125rem;
+        }
+
+        .skills {
+            margin-bottom: 0.25rem;
+        }
+
+        .skill-category {
+            font-weight: bold;
+        }
+
+        /* Icons */
+        .icon {
+            width: 1rem;
+            height: 1rem;
+            display: inline-block;
+        }
+
+        .icon-arrow-left::before { content: "←"; }
+        .icon-printer::before { content: "🖨"; }
+        .icon-file-text::before { content: "📄"; }
+
+        /* Print styles */
+        @media print {
+            .nav { display: none; }
+            body { background: white; }
+            .main { padding-top: 0; }
+        }
+
+        /* Hide buttons on mobile */
+        @media (max-width: 768px) {
+            .nav-buttons .btn { display: none; }
+        }
+    </style>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="portfolio-standalone.html" class="nav-link">
+                    <span class="icon icon-arrow-left"></span>
+                    Back to Portfolio
+                </a>
+                <div class="nav-buttons">
+                    <button onclick="window.print()" class="btn btn-secondary">
+                        <span class="icon icon-printer"></span>
+                        Print / PDF
+                    </button>
+                    <button onclick="exportToWord()" class="btn btn-primary">
+                        <span class="icon icon-file-text"></span>
+                        Save as Word
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="name">Isaias Geronimo</h1>
+                <p class="title">Frontend Developer</p>
+                <p class="contact">
+                    Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • 
+                    <a href="portfolio-standalone.html">Portfolio</a>
+                </p>
+            </header>
+
+            <div class="grid">
+                <!-- Left Column: Main Content -->
+                <div>
+                    <!-- Summary -->
+                    <section class="section">
+                        <h2 class="section-title">Professional Summary</h2>
+                        <div class="section-content">
+                            <p>Frontend Developer specializing in JavaScript (ES6+), responsive UI, and mobile-first design. Experienced in DOM manipulation, state management, async workflows, and Tailwind CSS.</p>
+                        </div>
+                    </section>
+
+                    <!-- Featured Projects -->
+                    <section class="section">
+                        <h2 class="section-title">Featured Projects</h2>
+                        <div class="section-content">
+                            <div class="project">
+                                <span class="project-name">LuxeMarket (Project Vanta)</span> — React e-commerce with portable storefront & admin dashboard — 
+                                <a href="portfolio-standalone.html">Portfolio</a>
+                            </div>
+                            <div class="project">
+                                <span class="project-name">Lumina E-Commerce Store</span> — Responsive e-commerce with filtering & LocalStorage — 
+                                <a href="https://superdeveloper1.github.io/lumina-store/" target="_blank">Live Demo</a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Experience -->
+                    <section class="section">
+                        <h2 class="section-title">Experience</h2>
+                        <div class="section-content">
+                            <div class="experience">
+                                <div class="job-title">Lumina E-Commerce Store | Project</div>
+                                <div class="company">Frontend Developer | JavaScript, Tailwind CSS</div>
+                                <ul class="job-list">
+                                    <li>Built responsive e-commerce app with mobile-first design</li>
+                                    <li>Implemented real-time filtering and LocalStorage state management</li>
+                                    <li>Developed async checkout flow with Async/Await</li>
+                                </ul>
+                            </div>
+                            <div class="experience">
+                                <div class="job-title">Junior Web Developer | 2019-2020</div>
+                                <div class="company">Generation USA</div>
+                                <ul class="job-list">
+                                    <li>Collaborated on frontend tasks and responsive layouts</li>
+                                    <li>Implemented HTML/CSS structures and JS interactions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Sidebar -->
+                <div>
+                    <!-- Skills -->
+                    <section class="section">
+                        <h2 class="section-title">Technical Skills</h2>
+                        <div class="section-content">
+                            <div class="skills">
+                                <span class="skill-category">Languages:</span> JavaScript (ES6+), HTML5, CSS3
+                            </div>
+                            <div class="skills">
+                                <span class="skill-category">Frameworks:</span> Tailwind CSS, Lucide Icons
+                            </div>
+                            <div class="skills">
+                                <span class="skill-category">Core:</span> DOM, State Management, Responsive Design
+                            </div>
+                            <div class="skills">
+                                <span class="skill-category">Data:</span> LocalStorage, Async/Await, JSON, REST APIs
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Education -->
+                    <section class="section">
+                        <h2 class="section-title">Education</h2>
+                        <div class="section-content">
+                            <div class="skills">
+                                <span class="skill-category">AAS, Computer Science:</span> Monroe College - 2020
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        function exportToWord() {
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>Resume - Isaias Geronimo</title></head>
+                <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+                    <h1 style="color: #1e293b; margin-bottom: 5px;">Isaias Geronimo</h1>
+                    <p style="color: #2563eb; font-size: 18px; margin-top: 0;">Frontend Developer</p>
+                    <p style="color: #666; font-size: 14px;">Rockaway Park, NY • (347) 245-7450 • isaiasgeronimo12@gmail.com • <a href="portfolio.html" style="color: #2563eb; text-decoration: none;">Portfolio</a></p>
+                    <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+                    
+                    <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Professional Summary</h2>
+                    <p style="color: #4b5563; line-height: 1.6;">Frontend Developer specializing in JavaScript (ES6+), responsive UI, and mobile-first design. Experienced in DOM manipulation, state management, async workflows, and Tailwind CSS.</p>
+                    
+                    <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Featured Projects</h2>
+                    <p style="color: #1e293b; margin-bottom: 5px;"><strong>LuxeMarket (Project Vanta)</strong> — React e-commerce with portable storefront & admin dashboard — <a href="portfolio-standalone.html">Portfolio</a></p>
+                    
+                    <p style="color: #1e293b; margin-bottom: 15px;"><strong>Lumina E-Commerce Store</strong> — Responsive e-commerce with filtering & LocalStorage — <a href="https://superdeveloper1.github.io/lumina-store/">Live Demo</a></p>
+                    
+                    <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Experience</h2>
+                    <h3 style="color: #1e293b; margin-bottom: 5px;">Lumina E-Commerce Store | Project</h3>
+                    <p style="color: #2563eb; margin: 0;">Frontend Developer | JavaScript, Tailwind CSS</p>
+                    <ul style="color: #4b5563; margin-top: 5px;">
+                        <li>Built responsive e-commerce app with mobile-first design</li>
+                        <li>Implemented real-time filtering and LocalStorage state management</li>
+                        <li>Developed async checkout flow with Async/Await</li>
+                    </ul>
+
+                    <h3 style="color: #1e293b; margin-bottom: 5px;">Junior Web Developer | 2019-2020</h3>
+                    <p style="color: #2563eb; margin: 0;">Generation USA</p>
+                    <ul style="color: #4b5563; margin-top: 5px;">
+                        <li>Collaborated on frontend tasks and responsive layouts</li>
+                        <li>Implemented HTML/CSS structures and JS interactions</li>
+                    </ul>
+                    
+                    <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Technical Skills</h2>
+                    <p style="color: #4b5563;"><strong>Languages:</strong> JavaScript (ES6+), HTML5, CSS3</p>
+                    <p style="color: #4b5563;"><strong>Frameworks:</strong> Tailwind CSS, Lucide Icons</p>
+                    <p style="color: #4b5563;"><strong>Core:</strong> DOM, State Management, Responsive Design</p>
+                    <p style="color: #4b5563;"><strong>Data:</strong> LocalStorage, Async/Await, JSON, REST APIs</p>
+                    
+                    <h2 style="color: #1e293b; border-bottom: 2px solid #2563eb; padding-bottom: 5px;">Education</h2>
+                    <p style="color: #4b5563;"><strong>AAS, Computer Science:</strong> Monroe College - 2020</p>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\\ufeff', html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Isaias_Geronimo_Resume.doc';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+
+</html>
