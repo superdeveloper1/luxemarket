@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 4px; margin: 5px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 LuxeMarket Simple Test</h1>
+        <p>This is a simple test page to verify everything is working.</p>
+        
+        <div id="status"></div>
+        
+        <h3>Quick Actions:</h3>
+        <button onclick="testStorage()">Test Storage</button>
+        <button onclick="addProduct()">Add Test Product</button>
+        <button onclick="showProducts()">Show Products</button>
+        <button onclick="clearData()">Clear Data</button>
+        <button onclick="goToApp()">Go to App</button>
+        
+        <div id="results" style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+            <p>Click buttons above to test functionality...</p>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.className = 'status ' + type;
+            status.textContent = message;
+        }
+
+        function updateResults(html) {
+            document.getElementById('results').innerHTML = html;
+        }
+
+        function testStorage() {
+            try {
+                localStorage.setItem('test', 'working');
+                const test = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (test === 'working') {
+                    showStatus('✅ localStorage is working!', 'success');
+                } else {
+                    showStatus('❌ localStorage test failed', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ localStorage error: ' + error.message, 'error');
+            }
+        }
+
+        function addProduct() {
+            try {
+                const products = JSON.parse(localStorage.getItem('luxemarket_products') || '[]');
+                const newProduct = {
+                    id: Date.now(),
+                    name: 'Test Sneakers',
+                    price: 99.99,
+                    category: 'Shoes',
+                    description: 'Test product with size selection',
+                    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300',
+                    colors: [
+                        { name: 'Black', hex: '#000000' },
+                        { name: 'White', hex: '#FFFFFF' }
+                    ],
+                    sizes: ['7', '8', '9', '10', '11'],
+                    rating: 4.5,
+                    reviews: 25
+                };
+                
+                products.push(newProduct);
+                localStorage.setItem('luxemarket_products', JSON.stringify(products));
+                localStorage.setItem('luxemarket_data_version', 'v1.9');
+                
+                showStatus(`✅ Added "${newProduct.name}" successfully!`, 'success');
+                showProducts();
+            } catch (error) {
+                showStatus('❌ Error adding product: ' + error.message, 'error');
+            }
+        }
+
+        function showProducts() {
+            try {
+                const products = JSON.parse(localStorage.getItem('luxemarket_products') || '[]');
+                const version = localStorage.getItem('luxemarket_data_version');
+                
+                let html = `<h4>Current Products (${products.length}):</h4>`;
+                html += `<p><strong>Data Version:</strong> ${version || 'none'}</p>`;
+                
+                if (products.length === 0) {
+                    html += '<p>No products found.</p>';
+                } else {
+                    html += '<ul>';
+                    products.forEach(p => {
+                        html += `<li><strong>${p.name}</strong> - $${p.price} (${p.category})`;
+                        if (p.sizes) html += ` - Sizes: ${p.sizes.join(', ')}`;
+                        html += `</li>`;
+                    });
+                    html += '</ul>';
+                }
+                
+                updateResults(html);
+            } catch (error) {
+                updateResults('❌ Error loading products: ' + error.message);
+            }
+        }
+
+        function clearData() {
+            if (confirm('Clear all data?')) {
+                localStorage.removeItem('luxemarket_products');
+                localStorage.removeItem('luxemarket_data_version');
+                localStorage.removeItem('luxemarket_cart');
+                showStatus('✅ All data cleared!', 'success');
+                showProducts();
+            }
+        }
+
+        function goToApp() {
+            window.open('index.html', '_blank');
+        }
+
+        // Auto-run tests on load
+        window.onload = function() {
+            testStorage();
+            showProducts();
+        };
+    </script>
+</body>
+</html>
