@@ -151,10 +151,10 @@
             const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
             const baseUrl = isGitHubPages ? 'https://superdeveloper1.github.io/luxemarket/' : '';
             
-            // Temporary fallback to portable versions until GitHub Pages issue is resolved
-            const demoLink = isFileProtocol ? "index-portable.html" : "index-portable.html";
-            const adminLink = isFileProtocol ? "admin-portable.html" : "admin-portable.html";
-            const resumeLink = isFileProtocol ? "resume.html" : "resume.html";
+            // Use absolute URLs for GitHub Pages, relative for local
+            const demoLink = isFileProtocol ? "index-portable.html" : (isGitHubPages ? baseUrl + "index-portable.html" : "index-portable.html");
+            const adminLink = isFileProtocol ? "admin-portable.html" : (isGitHubPages ? baseUrl + "admin-portable.html" : "admin-portable.html");
+            const resumeLink = isFileProtocol ? "resume.html" : (isGitHubPages ? baseUrl + "resume.html" : "resume.html");
             const githubLink = "https://github.com/superdeveloper1/luxemarket";
 
             return (
