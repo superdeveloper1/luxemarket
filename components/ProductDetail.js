@@ -50,8 +50,17 @@ function ProductDetail({ product, onAddToCart }) {
         }
 
         // Append video if it exists
-        if (product.video) {
-            media.push({ type: 'video', url: product.video });
+        let videoUrl = product.video;
+        if (selectedColor && product.variantVideos) {
+            if (product.variantVideos[selectedColor]) {
+                videoUrl = product.variantVideos[selectedColor];
+            } else {
+                const match = Object.keys(product.variantVideos).find(k => k.toLowerCase() === selectedColor.toLowerCase());
+                if (match) videoUrl = product.variantVideos[match];
+            }
+        }
+        if (videoUrl) {
+            media.push({ type: 'video', url: videoUrl });
         }
         return media;
     }, [selectedColor, product, defaultImages]);

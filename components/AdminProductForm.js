@@ -15,7 +15,7 @@ function AdminProductForm({ product, onSave, onCancel }) {
 
     // Dynamic state for complex fields
     const [galleryUrls, setGalleryUrls] = React.useState(['']);
-    const [variantMappings, setVariantMappings] = React.useState([{ color: '', urls: [''] }]);
+    const [variantMappings, setVariantMappings] = React.useState([{ color: '', urls: [''], video: '' }]);
     // Color Palette: array of { name: 'Red', hex: '#FF0000' }
     const [colorPalette, setColorPalette] = React.useState([{ name: '', hex: '#000000' }]);
     const [availableCategories, setAvailableCategories] = React.useState([]);
@@ -33,12 +33,23 @@ function AdminProductForm({ product, onSave, onCancel }) {
             setGalleryUrls(existingGallery.length > 0 ? existingGallery : ['']);
 
             // Setup Variants
-            if (product.variantImages) {
-                const mappings = Object.entries(product.variantImages).map(([key, val]) => ({
-                    color: key,
-                    urls: Array.isArray(val) ? val : [val]
-                }));
-                setVariantMappings(mappings.length > 0 ? mappings : [{ color: '', urls: [''] }]);
+            const allVariantKeys = new Set([
+                ...Object.keys(product.variantImages || {}),
+                ...Object.keys(product.variantVideos || {})
+            ]);
+
+            if (allVariantKeys.size > 0) {
+                const mappings = Array.from(allVariantKeys).map(key => {
+                    const val = product.variantImages ? product.variantImages[key] : null;
+                    return {
+                        color: key,
+                        urls: val ? (Array.isArray(val) ? val : [val]) : [''],
+                        video: product.variantVideos && product.variantVideos[key] ? product.variantVideos[key] : ''
+                    };
+                });
+                setVariantMappings(mappings);
+            } else {
+                setVariantMappings([{ color: '', urls: [''], video: '' }]);
             }
 
             // Setup Color Palette
@@ -113,10 +124,10 @@ function AdminProductForm({ product, onSave, onCancel }) {
         setVariantMappings(newMappings);
     };
 
-    const addVariantField = () => setVariantMappings([...variantMappings, { color: '', urls: [''] }]);
+    const addVariantField = () => setVariantMappings([...variantMappings, { color: '', urls: [''], video: '' }]);
     const removeVariantField = (index) => {
         const newMappings = variantMappings.filter((_, i) => i !== index);
-        setVariantMappings(newMappings.length ? newMappings : [{ color: '', urls: [''] }]);
+        setVariantMappings(newMappings.length ? newMappings : [{ color: '', urls: [''], video: '' }]);
     };
 
     // Color Palette Handlers
@@ -147,10 +158,14 @@ function AdminProductForm({ product, onSave, onCancel }) {
 
         // Process variant mapping
         const variantImages = {};
+        const variantVideos = {};
         variantMappings.forEach(item => {
             const cleanUrls = item.urls.map(u => u.trim()).filter(Boolean);
-            if (item.color.trim() && cleanUrls.length > 0) {
-                variantImages[item.color.trim()] = cleanUrls;
+            if (item.color.trim()) {
+                if (cleanUrls.length > 0) variantImages[item.color.trim()] = cleanUrls;
+                if (item.video && item.video.trim()) {
+                    variantVideos[item.color.trim()] = item.video.trim();
+                }
             }
         });
 
@@ -167,7 +182,8 @@ function AdminProductForm({ product, onSave, onCancel }) {
             colors: finalColors, // Save as array of objects
             sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
             images: uniqueImages,
-            variantImages: variantImages
+            variantImages: variantImages,
+            variantVideos: variantVideos
         };
 
         console.log("Submitting product:", submission);
@@ -478,6 +494,15 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                             >
                                                 <div className="icon-plus text-[10px]"></div> Add Image Angle
                                             </button>
+                                                    <div className="mt-3">
+                                                        <input
+                                                            type="url"
+                                                            placeholder="Variant Video URL (Optional)"
+                                                            value={mapping.video || ''}
+                                                            onChange={(e) => handleVariantChange(vIndex, 'video', e.target.value)}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                        />
+                                                    </div>
                                         </div>
                                     </div>
                                 </div>
