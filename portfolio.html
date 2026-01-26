@@ -147,9 +147,13 @@
                 }
             }, []);
 
-            const demoLink = isFileProtocol ? "index-portable.html" : "https://superdeveloper1.github.io/luxemarket/";
-            const adminLink = isFileProtocol ? "admin-portable.html" : "https://superdeveloper1.github.io/luxemarket/admin.html";
-            const resumeLink = isFileProtocol ? "resume.html" : "https://superdeveloper1.github.io/luxemarket/resume.html";
+            // Check if we're on GitHub Pages or local
+            const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
+            const baseUrl = isGitHubPages ? 'https://superdeveloper1.github.io/luxemarket/' : '';
+            
+            const demoLink = isFileProtocol ? "index-portable.html" : (isGitHubPages ? "index.html" : "index.html");
+            const adminLink = isFileProtocol ? "admin-portable.html" : (isGitHubPages ? "admin.html" : "admin.html");
+            const resumeLink = isFileProtocol ? "resume.html" : (isGitHubPages ? "resume.html" : "resume.html");
             const githubLink = "https://github.com/superdeveloper1/luxemarket";
 
             return (
@@ -182,6 +186,18 @@
                                     <div>
                                         <p className="text-amber-200 font-semibold text-sm">Portable Mode Active</p>
                                         <p className="text-amber-100/70 text-xs">You're viewing this locally. We've enabled "Portable Support" for the links below to bypass browser security restrictions.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {!isFileProtocol && window.location.hostname !== 'superdeveloper1.github.io' && (
+                                <div className="mb-12 p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center gap-4 animate-fade-in shadow-xl shadow-blue-500/5">
+                                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-500 flex-shrink-0">
+                                        <i data-lucide="info" className="w-6 h-6"></i>
+                                    </div>
+                                    <div>
+                                        <p className="text-blue-200 font-semibold text-sm">Development Mode</p>
+                                        <p className="text-blue-100/70 text-xs">You're viewing the latest development version with updated data (v1.7).</p>
                                     </div>
                                 </div>
                             )}
