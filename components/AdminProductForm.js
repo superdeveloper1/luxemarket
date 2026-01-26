@@ -155,6 +155,28 @@ function AdminProductForm({ product, onSave, onCancel }) {
         reader.readAsDataURL(file);
     };
 
+    // Drag & Drop Handlers
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+    };
+
+    const handleDrop = (e, callback) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            processFile(e.dataTransfer.files[0], callback);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -307,7 +329,12 @@ function AdminProductForm({ product, onSave, onCancel }) {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL (Required)</label>
-                            <div className="flex gap-2">
+                            <div 
+                                className="flex gap-2 p-1 -m-1 rounded-md transition-all"
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={(e) => handleDrop(e, (val) => setFormData(prev => ({ ...prev, image: val })))}
+                            >
                                 <input
                                     type="url"
                                     name="image"
@@ -341,7 +368,13 @@ function AdminProductForm({ product, onSave, onCancel }) {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Additional Images</label>
                             <div className="space-y-3">
                                 {galleryUrls.map((url, index) => (
-                                    <div key={index} className="flex gap-2">
+                                    <div 
+                                        key={index} 
+                                        className="flex gap-2 p-1 -m-1 rounded-md transition-all"
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={(e) => handleDrop(e, (val) => handleGalleryChange(index, val))}
+                                    >
                                         <input
                                             type="url"
                                             placeholder="https://..."
@@ -491,7 +524,13 @@ function AdminProductForm({ product, onSave, onCancel }) {
                                             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Images for this color</label>
                                             <div className="space-y-2">
                                                 {mapping.urls.map((url, uIndex) => (
-                                                    <div key={uIndex} className="flex gap-2">
+                                                    <div 
+                                                        key={uIndex} 
+                                                        className="flex gap-2 p-1 -m-1 rounded-md transition-all"
+                                                        onDragOver={handleDragOver}
+                                                        onDragLeave={handleDragLeave}
+                                                        onDrop={(e) => handleDrop(e, (val) => handleVariantUrlChange(vIndex, uIndex, val))}
+                                                    >
                                                         <input
                                                             type="url"
                                                             placeholder="https://..."
