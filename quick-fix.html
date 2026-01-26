@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Fix - Clear All Data</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            max-width: 600px;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 20px; }
+        p { font-size: 1.2em; margin-bottom: 30px; line-height: 1.6; }
+        button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #ff6b6b; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:hover { 
+            background: #ff5252; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .success { 
+            background: #4caf50; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+            display: none;
+        }
+        .test-links {
+            margin-top: 30px;
+        }
+        .test-links a {
+            display: inline-block;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .test-links a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 LuxeMarket Quick Fix</h1>
+        <p>This will completely clear all cached product data and start fresh with an empty catalog. You can then add your own products through the admin panel.</p>
+        
+        <button onclick="clearEverything()">🗑️ Clear All Data & Start Fresh</button>
+        
+        <div id="success" class="success">
+            <h3>✅ Success!</h3>
+            <p>All data cleared! Your app now starts with an empty product catalog.</p>
+        </div>
+        
+        <div class="test-links">
+            <h3>Test Your App:</h3>
+            <a href="index-portable.html" target="_blank">🛍️ Storefront (Should be empty)</a>
+            <a href="admin-portable.html" target="_blank">⚙️ Admin Panel (Add products here)</a>
+            <a href="resume-standalone.html" target="_blank">📄 Resume</a>
+        </div>
+    </div>
+
+    <script>
+        function clearEverything() {
+            // Clear all LuxeMarket data
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.includes('luxemarket')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            // Set new version to force empty start
+            localStorage.setItem('luxemarket_data_version', 'v1.8');
+            localStorage.setItem('luxemarket_products', '[]');
+            localStorage.setItem('luxemarket_categories', '["Electronics","Fashion","Furniture","Accessories","Sporting Goods","Industrial","Motors","Deals"]');
+            
+            // Show success message
+            document.getElementById('success').style.display = 'block';
+            
+            // Scroll to success message
+            document.getElementById('success').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
