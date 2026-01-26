@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Link Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function LinkTest() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const isGitHubPages = window.location.hostname === 'superdeveloper1.github.io';
+            const baseUrl = isGitHubPages ? 'https://superdeveloper1.github.io/luxemarket/' : '';
+            
+            const demoLink = isFileProtocol ? "index-portable.html" : (isGitHubPages ? baseUrl + "index-portable.html" : "index-portable.html");
+            const adminLink = isFileProtocol ? "admin-portable.html" : (isGitHubPages ? baseUrl + "admin-portable.html" : "admin-portable.html");
+            
+            return (
+                <div style={{padding: '20px', fontFamily: 'Arial'}}>
+                    <h1>Link Test</h1>
+                    <p>Protocol: {window.location.protocol}</p>
+                    <p>Hostname: {window.location.hostname}</p>
+                    <p>Is GitHub Pages: {isGitHubPages ? 'Yes' : 'No'}</p>
+                    <p>Base URL: {baseUrl}</p>
+                    <hr />
+                    <p>Demo Link: <a href={demoLink} target="_blank">{demoLink}</a></p>
+                    <p>Admin Link: <a href={adminLink} target="_blank">{adminLink}</a></p>
+                </div>
+            );
+        }
+        
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LinkTest />);
+    </script>
+</body>
+</html>
