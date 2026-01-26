@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Clear Cache - LuxeMarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">Clear LuxeMarket Cache</h1>
+        <p class="text-gray-600 mb-6">This will clear all stored data and reset the app to empty state.</p>
+        
+        <div class="space-y-4">
+            <button onclick="clearCache()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Clear All Data
+            </button>
+            
+            <button onclick="goToApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Go to App (Clean)
+            </button>
+            
+            <button onclick="goToAdmin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                Go to Admin (Clean)
+            </button>
+        </div>
+        
+        <div id="status" class="mt-4 p-3 rounded hidden"></div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.className = `mt-4 p-3 rounded ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            status.textContent = message;
+            status.classList.remove('hidden');
+        }
+
+        function clearCache() {
+            try {
+                // Clear all LuxeMarket related localStorage
+                localStorage.removeItem('luxemarket_products');
+                localStorage.removeItem('luxemarket_categories');
+                localStorage.removeItem('luxemarket_data_version');
+                localStorage.removeItem('luxemarket_cart');
+                
+                // Clear any other potential keys
+                Object.keys(localStorage).forEach(key => {
+                    if (key.toLowerCase().includes('luxe') || key.toLowerCase().includes('market')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                showStatus('✅ All cache cleared successfully!');
+            } catch (error) {
+                showStatus('❌ Error clearing cache: ' + error.message, 'error');
+            }
+        }
+
+        function goToApp() {
+            clearCache();
+            setTimeout(() => {
+                window.location.href = 'index.html?cleared=' + Date.now();
+            }, 1000);
+        }
+
+        function goToAdmin() {
+            clearCache();
+            setTimeout(() => {
+                window.location.href = 'admin.html?cleared=' + Date.now();
+            }, 1000);
+        }
+
+        // Show current storage status
+        window.onload = function() {
+            const products = localStorage.getItem('luxemarket_products');
+            const version = localStorage.getItem('luxemarket_data_version');
+            
+            if (products) {
+                const productCount = JSON.parse(products).length;
+                showStatus(`Current: ${productCount} products stored, version: ${version || 'unknown'}`, 'info');
+            } else {
+                showStatus('No data currently stored', 'info');
+            }
+        }
+    </script>
+</body>
+</html>
