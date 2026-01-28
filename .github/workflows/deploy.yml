@@ -36,13 +36,23 @@ jobs:
         run: npm run build
         working-directory: luxemarket/luxemarket-vite
         
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p deploy
+          cp -r luxemarket/luxemarket-vite/dist/* deploy/
+          cp portfolio.html deploy/
+          cp resume.html deploy/
+          cp -r portfolio-assets deploy/
+          cp favicon.ico deploy/ || true
+          cp .nojekyll deploy/ || true
+        
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: luxemarket/luxemarket-vite/dist
+          path: deploy
 
   deploy:
     environment:
