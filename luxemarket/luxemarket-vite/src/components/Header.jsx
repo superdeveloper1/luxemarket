@@ -255,7 +255,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                         </button>
 
                         {/* Logo */}
-                        <a href="index.html" className="flex-shrink-0 flex items-center gap-1 group">
+                        <a href="#" onClick={(e) => { e.preventDefault(); window.location.hash = ''; }} className="flex-shrink-0 flex items-center gap-1 group">
                             <div className="icon-shopping-bag text-3xl text-[var(--primary-color)]"></div>
                             <span className="text-2xl font-bold tracking-tighter text-gray-900">
                                 Luxe<span className="text-[var(--primary-color)]">Market</span>
@@ -288,7 +288,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                         </a>
                                     ))}
                                     <div className="border-t border-gray-100 mt-2 pt-2">
-                                        <a href="index.html#featured-products" className="font-bold hover:underline block p-1">See all categories</a>
+                                        <a href="#featured-products" className="font-bold hover:underline block p-1">See all categories</a>
                                     </div>
                                 </div>
                             )}
@@ -407,7 +407,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
             <div className="border-b border-gray-200 bg-white hidden md:block">
                 <div className="container-custom">
                     <nav className="flex items-center justify-center gap-6 py-2 text-[13px] text-gray-600">
-                        <a href="index.html" className="hover:text-[var(--primary-color)] font-medium border-b-2 border-transparent hover:border-[var(--primary-color)] pb-1 transition-colors">Home</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); window.location.hash = ''; }} className="hover:text-[var(--primary-color)] font-medium border-b-2 border-transparent hover:border-[var(--primary-color)] pb-1 transition-colors">Home</a>
                         <a href="#" onClick={(e) => handleFeatureClick(e, onOpenWatchlist)} className="hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] border-b-2 border-transparent pb-1 transition-colors flex items-center gap-1">
                             <div className="icon-heart text-xs"></div> Saved
                         </a>
