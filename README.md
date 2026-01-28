@@ -18,6 +18,9 @@ LuxeMarket is a portfolio project demonstrating modern web development skills in
 - Complex state management
 - Admin dashboard with full CRUD operations
 
+---
+*Deployed via GitHub Actions*
+
 ## 🏃 Quick Start
 
 ```bash
