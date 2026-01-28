@@ -190,8 +190,9 @@
                                         Building the <span className="gradient-text">Future</span> of Luxury Retail.
                                     </h1>
                                     <p className="text-gray-400 text-lg mb-8 max-w-lg leading-relaxed">
-                                        LuxeMarket is a high-performance e-commerce platform built with React, Tailwind CSS, and advanced data management logic.
-                                        Designed for speed, aesthetics, and developer-friendly extensibility.
+                                        LuxeMarket is a high-performance e-commerce platform built with React 18, Vite, and Tailwind CSS.
+                                        Features include admin dashboard with product management, color variants with visual picker, 
+                                        daily deals system, home page customization, and complete shopping cart with checkout flow.
                                     </p>
                                     <div className="flex flex-wrap gap-4">
                                         <a href={demoLink} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all shadow-lg shadow-blue-500/20">
@@ -242,22 +243,22 @@
                                 {/* Feature 2 */}
                                 <div className="glass p-8 rounded-2xl animate-fade-in delay-200 hover:transform hover:-translate-y-2 transition-all duration-300">
                                     <div className="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center text-purple-500 mb-6">
-                                        <i data-lucide="zap" className="w-6 h-6"></i>
+                                        <i data-lucide="palette" className="w-6 h-6"></i>
                                     </div>
-                                    <h3 className="text-xl font-bold mb-3 outfit">Interactive UI</h3>
+                                    <h3 className="text-xl font-bold mb-3 outfit">Color Variants & Visual Picker</h3>
                                     <p className="text-gray-400 text-sm leading-relaxed">
-                                        Advanced UX features like hover-triggered image carousels, smooth auto-scrolling category navigation, and real-time toast feedback.
+                                        Advanced color management with RGB/Hex visual picker, variant-specific images, and color name-to-hex conversion supporting 100+ color names.
                                     </p>
                                 </div>
 
                                 {/* Feature 3 */}
                                 <div className="glass p-8 rounded-2xl animate-fade-in delay-300 hover:transform hover:-translate-y-2 transition-all duration-300">
                                     <div className="w-12 h-12 bg-rose-600/20 rounded-xl flex items-center justify-center text-rose-500 mb-6">
-                                        <i data-lucide="shield-check" className="w-6 h-6"></i>
+                                        <i data-lucide="zap" className="w-6 h-6"></i>
                                     </div>
-                                    <h3 className="text-xl font-bold mb-3 outfit">Defensive Engineering</h3>
+                                    <h3 className="text-xl font-bold mb-3 outfit">Daily Deals & Auto-Carousel</h3>
                                     <p className="text-gray-400 text-sm leading-relaxed">
-                                        Robust error handling and data normalization in the checkout flow and persistence layer to prevent crashes from malformed data.
+                                        Dynamic daily deals system with discount management, auto-cycling image carousel (3s intervals), and smooth category filtering with scroll navigation.
                                     </p>
                                 </div>
                             </div>
@@ -327,29 +328,35 @@
                                     />
                                 </div>
                                 <div className="order-1 lg:order-2 animate-fade-in">
-                                    <h2 className="text-4xl font-bold mb-6 outfit">Powerful Management</h2>
+                                    <h2 className="text-4xl font-bold mb-6 outfit">Powerful Admin Dashboard</h2>
                                     <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                                        The Admin Dashboard provides total control over products and categories.
-                                        We implemented a <strong>Custom Order Persistence</strong> system where items can be moved 'Up' or 'Down' and saved instantly to the global state.
+                                        Complete admin control with product CRUD, category management, and home page customization.
+                                        Select any 12 products for the home page, reorder them with drag-and-drop, and manage color variants with a professional visual picker.
                                     </p>
                                     <ul className="space-y-4">
                                         <li className="flex items-center gap-3 text-gray-300">
                                             <div className="w-5 h-5 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-500">
                                                 <i data-lucide="check" className="w-3 h-3"></i>
                                             </div>
-                                            Full Product CRUD Support
+                                            Full Product CRUD with Image Management
                                         </li>
                                         <li className="flex items-center gap-3 text-gray-300">
                                             <div className="w-5 h-5 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-500">
                                                 <i data-lucide="check" className="w-3 h-3"></i>
                                             </div>
-                                            Dynamic Category Management
+                                            Home Page Product Selection & Ordering
                                         </li>
                                         <li className="flex items-center gap-3 text-gray-300">
                                             <div className="w-5 h-5 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-500">
                                                 <i data-lucide="check" className="w-3 h-3"></i>
                                             </div>
-                                            Live Sort Order Persistance
+                                            Visual Color Picker with RGB/Hex Support
+                                        </li>
+                                        <li className="flex items-center gap-3 text-gray-300">
+                                            <div className="w-5 h-5 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-500">
+                                                <i data-lucide="check" className="w-3 h-3"></i>
+                                            </div>
+                                            Daily Deals Management with Discounts
                                         </li>
                                     </ul>
                                 </div>
@@ -400,6 +407,13 @@
                                 </div>
                                 <div className="glass p-6 rounded-2xl flex flex-col items-center text-center">
                                     <div className="w-12 h-12 text-blue-400 mb-4 flex items-center justify-center">
+                                        <i data-lucide="zap" className="w-8 h-8"></i>
+                                    </div>
+                                    <h4 className="font-bold mb-1">Vite</h4>
+                                    <p className="text-xs text-gray-500">Lightning-Fast Build Tool</p>
+                                </div>
+                                <div className="glass p-6 rounded-2xl flex flex-col items-center text-center">
+                                    <div className="w-12 h-12 text-blue-400 mb-4 flex items-center justify-center">
                                         <i data-lucide="palette" className="w-8 h-8"></i>
                                     </div>
                                     <h4 className="font-bold mb-1">Tailwind CSS</h4>
@@ -411,13 +425,6 @@
                                     </div>
                                     <h4 className="font-bold mb-1">LocalStorage</h4>
                                     <p className="text-xs text-gray-500">State Persistence</p>
-                                </div>
-                                <div className="glass p-6 rounded-2xl flex flex-col items-center text-center">
-                                    <div className="w-12 h-12 text-blue-400 mb-4 flex items-center justify-center">
-                                        <i data-lucide="terminal" className="w-8 h-8"></i>
-                                    </div>
-                                    <h4 className="font-bold mb-1">Babel JS</h4>
-                                    <p className="text-xs text-gray-500">Modern Compilation</p>
                                 </div>
                             </div>
                         </div>
