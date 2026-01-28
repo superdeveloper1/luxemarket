@@ -4,8 +4,8 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/luxmarket/',
+  base: '/luxemarket/',
   build: {
-    outDir: path.resolve(__dirname, '../docs')
+    outDir: path.resolve(__dirname, 'docs') // no ../ — keep it inside the project
   }
 })
