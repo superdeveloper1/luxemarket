@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  Deploy_pages:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,3 +33,4 @@ jobs:
           publish_dir: deploy
           # redeploy trigger
           # force fresh workflow run
+          # fresh job name to flush cache
