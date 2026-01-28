@@ -38,17 +38,19 @@ jobs:
         
       - name: Prepare deployment directory
         run: |
-          mkdir -p deploy
-          cp -r luxemarket/luxemarket-vite/dist/* deploy/
+          mkdir -p deploy/luxemarket
+          # Copy Vite build to /luxemarket/ subdirectory
+          cp -r luxemarket/luxemarket-vite/dist/* deploy/luxemarket/
+          # Copy portfolio.html as index.html for the root domain
+          cp portfolio.html deploy/index.html
+          # Keep original files for direct access
           cp portfolio.html deploy/
           cp resume.html deploy/
           cp -r portfolio-assets deploy/
           cp favicon.ico deploy/ || true
           cp .nojekyll deploy/ || true
           echo "Contents of deploy directory:"
-          ls -la deploy/
-          echo "Checking if index.html exists:"
-          cat deploy/index.html | head -20
+          ls -R deploy/
         
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3

@@ -686,7 +686,7 @@ function AdminDashboard() {
             </div>
           </div>
           <a 
-            href="/" 
+            href="index.html" 
             className="btn btn-secondary flex items-center gap-2"
           >
             <div className="icon-arrow-left text-sm"></div>
