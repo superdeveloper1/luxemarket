@@ -1,10 +1,22 @@
-# LuxeMarket - Premium E-commerce Platform
+# Portfolio - LuxeMarket E-commerce Platform
 
-A modern, full-featured e-commerce application built with React, Vite, and Tailwind CSS.
+This repository showcases **LuxeMarket**, a full-featured e-commerce application built with React, Vite, and Tailwind CSS.
 
-## 🚀 Live Demo
+## 🌐 Live Links
 
-**Deployed App**: [https://superdeveloper1.github.io/luxemarket/](https://superdeveloper1.github.io/luxemarket/)
+- **Portfolio**: [https://superdeveloper1.github.io/luxemarket/portfolio.html](https://superdeveloper1.github.io/luxemarket/portfolio.html)
+- **Resume**: [https://superdeveloper1.github.io/luxemarket/resume.html](https://superdeveloper1.github.io/luxemarket/resume.html)
+- **Live Demo**: [https://superdeveloper1.github.io/luxemarket/](https://superdeveloper1.github.io/luxemarket/)
+
+## 📋 About This Project
+
+LuxeMarket is a portfolio project demonstrating modern web development skills including:
+- React 18 with hooks and context
+- Vite for fast development and optimized builds
+- Tailwind CSS for responsive design
+- LocalStorage for data persistence
+- Complex state management
+- Admin dashboard with full CRUD operations
 
 ## 🏃 Quick Start
 
