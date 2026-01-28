@@ -45,6 +45,10 @@ jobs:
           cp -r portfolio-assets deploy/
           cp favicon.ico deploy/ || true
           cp .nojekyll deploy/ || true
+          echo "Contents of deploy directory:"
+          ls -la deploy/
+          echo "Checking if index.html exists:"
+          cat deploy/index.html | head -20
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
