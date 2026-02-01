@@ -20,12 +20,15 @@ if ('serviceWorker' in navigator) {
 }
 
 // Migration: Clear old corrupted data once to fix "incognito only" issues
-const MIGRATION_KEY = 'luxemarket_data_reset_v2';
+const MIGRATION_KEY = 'luxemarket_data_reset_v3';
 if (typeof Storage !== 'undefined' && !localStorage.getItem(MIGRATION_KEY)) {
-  console.log('🧹 LuxeMarket: Running one-time data cleanup...');
+  console.log('🧹 LuxeMarket: Running one-time data cleanup (v3)...');
   localStorage.removeItem('luxemarket_daily_deals');
   localStorage.removeItem('luxemarket_homepage_order');
   localStorage.removeItem('luxemarket_products');
+  localStorage.removeItem('luxemarket_categories');
+  localStorage.removeItem('luxemarket_data_version');
+  localStorage.removeItem('luxemarket_watchlist');
   localStorage.setItem(MIGRATION_KEY, 'done');
 }
 
