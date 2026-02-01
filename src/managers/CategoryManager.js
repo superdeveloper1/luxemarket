@@ -32,11 +32,17 @@ const CategoryManager = (() => {
         return Array.from(set);
     };
 
+    const DEFAULT_CATEGORIES = [
+        "Electronics", "Fashion", "Furniture", "Accessories",
+        "Sporting Goods", "Industrial", "Motors", "Deals"
+    ];
+
     // Initialize categories
     let categories = load();
 
     if (!categories || categories.length === 0) {
-        categories = extractFromProducts();
+        const extracted = extractFromProducts();
+        categories = extracted.length > 0 ? extracted : [...DEFAULT_CATEGORIES];
         save(categories);
     }
 
@@ -46,6 +52,15 @@ const CategoryManager = (() => {
 
     return {
         getAll() {
+            if (categories.length === 0) {
+                const extracted = extractFromProducts();
+                if (extracted.length > 0) {
+                    categories = extracted;
+                    save(categories);
+                } else {
+                    return [...DEFAULT_CATEGORIES];
+                }
+            }
             return [...categories];
         },
 
