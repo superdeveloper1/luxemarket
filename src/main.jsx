@@ -35,6 +35,14 @@ if (typeof Storage !== 'undefined') {
       console.log('🗑️ IndexedDB: LuxeMarketDB scheduled for deletion');
     }
 
+    // Clear Cache API
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        for (let name of names) caches.delete(name);
+      });
+      console.log('🗑️ Cache API: All caches scheduled for deletion');
+    }
+
     // Set migration key BEFORE reload to avoid loops
     localStorage.setItem(MIGRATION_KEY, 'done');
 
