@@ -98,16 +98,6 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                 return matchesSearch && matchesCategory;
             }).slice(0, 5); // Limit to 5 suggestions
             setSearchSuggestions(filtered);
-
-            // Debug logging
-            console.log(`🔍 Search Debug:`, {
-                searchTerm: lowerTerm,
-                searchCategory,
-                totalProducts: allProducts.length,
-                filteredResults: filtered.length,
-                furnitureProducts: allProducts.filter(p => p.category.toLowerCase().includes('furniture')).length,
-                allCategories: [...new Set(allProducts.map(p => p.category))]
-            });
         } else {
             setSearchSuggestions([]);
         }
@@ -265,7 +255,6 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                         <div ref={dropdownRef} className="relative hidden md:block">
                             <button
                                 onClick={(e) => {
-                                    console.log(`[Header] Toggle button clicked. Current state: ${categoryOpen}`);
                                     e.stopPropagation();
                                     setCategoryOpen(!categoryOpen);
                                 }}

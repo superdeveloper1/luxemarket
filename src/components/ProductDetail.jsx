@@ -112,7 +112,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       document.body.style.overflow = 'unset';
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []); // Empty dependencies to avoid re-creating the handler
+  }, [mediaItems.length, onClose]); // Update listeners when media count changes
 
   const handleAddToCart = () => {
     if (!currentUser) {

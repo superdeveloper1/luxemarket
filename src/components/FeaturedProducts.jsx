@@ -26,12 +26,7 @@ function ProductCard({ product, onProductClick }) {
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer minimal-product-card"
-            onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🖱️ ProductCard clicked:', product.id, product.name);
-                onProductClick(product.id);
-            }}>
+            onClick={() => onProductClick && onProductClick(product.id)}>
             <div
                 className="relative aspect-square overflow-hidden bg-gray-100 product-image-container"
             >
@@ -120,28 +115,18 @@ function FeaturedProductsSection() {
             setProducts([]); // Clear old products first
 
             if (window.ProductManager) {
-                // Debug: Log which method we're using
-                console.log('🔍 FrontPage: Loading products...');
-
                 let allProducts;
                 if (window.ProductManager.getAllWithDealsAsync) {
-                    console.log('🔥 FrontPage: Using getAllWithDealsAsync from Firebase...');
                     allProducts = await window.ProductManager.getAllWithDealsAsync();
                 } else if (window.ProductManager.getAllAsync) {
-                    console.log('🔥 FrontPage: Using getAllAsync from Firebase...');
                     allProducts = await window.ProductManager.getAllAsync();
                 } else {
-                    console.log('⚠️ FrontPage: Using sync method');
                     allProducts = window.ProductManager.getAll();
                 }
-
-                console.log('📦 FrontPage: Total products loaded:', allProducts.length);
-                console.log('📦 FrontPage: First product:', allProducts[0]);
 
                 // Check if products have stock field
                 const firstProduct = allProducts[0];
                 if (firstProduct && typeof firstProduct.stock === 'undefined') {
-                    console.log('⚠️ Products missing stock field, resetting data...');
                     if (window.ProductManager.resetToDefaults) {
                         window.ProductManager.resetToDefaults();
                         allProducts = window.ProductManager.getAll();
@@ -153,7 +138,6 @@ function FeaturedProductsSection() {
                 // Apply daily deals filter first if active
                 if (showDealsOnly) {
                     productsToShow = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
-                    console.log(`🔥 Daily deals filter: ${productsToShow.length} deals found`);
                 }
                 // Apply category filter if set
                 else if (categoryFilter && categoryFilter !== 'All Categories') {
@@ -161,12 +145,10 @@ function FeaturedProductsSection() {
                         // Case-insensitive category matching to handle any inconsistencies
                         return p.category && p.category.toLowerCase() === categoryFilter.toLowerCase();
                     });
-                    console.log(`🏷️ Filtered by category "${categoryFilter}":`, productsToShow.length, 'products found');
                 }
                 // Show all products if requested
                 else if (showAllProducts) {
                     productsToShow = allProducts;
-                    console.log('📋 Showing all products:', productsToShow.length);
                 }
                 // Default: show home page products (respecting admin order)
                 else {
@@ -175,10 +157,8 @@ function FeaturedProductsSection() {
                     } else {
                         productsToShow = allProducts.slice(0, 12);
                     }
-                    console.log('🏠 Home page: Setting', productsToShow.length, 'products');
                 }
 
-                console.log('🔥 Daily deals found:', productsToShow.filter(p => p.isDailyDeal || p.dailyDeal).length);
                 setProducts(productsToShow);
                 setCurrentPage(1); // Reset to first page when products change
             } else {
@@ -196,14 +176,12 @@ function FeaturedProductsSection() {
 
         // Listen for admin updates
         const handleAdminUpdate = () => {
-            console.log('🔄 Admin update detected, refreshing home page products...');
             loadProducts();
         };
 
         // Listen for category filter events
         const handleCategoryFilter = (event) => {
             const { category } = event.detail;
-            console.log('🏷️ Category filter event received:', category);
             setCategoryFilter(category);
             setShowDealsOnly(false); // Clear deals filter when category is selected
             setShowAllProducts(false); // Clear show all when filtering
@@ -218,7 +196,6 @@ function FeaturedProductsSection() {
 
         // Listen for daily deals filter events
         const handleDealsFilter = () => {
-            console.log('🔥 Daily deals filter event received');
             setShowDealsOnly(true);
             setCategoryFilter(''); // Clear category filter when deals is selected
             setShowAllProducts(false); // Clear show all when filtering
@@ -233,7 +210,6 @@ function FeaturedProductsSection() {
 
         // Listen for show all products event
         const handleShowAllProducts = () => {
-            console.log('📋 Show all products event received');
             setShowAllProducts(true);
             setCategoryFilter('');
             setShowDealsOnly(false);
@@ -260,7 +236,6 @@ function FeaturedProductsSection() {
     }, [loadProducts]);
 
     const handleProductClick = (productId) => {
-        console.log('🖱️ Product clicked:', productId);
         window.dispatchEvent(new CustomEvent('openProduct', { detail: { productId } }));
     };
 

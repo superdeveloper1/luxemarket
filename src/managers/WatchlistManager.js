@@ -46,7 +46,6 @@ const WatchlistManager = (() => {
         currentUser = user;
 
         if (user) {
-          console.log('👤 WatchlistManager: User logged in, syncing...');
           // Sync local items to cloud
           const localItems = loadLocal();
           if (localItems.length > 0) {
@@ -59,13 +58,11 @@ const WatchlistManager = (() => {
           // Trigger update to fetch fresh data
           window.dispatchEvent(new Event('watchlistUpdated'));
         } else {
-          console.log('👤 WatchlistManager: User logged out');
           window.dispatchEvent(new Event('watchlistUpdated'));
         }
       });
 
       isInitialized = true;
-      console.log('✅ WatchlistManager initialized');
     },
 
     getAll() {

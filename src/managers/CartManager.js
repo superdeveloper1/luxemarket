@@ -142,7 +142,6 @@ const CartManager = (() => {
             this._autoSaveInterval = setInterval(() => {
                 try {
                     save(cart);
-                    console.log('🛒 Auto-saved cart data');
                 } catch (error) {
                     console.error('❌ Cart auto-save failed:', error);
                 }
@@ -162,7 +161,6 @@ const CartManager = (() => {
         forceSave() {
             try {
                 save(cart);
-                console.log('💾 Force saved cart data');
                 return true;
             } catch (error) {
                 console.error('❌ Cart force save failed:', error);

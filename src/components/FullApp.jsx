@@ -16,8 +16,6 @@ import CartManager from '../managers/CartManager.js';
 import WatchlistManager from '../managers/WatchlistManager.js';
 import { showToast } from '../utils/simpleToast.js';
 
-console.log('🚀 FullApp component loading...');
-
 function FullApp() {
   const [currentView, setCurrentView] = React.useState('home');
   const [cartCount, setCartCount] = React.useState(0);

@@ -174,9 +174,6 @@ function HomePageManager({ products, onUpdate }) {
     const homeProductIds = new Set(homeProducts.map(p => p.id.toString()));
     const available = products.filter(p => !homeProductIds.has(p.id.toString()));
     setAvailableProducts(available);
-
-    console.log('🏠 Home page products:', homeProducts.length);
-    console.log('📦 Available products:', available.length);
   };
 
   const handleDragStart = (e, index, from) => {
@@ -456,20 +453,12 @@ function AdminDashboard() {
         return;
       }
 
-      // Debug: Log which method we're using
-      console.log('🔍 AdminDashboard: Loading products...');
-
       let allProducts;
       if (window.ProductManager.getAllAsync) {
-        console.log('🔥 AdminDashboard: Using getAllAsync from Firebase...');
         allProducts = await window.ProductManager.getAllAsync();
       } else {
-        console.log('⚠️ AdminDashboard: Using sync method');
         allProducts = window.ProductManager.getAll();
       }
-
-      console.log('📦 AdminDashboard: Total products loaded:', allProducts.length);
-      console.log('📦 AdminDashboard: First product:', allProducts[0]);
 
       setProducts(allProducts);
       setCategories(CategoryManager.getAll());
