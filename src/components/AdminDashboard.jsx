@@ -458,9 +458,11 @@ function AdminDashboard() {
         return;
       }
       
-      // Use async method if available
+      // Use the same method as front page to ensure consistency
       let allProducts;
-      if (window.ProductManager.getAllAsync) {
+      if (window.ProductManager.getAllWithDeals) {
+        allProducts = window.ProductManager.getAllWithDeals();
+      } else if (window.ProductManager.getAllAsync) {
         allProducts = await window.ProductManager.getAllAsync();
       } else {
         allProducts = window.ProductManager.getAll();
@@ -1128,7 +1130,19 @@ function AdminDashboard() {
                 </div>
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{product.name}</h3>
-                  <p className="text-xl font-bold text-[var(--primary-color)] mb-1">${product.price.toFixed(2)}</p>
+                  <div className="mb-1">
+                    {product.isDailyDeal ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
+                        <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                        <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                          {product.discountPercent}% OFF
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-xl font-bold text-[var(--primary-color)]">${product.price.toFixed(2)}</p>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                   
                   {/* Stock Information - Admin Only */}
