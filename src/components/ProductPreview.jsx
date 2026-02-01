@@ -3,6 +3,7 @@ import React from 'react';
 function ProductPreview({ product, isVisible }) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [selectedColor, setSelectedColor] = React.useState(null);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
 
   // Stable effect to avoid flickering
   React.useEffect(() => {
@@ -59,7 +60,6 @@ function ProductPreview({ product, isVisible }) {
     setCurrentImageIndex(index);
   };
 
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
   const descriptionThreshold = 150;
   const isDescriptionTooLong = product.description && product.description.length > descriptionThreshold;
   const displayDescription = isDescriptionTooLong && !isDescriptionExpanded

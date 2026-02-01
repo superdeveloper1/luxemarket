@@ -8,6 +8,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [isInWatchlist, setIsInWatchlist] = React.useState(false);
   const [quantity, setQuantity] = React.useState(1);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
 
   React.useEffect(() => {
     if (product) {
@@ -200,7 +201,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       showToast(error.message || 'Failed to process purchase', 'error');
     }
   };
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
+
   const descriptionThreshold = 200;
   const isDescriptionTooLong = product.description && product.description.length > descriptionThreshold;
   const displayDescription = isDescriptionTooLong && !isDescriptionExpanded
