@@ -12,32 +12,44 @@ import './managers/CartManager.js'
 import './managers/CategoryManager.js'
 import './utils/watchlist.js'
 
-// Force cache refresh on load
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    registrations.forEach(registration => registration.unregister());
-  });
-}
-
 // Migration: Clear old corrupted data once to fix "incognito only" issues
-const MIGRATION_KEY = 'luxemarket_data_reset_v3';
-if (typeof Storage !== 'undefined' && !localStorage.getItem(MIGRATION_KEY)) {
-  console.log('🧹 LuxeMarket: Running one-time data cleanup (v3)...');
-  localStorage.removeItem('luxemarket_daily_deals');
-  localStorage.removeItem('luxemarket_homepage_order');
-  localStorage.removeItem('luxemarket_products');
-  localStorage.removeItem('luxemarket_categories');
-  localStorage.removeItem('luxemarket_data_version');
-  localStorage.removeItem('luxemarket_watchlist');
-  localStorage.setItem(MIGRATION_KEY, 'done');
+const MIGRATION_KEY = 'luxemarket_data_reset_v4';
+if (typeof Storage !== 'undefined') {
+  if (!localStorage.getItem(MIGRATION_KEY)) {
+    console.log('🧹 LuxeMarket: Running AGGRESSIVE one-time data cleanup (v4)...');
+
+    // Clear every single key that starts with luxemarket
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('luxemarket')) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    // Clear session storage too
+    sessionStorage.clear();
+
+    // Set migration key BEFORE reload to avoid loops
+    localStorage.setItem(MIGRATION_KEY, 'done');
+
+    console.log('✅ Data cleared. Forcing refresh for a clean session...');
+    window.location.reload();
+  }
 }
 
-// Clear ONLY products cache, NOT the user's home page order or deals
+// Ensure the products cache is cleared on every load to force Firebase sync
 if (typeof Storage !== 'undefined') {
   localStorage.removeItem('luxemarket_products');
-  sessionStorage.clear();
 }
 
+// Force service worker unregistration for regular window users
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  });
+}
 // Initialize Firebase and make it available globally
 window.ProductManager = {
   getAll: () => FirebaseProductManager.getAllSync(),
