@@ -545,7 +545,7 @@ const ProductManager = (() => {
             return true;
         },
 
-        getHomePageProducts(limit = 36) {
+        getHomePageProducts(limit = 12) {
             const customOrder = this.getHomePageOrder();
             const allProducts = this.getAllWithDeals();
 

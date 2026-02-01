@@ -143,7 +143,7 @@ window.ProductManager = {
       return [];
     }
   },
-  getHomePageProducts: (limit = 36, passedProducts = null) => {
+  getHomePageProducts: (limit = 12, passedProducts = null) => {
     const customOrder = window.ProductManager.getHomePageOrder();
     const allWithDeals = passedProducts || window.ProductManager.getAllWithDeals();
 
@@ -164,7 +164,7 @@ window.ProductManager = {
   reorderHomePageProducts: (fromIndex, toIndex) => {
     const currentOrder = window.ProductManager.getHomePageOrder();
     const allProducts = FirebaseProductManager.getAllSync();
-    let workingOrder = currentOrder.length > 0 ? [...currentOrder] : allProducts.slice(0, 36).map(p => p.id);
+    let workingOrder = currentOrder.length > 0 ? [...currentOrder] : allProducts.slice(0, 12).map(p => p.id);
     const [movedItem] = workingOrder.splice(fromIndex, 1);
     workingOrder.splice(toIndex, 0, movedItem);
     localStorage.setItem('luxemarket_homepage_order', JSON.stringify(workingOrder));

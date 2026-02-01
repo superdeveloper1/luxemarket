@@ -106,7 +106,7 @@ function FeaturedProductsSection() {
     const [showDealsOnly, setShowDealsOnly] = React.useState(false);
     const [showAllProducts, setShowAllProducts] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
-    const itemsPerPage = 36;
+    const itemsPerPage = 12;
     const sectionRef = React.useRef(null);
 
     const loadProducts = React.useCallback(async () => {
@@ -166,9 +166,9 @@ function FeaturedProductsSection() {
                 // Default: show home page products (respecting admin order)
                 else {
                     if (window.ProductManager.getHomePageProducts) {
-                        productsToShow = window.ProductManager.getHomePageProducts(36, allProducts);
+                        productsToShow = window.ProductManager.getHomePageProducts(12, allProducts);
                     } else {
-                        productsToShow = allProducts.slice(0, 36);
+                        productsToShow = allProducts.slice(0, 12);
                     }
                     console.log('🏠 Home page: Setting', productsToShow.length, 'products');
                 }
