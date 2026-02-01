@@ -12,6 +12,19 @@ import './managers/CartManager.js'
 import './managers/CategoryManager.js'
 import './utils/watchlist.js'
 
+// Force cache refresh on load
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => registration.unregister());
+  });
+}
+
+// Clear relevant caches
+if (typeof Storage !== 'undefined') {
+  // Force refresh Firebase cache
+  sessionStorage.setItem('firebase_cache_bust', Date.now().toString());
+}
+
 // Initialize Firebase and make it available globally
 window.ProductManager = {
     getAll: () => FirebaseProductManager.getAllSync(),
