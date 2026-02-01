@@ -33,8 +33,7 @@ const CategoryManager = (() => {
     };
 
     const DEFAULT_CATEGORIES = [
-        "Electronics", "Fashion", "Furniture", "Accessories",
-        "Sporting Goods", "Industrial", "Motors", "Deals"
+        "Electronics", "Fashion", "Furniture", "Accessories"
     ];
 
     // Initialize categories

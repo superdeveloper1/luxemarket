@@ -5,14 +5,13 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     // All state declarations at the top
     const [categoryOpen, setCategoryOpen] = React.useState(false);
     const [categories, setCategories] = React.useState([
-        "Electronics", "Fashion", "Furniture", "Accessories",
-        "Sporting Goods", "Industrial", "Motors", "Deals"
+        "Electronics", "Fashion", "Furniture", "Accessories"
     ]);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [searchCategory, setSearchCategory] = React.useState('All Categories');
     const [searchSuggestions, setSearchSuggestions] = React.useState([]);
     const [showSuggestions, setShowSuggestions] = React.useState(false);
-    
+
     // Refs
     const dropdownRef = React.useRef(null);
     const searchRef = React.useRef(null);
@@ -56,17 +55,17 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     const handleCategoryClick = (e, category) => {
         e.preventDefault();
         setCategoryOpen(false);
-        
+
         // Update search category and trigger search
         setSearchCategory(category);
         setSearchTerm('');
-        
+
         // Navigate to home page with category filter
         window.location.hash = 'products-section';
-        
+
         // Dispatch event to filter products by category
-        window.dispatchEvent(new CustomEvent('filterByCategory', { 
-            detail: { category } 
+        window.dispatchEvent(new CustomEvent('filterByCategory', {
+            detail: { category }
         }));
     };
 
@@ -89,17 +88,17 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                 const matchesSearch = p.name.toLowerCase().includes(lowerTerm) ||
                     p.description.toLowerCase().includes(lowerTerm) ||
                     p.category.toLowerCase().includes(lowerTerm);
-                
+
                 // If a specific category is selected, also filter by category (case-insensitive)
                 // But if searching for a category name, show all results for that category
-                const matchesCategory = searchCategory === 'All Categories' || 
+                const matchesCategory = searchCategory === 'All Categories' ||
                     p.category.toLowerCase() === searchCategory.toLowerCase() ||
                     p.category.toLowerCase().includes(lowerTerm);
-                
+
                 return matchesSearch && matchesCategory;
             }).slice(0, 5); // Limit to 5 suggestions
             setSearchSuggestions(filtered);
-            
+
             // Debug logging
             console.log(`🔍 Search Debug:`, {
                 searchTerm: lowerTerm,
@@ -164,7 +163,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
         // Navigate to product detail by triggering the product click
         setShowSuggestions(false);
         setSearchTerm('');
-        
+
         // Dispatch a custom event to open the product detail
         window.dispatchEvent(new CustomEvent('openProduct', { detail: { productId: product.id } }));
     };
@@ -195,7 +194,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                 Hi! <button onClick={() => onOpenAuth(false)} className="text-blue-600 hover:underline">Sign in</button> or <button onClick={() => onOpenAuth(true)} className="text-blue-600 hover:underline">register</button>
                             </span>
                         )}
-                        <button 
+                        <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 // Filter by daily deals
@@ -412,9 +411,9 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                             <div className="icon-heart text-xs"></div> Saved
                         </a>
                         {categories.slice(0, 6).map(cat => (
-                            <a 
-                                key={cat} 
-                                href={getCategoryLink(cat)} 
+                            <a
+                                key={cat}
+                                href={getCategoryLink(cat)}
                                 onClick={(e) => handleCategoryClick(e, cat)}
                                 className="hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] border-b-2 border-transparent pb-1 transition-colors"
                             >
@@ -437,9 +436,9 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                             <button onClick={() => setIsMenuOpen(false)} className="text-gray-400"><div className="icon-x text-xl"></div></button>
                         </div>
                         {categories.map(cat => (
-                            <a 
-                                key={cat} 
-                                href={getCategoryLink(cat)} 
+                            <a
+                                key={cat}
+                                href={getCategoryLink(cat)}
                                 onClick={(e) => handleCategoryClick(e, cat)}
                                 className="text-gray-700 py-1 border-b border-gray-50 pl-2"
                             >
