@@ -116,19 +116,20 @@ function FeaturedProductsSection() {
             setProducts([]); // Clear old products first
             
             if (window.ProductManager) {
-                // Wait for products to load from Firebase
+                // Debug: Log which method we're using
+                console.log('🔍 FrontPage: Loading products...');
+                
                 let allProducts;
                 if (window.ProductManager.getAllAsync) {
-                    console.log('🔥 Loading products from Firebase...');
+                    console.log('🔥 FrontPage: Using getAllAsync from Firebase...');
                     allProducts = await window.ProductManager.getAllAsync();
-                    console.log('🔥 Loaded from Firebase:', allProducts.length, 'products');
-                    console.log('🔥 First product:', allProducts[0]);
                 } else {
-                    console.log('⚠️ Using sync method');
+                    console.log('⚠️ FrontPage: Using sync method');
                     allProducts = window.ProductManager.getAll();
                 }
                 
-                console.log('📦 Total products available:', allProducts.length);
+                console.log('📦 FrontPage: Total products loaded:', allProducts.length);
+                console.log('📦 FrontPage: First product:', allProducts[0]);
                 
                 // Check if products have stock field
                 const firstProduct = allProducts[0];

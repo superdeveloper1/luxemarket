@@ -458,15 +458,20 @@ function AdminDashboard() {
         return;
       }
       
-      // Use the same method as front page to ensure consistency
+      // Debug: Log which method we're using
+      console.log('🔍 AdminDashboard: Loading products...');
+      
       let allProducts;
-      if (window.ProductManager.getAllWithDeals) {
-        allProducts = window.ProductManager.getAllWithDeals();
-      } else if (window.ProductManager.getAllAsync) {
+      if (window.ProductManager.getAllAsync) {
+        console.log('🔥 AdminDashboard: Using getAllAsync from Firebase...');
         allProducts = await window.ProductManager.getAllAsync();
       } else {
+        console.log('⚠️ AdminDashboard: Using sync method');
         allProducts = window.ProductManager.getAll();
       }
+      
+      console.log('📦 AdminDashboard: Total products loaded:', allProducts.length);
+      console.log('📦 AdminDashboard: First product:', allProducts[0]);
       
       setProducts(allProducts);
       setCategories(CategoryManager.getAll());
