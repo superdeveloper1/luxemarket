@@ -1,6 +1,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import RelatedItems from './RelatedItems.jsx';
+import CartManager from '../managers/CartManager.js';
+import { showToast } from '../utils/simpleToast.js';
 
 function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate }) {
   const [selectedColor, setSelectedColor] = React.useState(null);
