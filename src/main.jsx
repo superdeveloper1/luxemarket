@@ -7,14 +7,10 @@ import App from './App.jsx'
 import './firebase/config.js'
 import FirebaseProductManager from './managers/FirebaseProductManager.js'
 
-// Import old managers for backward compatibility (will be phased out)
-import './managers/ProductManager.js'
+// Import other managers
 import './managers/CartManager.js'
 import './managers/CategoryManager.js'
 import './utils/watchlist.js'
-
-// Import data manager for auto-save functionality (temporarily disabled for debugging)
-// import './utils/dataManager.js'
 
 // Initialize Firebase and make it available globally
 window.ProductManager = {
