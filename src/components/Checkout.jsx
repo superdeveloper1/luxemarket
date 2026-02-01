@@ -47,7 +47,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
             product: product
           };
         }).filter(item => item.product);
-        
+
         setCartItems(itemsWithDetails);
       }
     } catch (error) {
@@ -92,8 +92,8 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
         return cartItems.length > 0;
       case 2:
         const { shipping } = orderData;
-        return shipping.firstName && shipping.lastName && shipping.email && 
-               shipping.address && shipping.city && shipping.state && shipping.zipCode;
+        return shipping.firstName && shipping.lastName && shipping.email &&
+          shipping.address && shipping.city && shipping.state && shipping.zipCode;
       case 3:
         const { payment } = orderData;
         return payment.cardNumber && payment.expiryDate && payment.cvv && payment.cardName;
@@ -117,20 +117,20 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
   const handlePlaceOrder = async () => {
     try {
       setLoading(true);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Clear cart
       window.CartManager.clear();
-      
+
       // Generate order number
       const orderNumber = 'LM' + Date.now().toString().slice(-6);
-      
+
       setStep(4);
       onOrderComplete(orderNumber);
       showToast('Order placed successfully!', 'success');
-      
+
     } catch (error) {
       console.error('Error placing order:', error);
       showToast('Error placing order. Please try again.', 'error');
@@ -161,7 +161,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -170,9 +170,8 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
             <div className="flex items-center mt-2 space-x-4">
               {[1, 2, 3, 4].map((stepNum) => (
                 <div key={stepNum} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                    step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-                  }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                    }`}>
                     {stepNum}
                   </div>
                   <span className={`ml-2 text-sm ${step >= stepNum ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
@@ -186,7 +185,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
               ))}
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
@@ -214,8 +213,8 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                         {cartItems.map((item) => (
                           <div key={item.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
                             <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                              <img 
-                                src={item.product.image} 
+                              <img
+                                src={item.product.image}
                                 alt={item.product.name}
                                 className="w-full h-full object-cover"
                               />
@@ -439,7 +438,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                         </div>
                       </div>
                     </div>
-                    
+
                     {getTotal() < 50 && step < 4 && (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                         <p className="text-sm text-blue-800">
@@ -459,7 +458,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
           <div className="bg-gray-50 border-t border-gray-200 p-6 flex justify-between">
             <div>
               {step > 1 && (
-                <button 
+                <button
                   onClick={handleBack}
                   className="btn btn-secondary px-6 py-3"
                 >
@@ -468,14 +467,14 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
               )}
             </div>
             <div className="flex gap-4">
-              <button 
+              <button
                 onClick={onClose}
                 className="btn btn-ghost px-6 py-3"
               >
                 Cancel
               </button>
               {step < 3 ? (
-                <button 
+                <button
                   onClick={handleNext}
                   className="btn btn-primary px-6 py-3"
                   disabled={!validateStep(step)}
@@ -483,7 +482,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                   Continue
                 </button>
               ) : (
-                <button 
+                <button
                   onClick={handlePlaceOrder}
                   className="btn btn-primary px-8 py-3"
                   disabled={loading || !validateStep(step)}
@@ -497,7 +496,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
 
         {step === 4 && (
           <div className="bg-gray-50 border-t border-gray-200 p-6 flex justify-center">
-            <button 
+            <button
               onClick={onClose}
               className="btn btn-primary px-8 py-3"
             >

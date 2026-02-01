@@ -16,13 +16,12 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 space-y-2 z-50">
+      <div className="fixed bottom-4 right-4 space-y-2 z-[10000]">
         {toasts.map(toast => (
-          <div key={toast.id} className={`bg-white shadow-md rounded px-4 py-2 border-l-4 ${
-            toast.type === 'success' ? 'border-green-500' :
-            toast.type === 'error' ? 'border-red-500' :
-            toast.type === 'info' ? 'border-blue-500' : 'border-gray-500'
-          }`}>
+          <div key={toast.id} className={`bg-white shadow-md rounded px-4 py-2 border-l-4 ${toast.type === 'success' ? 'border-green-500' :
+              toast.type === 'error' ? 'border-red-500' :
+                toast.type === 'info' ? 'border-blue-500' : 'border-gray-500'
+            }`}>
             {toast.message}
           </div>
         ))}

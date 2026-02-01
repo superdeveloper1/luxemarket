@@ -48,7 +48,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
       // Calculate stats
       const totalSpent = mockOrders.reduce((sum, order) => sum + order.total, 0);
       const watchlist = JSON.parse(localStorage.getItem('luxemarket_watchlist') || '[]');
-      
+
       setStats({
         totalOrders: mockOrders.length,
         totalSpent: totalSpent,
@@ -88,7 +88,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -98,7 +98,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
               Welcome back, {currentUser?.name || 'User'}!
             </p>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
@@ -123,7 +123,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-green-50 rounded-lg p-6">
                     <div className="flex items-center">
                       <div className="icon-dollar-sign text-2xl text-green-600 mr-3"></div>
@@ -133,7 +133,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-purple-50 rounded-lg p-6">
                     <div className="flex items-center">
                       <div className="icon-heart text-2xl text-purple-600 mr-3"></div>
@@ -157,11 +157,10 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                           <p className="font-semibold text-gray-900">Order #{order.id}</p>
                           <p className="text-sm text-gray-500">{order.date}</p>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                          order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                            order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                              'bg-yellow-100 text-yellow-800'
+                          }`}>
                           {order.status}
                         </span>
                       </div>
@@ -192,7 +191,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
 
         {/* Footer */}
         <div className="bg-gray-50 border-t border-gray-200 p-6 flex justify-center">
-          <button 
+          <button
             onClick={onClose}
             className="btn btn-primary px-8 py-3"
           >

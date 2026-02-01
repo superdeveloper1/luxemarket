@@ -1247,7 +1247,7 @@ function AdminDashboard() {
       {showGoToTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 group"
+          className="fixed bottom-6 right-6 bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-[1000] group"
           title="Go to top"
         >
           <div className="icon-arrow-up text-lg group-hover:animate-bounce"></div>

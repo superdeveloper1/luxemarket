@@ -15,13 +15,13 @@ function Watchlist({ isOpen, onClose }) {
     try {
       const saved = localStorage.getItem('luxemarket_watchlist');
       const watchlist = saved ? JSON.parse(saved) : [];
-      
+
       if (window.ProductManager) {
         const itemsWithDetails = watchlist.map(productId => {
           const product = window.ProductManager.getById(productId);
           return product;
         }).filter(Boolean);
-        
+
         setWatchlistItems(itemsWithDetails);
       }
     } catch (error) {
@@ -37,7 +37,7 @@ function Watchlist({ isOpen, onClose }) {
       const saved = localStorage.getItem('luxemarket_watchlist');
       const watchlist = saved ? JSON.parse(saved) : [];
       const updated = watchlist.filter(id => id !== productId);
-      
+
       localStorage.setItem('luxemarket_watchlist', JSON.stringify(updated));
       loadWatchlist();
       showToast('Removed from watchlist', 'success');
@@ -82,7 +82,7 @@ function Watchlist({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -92,7 +92,7 @@ function Watchlist({ isOpen, onClose }) {
               {watchlistItems.length} {watchlistItems.length === 1 ? 'item' : 'items'} saved
             </p>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
@@ -112,7 +112,7 @@ function Watchlist({ isOpen, onClose }) {
               <div className="text-6xl text-gray-300 mb-4">❤️</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Your watchlist is empty</h3>
               <p className="text-gray-500 mb-6">Save items you're interested in to view them later!</p>
-              <button 
+              <button
                 onClick={onClose}
                 className="btn btn-primary px-6 py-3"
               >
@@ -125,8 +125,8 @@ function Watchlist({ isOpen, onClose }) {
                 {watchlistItems.map((product) => (
                   <div key={product.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-square bg-gray-100">
-                      <img 
-                        src={product.image} 
+                      <img
+                        src={product.image}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
@@ -135,20 +135,19 @@ function Watchlist({ isOpen, onClose }) {
                       <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
                       <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                       <p className="text-lg font-bold text-blue-600 mb-3">${product.price.toFixed(2)}</p>
-                      
+
                       <div className="flex gap-2">
-                        <button 
+                        <button
                           onClick={() => addToCart(product)}
                           disabled={product.stock === 0}
-                          className={`flex-1 text-sm py-2 px-3 rounded transition-colors ${
-                            product.stock === 0 
-                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                          className={`flex-1 text-sm py-2 px-3 rounded transition-colors ${product.stock === 0
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                               : 'btn btn-primary'
-                          }`}
+                            }`}
                         >
                           {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                         </button>
-                        <button 
+                        <button
                           onClick={() => removeFromWatchlist(product.id)}
                           className="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded transition-colors"
                           title="Remove from watchlist"

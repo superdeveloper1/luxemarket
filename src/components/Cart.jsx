@@ -22,7 +22,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
             product: product
           };
         }).filter(item => item.product); // Filter out items where product wasn't found
-        
+
         setCartItems(itemsWithDetails);
       }
     } catch (error) {
@@ -106,7 +106,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 cart-modal">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4 cart-modal">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -116,7 +116,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
               {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
@@ -136,7 +136,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
               <div className="text-6xl text-gray-300 mb-4">🛒</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h3>
               <p className="text-gray-500 mb-6">Add some products to get started!</p>
-              <button 
+              <button
                 onClick={onClose}
                 className="btn btn-primary px-6 py-3"
               >
@@ -151,8 +151,8 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
                   <div key={item.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow cart-item">
                     {/* Product Image */}
                     <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                      <img 
-                        src={item.product.image} 
+                      <img
+                        src={item.product.image}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -166,7 +166,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
                       <h3 className="font-semibold text-gray-900 truncate">{item.product.name}</h3>
                       <p className="text-sm text-gray-500">{item.product.category}</p>
                       <p className="text-lg font-bold text-blue-600">${item.product.price.toFixed(2)}</p>
-                      
+
                       {/* Stock Warning */}
                       {item.quantity > item.product.stock && (
                         <p className="text-xs text-red-600 mt-1">
@@ -177,7 +177,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-3">
-                      <button 
+                      <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                         disabled={item.quantity <= 1}
@@ -185,7 +185,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
                         −
                       </button>
                       <span className="w-8 text-center font-medium">{item.quantity}</span>
-                      <button 
+                      <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
                         disabled={item.quantity >= item.product.stock}
@@ -197,7 +197,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
                     {/* Item Total */}
                     <div className="text-right min-w-0">
                       <p className="font-bold text-gray-900">${(item.product.price * item.quantity).toFixed(2)}</p>
-                      <button 
+                      <button
                         onClick={() => removeItem(item.id)}
                         className="text-xs text-red-600 hover:text-red-800 transition-colors mt-1"
                       >
@@ -217,13 +217,13 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-                  <button 
+                  <button
                     onClick={clearCart}
                     className="flex-1 btn btn-secondary py-3"
                   >
                     Clear Cart
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       onCheckout();
                     }}
