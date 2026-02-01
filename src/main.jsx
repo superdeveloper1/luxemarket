@@ -19,11 +19,19 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Migration: Clear old corrupted data once to fix "incognito only" issues
+const MIGRATION_KEY = 'luxemarket_data_reset_v2';
+if (typeof Storage !== 'undefined' && !localStorage.getItem(MIGRATION_KEY)) {
+  console.log('🧹 LuxeMarket: Running one-time data cleanup...');
+  localStorage.removeItem('luxemarket_daily_deals');
+  localStorage.removeItem('luxemarket_homepage_order');
+  localStorage.removeItem('luxemarket_products');
+  localStorage.setItem(MIGRATION_KEY, 'done');
+}
+
 // Clear ONLY products cache, NOT the user's home page order or deals
 if (typeof Storage !== 'undefined') {
   localStorage.removeItem('luxemarket_products');
-  // localStorage.removeItem('luxemarket_daily_deals'); // Keep these!
-  // localStorage.removeItem('luxemarket_homepage_order'); // Keep these!
   sessionStorage.clear();
 }
 
@@ -33,24 +41,31 @@ window.ProductManager = {
   getById: (id) => FirebaseProductManager.getByIdSync(id),
   getByCategory: (cat) => FirebaseProductManager.getByCategorySync(cat),
   getFeatured: () => FirebaseProductManager.getFeaturedSync(),
-  // Updated getDailyDeals to use localStorage if available, falling back to Firebase property
+  // Updated getDailyDeals with safe parsing
   getDailyDeals: () => {
-    const localDeals = localStorage.getItem('luxemarket_daily_deals');
-    let deals = [];
-    if (localDeals) {
-      deals = JSON.parse(localDeals);
-    } else {
-      deals = FirebaseProductManager.getDailyDealsSync().map(p => ({ productId: p.id, discountPercent: p.discountPercent || 20 }));
-    }
-
-    // De-duplicate by productId to prevent the "x4" count issue if data is corrupted
-    const uniqueDealsMap = new Map();
-    deals.forEach(deal => {
-      if (deal && deal.productId) {
-        uniqueDealsMap.set(deal.productId.toString(), deal);
+    try {
+      const localDeals = localStorage.getItem('luxemarket_daily_deals');
+      let deals = [];
+      if (localDeals) {
+        deals = JSON.parse(localDeals);
+      } else {
+        deals = FirebaseProductManager.getDailyDealsSync().map(p => ({ productId: p.id, discountPercent: p.discountPercent || 20 }));
       }
-    });
-    return Array.from(uniqueDealsMap.values());
+
+      if (!Array.isArray(deals)) deals = [];
+
+      // De-duplicate by productId to prevent the "x4" count issue if data is corrupted
+      const uniqueDealsMap = new Map();
+      deals.forEach(deal => {
+        if (deal && deal.productId) {
+          uniqueDealsMap.set(deal.productId.toString(), deal);
+        }
+      });
+      return Array.from(uniqueDealsMap.values());
+    } catch (e) {
+      console.error("❌ Error parsing daily deals:", e);
+      return [];
+    }
   },
   getAllWithDeals: () => {
     const products = FirebaseProductManager.getAllSync();
@@ -91,8 +106,13 @@ window.ProductManager = {
     return true;
   },
   getHomePageOrder: () => {
-    const order = localStorage.getItem('luxemarket_homepage_order');
-    return order ? JSON.parse(order) : [];
+    try {
+      const order = localStorage.getItem('luxemarket_homepage_order');
+      return order ? JSON.parse(order) : [];
+    } catch (e) {
+      console.error("❌ Error parsing homepage order:", e);
+      return [];
+    }
   },
   getHomePageProducts: (limit = 12, passedProducts = null) => {
     const customOrder = window.ProductManager.getHomePageOrder();
