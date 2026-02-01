@@ -59,11 +59,11 @@ function Watchlist({ isOpen, onClose }) {
   // Use direct rendering instead of Portal to debug event issues
   return createPortal(
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop"
+      className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cursor-pointer"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-[fadeIn_0.2s_ease-out]"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-[fadeIn_0.2s_ease-out] cursor-default"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

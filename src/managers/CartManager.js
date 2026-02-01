@@ -3,6 +3,9 @@
 // Centralized cart data layer
 // ===============================
 
+// Check if we are in environment where ProductManager might be loaded later
+// We don't import it directly as it's a global manager pattern in this codebase
+
 const CartManager = (() => {
     const STORAGE_KEY = "luxemarket_cart";
 
@@ -11,19 +14,24 @@ const CartManager = (() => {
     // -------------------------------
 
     const load = () => {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
         try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return [];
             return JSON.parse(raw);
-        } catch {
+        } catch (error) {
+            console.error('Error loading cart from storage:', error);
             return [];
         }
     };
 
     const save = (cart) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-        // Dispatch cart update event
-        window.dispatchEvent(new Event('cartUpdated'));
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+            // Dispatch cart update event
+            window.dispatchEvent(new Event('cartUpdated'));
+        } catch (error) {
+            console.error('Error saving cart to storage:', error);
+        }
     };
 
     // Initialize cart
@@ -61,14 +69,14 @@ const CartManager = (() => {
                 if (!product) {
                     throw new Error('Product not found');
                 }
-                
+
                 if (!window.ProductManager.isInStock(productId)) {
                     throw new Error('Product is out of stock');
                 }
-                
+
                 const currentInCart = cart.find(item => item.id === productId)?.quantity || 0;
                 const requestedTotal = currentInCart + quantity;
-                
+
                 if (requestedTotal > product.stock) {
                     throw new Error(`Only ${product.stock} items available (${currentInCart} already in cart)`);
                 }
@@ -130,7 +138,7 @@ const CartManager = (() => {
             if (this._autoSaveInterval) {
                 clearInterval(this._autoSaveInterval);
             }
-            
+
             this._autoSaveInterval = setInterval(() => {
                 try {
                     save(cart);
@@ -139,7 +147,7 @@ const CartManager = (() => {
                     console.error('❌ Cart auto-save failed:', error);
                 }
             }, intervalMs);
-            
+
             return this._autoSaveInterval;
         },
 

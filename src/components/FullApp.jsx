@@ -13,6 +13,7 @@ import Watchlist from './Watchlist.jsx';
 import AccountSummary from './AccountSummary.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
 import CartManager from '../managers/CartManager.js';
+import WatchlistManager from '../managers/WatchlistManager.js';
 import { showToast } from '../utils/simpleToast.js';
 
 console.log('🚀 FullApp component loading...');
