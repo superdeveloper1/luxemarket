@@ -41,7 +41,7 @@ function FullApp() {
     };
 
     updateCartCount();
-    
+
     // Listen for cart changes
     window.addEventListener('cartUpdated', updateCartCount);
     return () => {
@@ -79,7 +79,7 @@ function FullApp() {
           console.error('ProductManager not initialized');
           return;
         }
-        
+
         // Use async method if available, otherwise fall back to sync
         let product;
         if (window.ProductManager.getByIdAsync) {
@@ -87,7 +87,7 @@ function FullApp() {
         } else {
           product = window.ProductManager.getById(event.detail.productId);
         }
-        
+
         if (product) {
           setSelectedProduct(product);
         }
@@ -202,7 +202,7 @@ function FullApp() {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
         <ErrorBoundary>
-          <Header 
+          <Header
             cartCount={cartCount}
             isMenuOpen={isMenuOpen}
             setIsMenuOpen={setIsMenuOpen}
@@ -214,7 +214,7 @@ function FullApp() {
             onOpenAccountSummary={handleOpenAccountSummary}
           />
         </ErrorBoundary>
-        
+
         <main>
           <ErrorBoundary>
             <Hero />
@@ -223,11 +223,11 @@ function FullApp() {
             <FeaturedProductsSection />
           </ErrorBoundary>
         </main>
-        
+
         <ErrorBoundary>
           <Footer />
         </ErrorBoundary>
-        
+
         {authModal.isOpen && (
           <ErrorBoundary>
             <AuthModal
@@ -239,7 +239,7 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-        
+
         {selectedProduct && (
           <ErrorBoundary>
             <ProductDetail
@@ -251,7 +251,7 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-        
+
         {cartOpen && (
           <ErrorBoundary>
             <Cart
@@ -262,7 +262,7 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-        
+
         {checkoutOpen && (
           <ErrorBoundary>
             <Checkout
@@ -272,7 +272,7 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-        
+
         {watchlistOpen && (
           <ErrorBoundary>
             <Watchlist
@@ -281,7 +281,7 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-        
+
         {accountSummaryOpen && (
           <ErrorBoundary>
             <AccountSummary

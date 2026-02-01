@@ -31,7 +31,7 @@ function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
         setFormData({ name: '', email: '', password: '' });
     };
 
-    return createPortal(
+    return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out] modal-overlay modal-backdrop" onClick={onClose}>
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden relative m-4" onClick={e => e.stopPropagation()}>
                 <button
@@ -127,8 +127,7 @@ function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
                     </div>
                 </div>
             </div>
-        </div>,
-        document.body
+        </div>
     );
 }
 export default AuthModal;

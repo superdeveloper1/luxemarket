@@ -62,7 +62,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
 
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cart-modal" onClick={onClose}>
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -167,8 +167,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
           </div>
         )}
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

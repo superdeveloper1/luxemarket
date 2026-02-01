@@ -61,7 +61,7 @@ function ConfirmationModal({
     onClose();
   };
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -138,8 +138,7 @@ function ConfirmationModal({
           </button>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

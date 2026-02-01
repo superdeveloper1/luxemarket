@@ -159,7 +159,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
 
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop" onClick={onClose}>
       <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -504,8 +504,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
           </div>
         )}
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 

@@ -22,14 +22,13 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
   }, [product]);
 
   if (!product) {
-    return createPortal(
+    return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" onClick={onClose}>
         <div className="bg-white rounded-lg p-8" onClick={(e) => e.stopPropagation()}>
           <p>Product not found</p>
           <button onClick={onClose} className="btn btn-primary mt-4">Close</button>
         </div>
-      </div>,
-      document.body
+      </div>
     );
   }
 
@@ -206,7 +205,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     ? product.description.substring(0, descriptionThreshold) + '...'
     : product.description;
 
-  return createPortal(
+  return (
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]" onClick={onClose}>
       <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
         {/* Fixed Header */}
@@ -506,8 +505,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
           </div>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 
