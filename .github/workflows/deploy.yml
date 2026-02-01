@@ -26,28 +26,22 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: luxemarket/luxemarket-vite/package-lock.json
           
       - name: Install dependencies
         run: npm ci
-        working-directory: luxemarket/luxemarket-vite
         
       - name: Build
         run: npm run build
-        working-directory: luxemarket/luxemarket-vite
+        env:
+          # Firebase config will be in the build
+          NODE_ENV: production
         
       - name: Prepare deployment directory
         run: |
           mkdir -p deploy
-          # Copy built Vite app to /luxemarket/ subdirectory
-          mkdir -p deploy/luxemarket
-          cp -r luxemarket/luxemarket-vite/dist/* deploy/luxemarket/
-          # Copy portfolio files to root
-          cp portfolio.html deploy/index.html
-          cp portfolio.html deploy/
-          cp resume.html deploy/
-          cp -r portfolio-assets deploy/
-          cp favicon.ico deploy/ || true
+          # Copy built Vite app
+          cp -r dist/* deploy/
+          # Copy additional files
           cp .nojekyll deploy/ || true
         
       - name: Deploy to gh-pages
