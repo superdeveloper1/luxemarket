@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { showToast } from '../utils/simpleToast.js';
 
 function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {

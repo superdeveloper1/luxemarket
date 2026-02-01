@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom';
+import React from 'react';
 
 function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
     const [isRegistering, setIsRegistering] = React.useState(isRegister);

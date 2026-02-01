@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom';
+import React from 'react';
 
 function AccountSummary({ isOpen, onClose, currentUser }) {
   const [orders, setOrders] = React.useState([]);

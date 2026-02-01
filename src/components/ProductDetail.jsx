@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom';
+import React from 'react';
 
 function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate }) {
   const [selectedColor, setSelectedColor] = React.useState(null);

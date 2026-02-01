@@ -1,4 +1,4 @@
-import { createPortal } from 'react-dom';
+import React from 'react';
 
 function ConfirmationModal({
   isOpen,
