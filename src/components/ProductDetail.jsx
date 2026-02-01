@@ -23,8 +23,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
 
   if (!product) {
     return createPortal(
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" style={{ isolation: 'isolate' }}>
-        <div className="bg-white rounded-lg p-8">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" style={{ isolation: 'isolate' }} onClick={onClose}>
+        <div className="bg-white rounded-lg p-8" onClick={(e) => e.stopPropagation()}>
           <p>Product not found</p>
           <button onClick={onClose} className="btn btn-primary mt-4">Close</button>
         </div>
@@ -207,8 +207,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     : product.description;
 
   return createPortal(
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]" style={{ isolation: 'isolate' }}>
-      <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative">
+    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]" style={{ isolation: 'isolate' }} onClick={onClose}>
+      <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
         {/* Fixed Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-lg">
           <div>

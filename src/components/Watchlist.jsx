@@ -57,8 +57,8 @@ function Watchlist({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop" style={{ isolation: 'isolate' }}>
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop" style={{ isolation: 'isolate' }} onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-[fadeIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
           <div>
