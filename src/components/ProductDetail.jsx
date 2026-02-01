@@ -205,19 +205,31 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     ? product.description.substring(0, descriptionThreshold) + '...'
     : product.description;
 
+  // Debug: Global click listener to see what's catching the events
+  React.useEffect(() => {
+    const debugClickListener = (e) => {
+      console.log('🌍 GLOBAL CLICK:', e.target);
+      console.log('   Classes:', e.target.className);
+      // Log z-index of the target
+      const zIndex = window.getComputedStyle(e.target).zIndex;
+      console.log('   Z-Index:', zIndex);
+    };
+    // Capture phase listener on window
+    window.addEventListener('click', debugClickListener, true);
+    return () => window.removeEventListener('click', debugClickListener, true);
+  }, []);
+
   return (
     <div
       className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-8 overflow-y-auto z-[99999]"
       onClick={(e) => {
-        console.log('🎯 BACKDROP CLICKED!');
-        console.log('Target:', e.target);
-        console.log('CurrentTarget:', e.currentTarget);
-        console.log('Target classes:', e.target.className);
+        console.log('🎯 BACKDROP CLICKED (React)!');
         onClose();
       }}
       style={{
         pointerEvents: 'auto',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        border: '5px solid red' // VISUAL DEBUG
       }}
     >
       <div
@@ -225,6 +237,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
         style={{ maxWidth: 'calc(100vw - 8rem)', maxHeight: 'calc(100vh - 8rem)' }}
         onClick={(e) => {
           console.log('📦 CONTENT CLICKED - stopping propagation');
+          // Temporarily commenting out stopPropagation to see if it bubbles to global
           e.stopPropagation();
         }}
       >        {/* Fixed Header */}
