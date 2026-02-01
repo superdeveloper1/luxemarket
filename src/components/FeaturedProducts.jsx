@@ -111,7 +111,20 @@ function FeaturedProductsSection() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 12;
     const sectionRef = React.useRef(null);
+      React.useEffect(() => {
+    const stored = localStorage.getItem('luxemarket_products');
 
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setProducts(parsed);
+      } catch (err) {
+        console.error('Failed to parse luxemarket_products from localStorage', err);
+      }
+    }
+
+    setLoading(false);
+  }, []);
     const loadProducts = React.useCallback(async () => {
         try {
             setLoading(true);
@@ -310,7 +323,7 @@ function FeaturedProductsSection() {
 
                 <div className="home-products-grid">
                     <FeaturedProducts
-                        products={currentProducts}
+                        products={Products}
                         onProductClick={handleProductClick}
                     />
                 </div>

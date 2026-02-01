@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 import Header from './Header.jsx';
 import Hero from './Hero.jsx';
 import FeaturedProductsSection from './FeaturedProducts.jsx';
@@ -16,7 +16,40 @@ import CartManager from '../managers/CartManager.js';
 import WatchlistManager from '../managers/WatchlistManager.js';
 import { showToast } from '../utils/simpleToast.js';
 
+// ✅ Fallback product list for seeding
+const fallbackProducts = [
+  {
+    id: "p001",
+    name: "Nebula Wireless Earbuds",
+    price: 89.99,
+    image: "/assets/earbuds.png",
+    description: "Cosmic sound with galaxy-inspired design.",
+    category: "Audio",
+  },
+  {
+    id: "p002",
+    name: "Luxe Charging Dock",
+    price: 49.99,
+    image: "/assets/dock.png",
+    description: "Premium magnetic dock with ambient glow.",
+    category: "Accessories",
+  },
+];
+
 function FullApp() {
+  // ✅ Seed product data on first visit
+  React.useEffect(() => {
+    const existing = localStorage.getItem("luxemarket_products");
+
+    if (!existing) {
+      console.log("🌟 Seeding fallback product data...");
+      localStorage.setItem(
+        "luxemarket_products",
+        JSON.stringify(fallbackProducts)
+      );
+    }
+  }, []);
+
   const [currentView, setCurrentView] = React.useState('home');
   const [cartCount, setCartCount] = React.useState(0);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -28,7 +61,6 @@ function FullApp() {
   const [watchlistOpen, setWatchlistOpen] = React.useState(false);
   const [accountSummaryOpen, setAccountSummaryOpen] = React.useState(false);
 
-  // Initialize cart count and listen for changes
   React.useEffect(() => {
     const updateCartCount = () => {
       try {
@@ -40,15 +72,12 @@ function FullApp() {
     };
 
     updateCartCount();
-
-    // Listen for cart changes
     window.addEventListener('cartUpdated', updateCartCount);
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
     };
   }, []);
 
-  // Handle URL hash changes for routing
   React.useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
@@ -56,8 +85,6 @@ function FullApp() {
         setCurrentView('admin');
       } else if (hash === 'firebase') {
         setCurrentView('firebase');
-      } else if (hash === 'full') {
-        setCurrentView('home');
       } else {
         setCurrentView('home');
       }
@@ -67,50 +94,6 @@ function FullApp() {
     window.addEventListener('hashchange', handleHashChange);
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, []);
-
-  // Listen for product detail requests
-  React.useEffect(() => {
-    const handleOpenProduct = async (event) => {
-      console.log('FullApp: openProduct event received', event.detail);
-      try {
-        if (!window.ProductManager) {
-          console.error('ProductManager not initialized');
-          return;
-        }
-
-        // Use async method if available, otherwise fall back to sync
-        let product;
-        if (window.ProductManager.getByIdAsync) {
-          product = await window.ProductManager.getByIdAsync(event.detail.productId);
-        } else {
-          product = window.ProductManager.getById(event.detail.productId);
-        }
-
-        if (product) {
-          setSelectedProduct(product);
-        }
-      } catch (error) {
-        console.error('Product open error:', error);
-      }
-    };
-
-    window.addEventListener('openProduct', handleOpenProduct);
-    return () => {
-      window.removeEventListener('openProduct', handleOpenProduct);
-    };
-  }, []);
-
-  // Listen for checkout requests (from Buy Now button)
-  React.useEffect(() => {
-    const handleOpenCheckout = () => {
-      setCheckoutOpen(true);
-    };
-
-    window.addEventListener('openCheckout', handleOpenCheckout);
-    return () => {
-      window.removeEventListener('openCheckout', handleOpenCheckout);
     };
   }, []);
 

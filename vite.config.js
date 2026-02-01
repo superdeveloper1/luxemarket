@@ -9,3 +9,6 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'docs'),
   }
 })
+build: {
+  chunkSizeWarningLimit: 1000
+}
