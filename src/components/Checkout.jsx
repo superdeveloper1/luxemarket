@@ -1,5 +1,4 @@
-import React from 'react';
-import { showToast } from '../utils/simpleToast.js';
+import { createPortal } from 'react-dom';
 
 function Checkout({ isOpen, onClose, onOrderComplete }) {
   const [cartItems, setCartItems] = React.useState([]);
@@ -160,9 +159,9 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4 modal-overlay modal-backdrop">
-      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
+  return createPortal(
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop" style={{ isolation: 'isolate' }}>
+      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl relative">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
           <div>
@@ -190,7 +189,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
           >
-            ×
+            <div className="icon-x text-2xl"></div>
           </button>
         </div>
 
@@ -505,7 +504,8 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

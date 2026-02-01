@@ -1,7 +1,4 @@
-import React from 'react';
-import { showToast } from '../utils/simpleToast.js';
-import CartManager from '../managers/CartManager.js';
-import RelatedItems from './RelatedItems.jsx';
+import { createPortal } from 'react-dom';
 
 function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate }) {
   const [selectedColor, setSelectedColor] = React.useState(null);
@@ -25,13 +22,14 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
   }, [product]);
 
   if (!product) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] modal-overlay modal-backdrop">
+    return createPortal(
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" style={{ isolation: 'isolate' }}>
         <div className="bg-white rounded-lg p-8">
           <p>Product not found</p>
           <button onClick={onClose} className="btn btn-primary mt-4">Close</button>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -208,9 +206,9 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     ? product.description.substring(0, descriptionThreshold) + '...'
     : product.description;
 
-  return (
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[9999]">
-      <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl">
+  return createPortal(
+    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]" style={{ isolation: 'isolate' }}>
+      <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative">
         {/* Fixed Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-lg">
           <div>
@@ -224,7 +222,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
             className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
           >
-            ×
+            <div className="icon-x text-2xl"></div>
           </button>
         </div>
 
@@ -508,7 +506,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

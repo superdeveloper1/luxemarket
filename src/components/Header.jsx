@@ -242,7 +242,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
             </div>
 
             {/* Main Header */}
-            <div className="bg-white py-3 border-b border-gray-200 sticky top-0 z-[100] shadow-sm">
+            <div className="bg-white py-3 border-b border-gray-200 sticky top-0 z-[10] shadow-sm">
                 <div className="container-custom">
                     <div className="flex items-center gap-4">
                         {/* Mobile Menu Button */}
@@ -274,7 +274,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                 Shop by category <div className={`icon-chevron-down text-xs transition-transform ${categoryOpen ? 'rotate-180' : ''}`}></div>
                             </button>
                             {categoryOpen && (
-                                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 shadow-xl rounded-lg p-4 z-[150] grid grid-cols-1 gap-2 animate-[fadeIn_0.2s_ease-out] category-dropdown">
+                                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 shadow-xl rounded-lg p-4 z-[20] grid grid-cols-1 gap-2 animate-[fadeIn_0.2s_ease-out] category-dropdown">
                                     {categories.map(cat => (
                                         <a
                                             key={cat}
@@ -337,7 +337,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
 
                             {/* Search Suggestions Dropdown */}
                             {showSuggestions && searchTerm.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden max-h-[70vh] overflow-y-auto z-[200] animate-[fadeIn_0.2s_ease-out] search-dropdown">
+                                <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden max-h-[70vh] overflow-y-auto z-[30] animate-[fadeIn_0.2s_ease-out] search-dropdown">
                                     <div className="p-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
                                         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Suggested Products</span>
                                         <span className="text-xs text-gray-400">{searchSuggestions.length} results</span>
@@ -429,7 +429,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
 
             {/* Mobile Menu Overlay */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white border-b border-gray-200 shadow-xl absolute top-full left-0 right-0 z-[150] max-h-[80vh] overflow-y-auto">
+                <div className="md:hidden bg-white border-b border-gray-200 shadow-xl absolute top-full left-0 right-0 z-[20] max-h-[80vh] overflow-y-auto">
                     <div className="p-4 flex flex-col space-y-4">
                         <div className="font-bold text-lg mb-2 flex justify-between items-center">
                             Categories
