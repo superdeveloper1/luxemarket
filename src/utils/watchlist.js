@@ -1,8 +1,9 @@
-// Watchlist utility functions
+// Watchlist utility functions - stores full product objects
 export const WatchlistManager = {
   STORAGE_KEY: 'luxemarket_watchlist',
 
-  getWatchlist() {
+  // Get all watchlist items as full product objects
+  getAll() {
     try {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
@@ -12,31 +13,37 @@ export const WatchlistManager = {
     }
   },
 
-  isInWatchlist(productId) {
-    const watchlist = this.getWatchlist();
-    return watchlist.includes(productId);
+  // Check if product is in watchlist
+  has(productId) {
+    const watchlist = this.getAll();
+    return watchlist.some(item => item.id === productId);
   },
 
-  addToWatchlist(productId) {
+  // Add full product object to watchlist
+  add(product) {
     try {
-      const watchlist = this.getWatchlist();
-      if (!watchlist.includes(productId)) {
-        watchlist.push(productId);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(watchlist));
-        return true;
+      const watchlist = this.getAll();
+      // Check if already in watchlist
+      if (watchlist.some(item => item.id === product.id)) {
+        return false;
       }
-      return false;
+      watchlist.push(product);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(watchlist));
+      window.dispatchEvent(new Event('watchlistUpdated'));
+      return true;
     } catch (error) {
       console.error('Error adding to watchlist:', error);
       return false;
     }
   },
 
-  removeFromWatchlist(productId) {
+  // Remove from watchlist by product ID
+  remove(productId) {
     try {
-      const watchlist = this.getWatchlist();
-      const updated = watchlist.filter(id => id !== productId);
+      const watchlist = this.getAll();
+      const updated = watchlist.filter(item => item.id !== productId);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event('watchlistUpdated'));
       return true;
     } catch (error) {
       console.error('Error removing from watchlist:', error);
@@ -44,20 +51,35 @@ export const WatchlistManager = {
     }
   },
 
-  toggleWatchlist(productId) {
-    if (this.isInWatchlist(productId)) {
-      this.removeFromWatchlist(productId);
+  // Toggle product in/out of watchlist
+  toggle(product) {
+    if (this.has(product.id)) {
+      this.remove(product.id);
       return false;
     } else {
-      this.addToWatchlist(productId);
+      this.add(product);
       return true;
     }
   },
 
-  getCount() {
-    return this.getWatchlist().length;
+  // Get count of items
+  count() {
+    return this.getAll().length;
+  },
+
+  // Clear all items
+  clear() {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+      window.dispatchEvent(new Event('watchlistUpdated'));
+      return true;
+    } catch (error) {
+      console.error('Error clearing watchlist:', error);
+      return false;
+    }
   }
 };
 
 // Make available globally
 window.WatchlistManager = WatchlistManager;
+console.log('✅ WatchlistManager initialized (stores full product objects)');
