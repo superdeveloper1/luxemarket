@@ -207,7 +207,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
 
   return (
     <div
-      className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]"
+      className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-8 overflow-y-auto z-[99999]"
       onClick={(e) => {
         console.log('🎯 BACKDROP CLICKED!');
         console.log('Target:', e.target);
@@ -221,7 +221,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       }}
     >
       <div
-        className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative"
+        className="product-modal bg-white rounded-lg max-w-3xl w-full my-8 shadow-2xl relative"
+        style={{ maxWidth: 'calc(100vw - 8rem)', maxHeight: 'calc(100vh - 8rem)' }}
         onClick={(e) => {
           console.log('📦 CONTENT CLICKED - stopping propagation');
           e.stopPropagation();
