@@ -26,7 +26,10 @@ function ProductCard({ product, onProductClick }) {
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer minimal-product-card"
-            onClick={() => onProductClick && onProductClick(product.id)}>
+            onClick={() => {
+                console.log('ProductCard clicked:', product.id);
+                if (onProductClick) onProductClick(product.id);
+            }}>
             <div
                 className="relative aspect-square overflow-hidden bg-gray-100 product-image-container"
             >

@@ -73,6 +73,7 @@ function FullApp() {
   // Listen for product detail requests
   React.useEffect(() => {
     const handleOpenProduct = async (event) => {
+      console.log('FullApp: openProduct event received', event.detail);
       try {
         if (!window.ProductManager) {
           console.error('ProductManager not initialized');

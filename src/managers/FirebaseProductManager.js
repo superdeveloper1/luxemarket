@@ -148,7 +148,11 @@ const FirebaseProductManager = (() => {
         getByIdSync,
         getByCategorySync,
         getFeaturedSync,
-        getDailyDealsSync
+        getDailyDealsSync,
+        // Async aliases for compatibility
+        getAllAsync: getAll,
+        getByIdAsync: getById,
+        getAllWithDealsAsync: getAll
     };
 })();
 
