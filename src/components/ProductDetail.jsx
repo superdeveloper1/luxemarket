@@ -206,9 +206,27 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     : product.description;
 
   return (
-    <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]" onClick={onClose}>
-      <div className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
-        {/* Fixed Header */}
+    <div
+      className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto z-[99999]"
+      onClick={(e) => {
+        console.log('🎯 BACKDROP CLICKED!');
+        console.log('Target:', e.target);
+        console.log('CurrentTarget:', e.currentTarget);
+        console.log('Target classes:', e.target.className);
+        onClose();
+      }}
+      style={{
+        pointerEvents: 'auto',
+        cursor: 'pointer'
+      }}
+    >
+      <div
+        className="product-modal bg-white rounded-lg max-w-4xl w-full my-8 shadow-2xl relative"
+        onClick={(e) => {
+          console.log('📦 CONTENT CLICKED - stopping propagation');
+          e.stopPropagation();
+        }}
+      >        {/* Fixed Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-lg">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Product Details</h2>
