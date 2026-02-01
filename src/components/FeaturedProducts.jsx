@@ -26,7 +26,12 @@ function ProductCard({ product, onProductClick }) {
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer minimal-product-card"
-            onClick={() => onProductClick(product.id)}>
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ ProductCard clicked:', product.id, product.name);
+                onProductClick(product.id);
+            }}>
             <div
                 className="relative aspect-square overflow-hidden bg-gray-100 product-image-container"
             >
@@ -255,6 +260,7 @@ function FeaturedProductsSection() {
     }, [loadProducts]);
 
     const handleProductClick = (productId) => {
+        console.log('🖱️ Product clicked:', productId);
         window.dispatchEvent(new CustomEvent('openProduct', { detail: { productId } }));
     };
 
