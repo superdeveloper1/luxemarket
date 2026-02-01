@@ -33,16 +33,25 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Firebase config will be in the build
           NODE_ENV: production
+        continue-on-error: false
+        
+      - name: List build output
+        run: |
+          echo "Checking docs directory..."
+          ls -la docs/ || echo "docs directory not found"
         
       - name: Prepare deployment directory
         run: |
           mkdir -p deploy
-          # Copy built Vite app
-          cp -r dist/* deploy/
-          # Copy additional files
-          cp .nojekyll deploy/ || true
+          if [ -d "docs" ]; then
+            cp -r docs/* deploy/
+            echo "Copied docs to deploy"
+          else
+            echo "Error: docs directory not found"
+            exit 1
+          fi
+          cp .nojekyll deploy/ 2>/dev/null || echo "No .nojekyll file"
         
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
