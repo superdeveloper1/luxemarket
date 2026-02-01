@@ -6,6 +6,8 @@ import Footer from './Footer.jsx';
 import AuthModal from './AuthModal.jsx';
 import ProductDetail from './ProductDetail.jsx';
 import AdminDashboard from './AdminDashboard.jsx';
+import FirebaseSetup from './FirebaseSetup.jsx';
+import FirebaseStatus from './FirebaseStatus.jsx';
 import Cart from './Cart.jsx';
 import Checkout from './Checkout.jsx';
 import Watchlist from './Watchlist.jsx';
@@ -55,6 +57,8 @@ function FullApp() {
       const hash = window.location.hash.slice(1);
       if (hash === 'admin') {
         setCurrentView('admin');
+      } else if (hash === 'firebase') {
+        setCurrentView('firebase');
       } else if (hash === 'full') {
         setCurrentView('home');
       } else {
@@ -176,6 +180,14 @@ function FullApp() {
     );
   }
 
+  if (currentView === 'firebase') {
+    return (
+      <ErrorBoundary>
+        <FirebaseSetup />
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50">
@@ -269,6 +281,9 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
+
+        {/* Firebase Status Indicator */}
+        <FirebaseStatus />
       </div>
     </ErrorBoundary>
   );

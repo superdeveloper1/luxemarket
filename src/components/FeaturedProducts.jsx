@@ -110,31 +110,38 @@ function FeaturedProductsSection() {
     const itemsPerPage = 12;
     const sectionRef = React.useRef(null);
 
-    const loadProducts = React.useCallback(() => {
+    const loadProducts = React.useCallback(async () => {
         try {
+            setLoading(true);
             if (window.ProductManager) {
-                const allProducts = window.ProductManager.getAll();
+                // Wait for products to load from Firebase
+                let allProducts;
+                if (window.ProductManager.getAllAsync) {
+                    allProducts = await window.ProductManager.getAllAsync();
+                } else {
+                    allProducts = window.ProductManager.getAll();
+                }
                 
                 // Check if products have stock field
                 const firstProduct = allProducts[0];
                 if (firstProduct && typeof firstProduct.stock === 'undefined') {
                     console.log('⚠️ Products missing stock field, resetting data...');
-                    window.ProductManager.resetToDefaults();
+                    if (window.ProductManager.resetToDefaults) {
+                        window.ProductManager.resetToDefaults();
+                        allProducts = window.ProductManager.getAll();
+                    }
                 }
                 
                 let productsToShow;
                 
                 // Apply daily deals filter first if active
                 if (showDealsOnly) {
-                    const allProductsWithDeals = window.ProductManager.getAllWithDeals();
-                    productsToShow = allProductsWithDeals.filter(p => p.isDailyDeal);
+                    productsToShow = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
                     console.log(`🔥 Daily deals filter: ${productsToShow.length} deals found`);
                 }
                 // Apply category filter if set
                 else if (categoryFilter && categoryFilter !== 'All Categories') {
-                    // Filter ALL products by category first, then apply daily deals
-                    const allProductsWithDeals = window.ProductManager.getAllWithDeals();
-                    productsToShow = allProductsWithDeals.filter(p => {
+                    productsToShow = allProducts.filter(p => {
                         // Case-insensitive category matching to handle any inconsistencies
                         return p.category && p.category.toLowerCase() === categoryFilter.toLowerCase();
                     });
@@ -142,16 +149,16 @@ function FeaturedProductsSection() {
                 }
                 // Show all products if requested
                 else if (showAllProducts) {
-                    productsToShow = window.ProductManager.getAllWithDeals();
+                    productsToShow = allProducts;
                     console.log('📋 Showing all products:', productsToShow.length);
                 }
                 // Default: show home page products (limited to 12)
                 else {
-                    productsToShow = window.ProductManager.getHomePageProducts(12);
+                    productsToShow = allProducts.slice(0, 12);
                     console.log('🏠 Home page: Setting', productsToShow.length, 'products');
                 }
                 
-                console.log('🔥 Daily deals found:', productsToShow.filter(p => p.isDailyDeal).length);
+                console.log('🔥 Daily deals found:', productsToShow.filter(p => p.isDailyDeal || p.dailyDeal).length);
                 setProducts(productsToShow);
                 setCurrentPage(1); // Reset to first page when products change
             } else {
