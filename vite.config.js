@@ -6,6 +6,13 @@ export default defineConfig({
   plugins: [react()],
   base: '/luxemarket/',
   build: {
-    outDir: path.resolve(__dirname, 'docs') // no ../ — keep it inside the project
+    outDir: path.resolve(__dirname, 'docs'),
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`
+      }
+    }
   }
 })
