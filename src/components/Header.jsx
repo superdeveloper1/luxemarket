@@ -424,9 +424,6 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                         <a href="#admin" className="text-[var(--primary-color)] hover:underline flex items-center gap-1 ml-4 border-l pl-4 border-gray-300">
                             <div className="icon-cog text-xs"></div> Admin
                         </a>
-                        <a href="#firebase" className="text-orange-600 hover:underline flex items-center gap-1">
-                            🔥 Firebase
-                        </a>
                     </nav>
                 </div>
             </div>

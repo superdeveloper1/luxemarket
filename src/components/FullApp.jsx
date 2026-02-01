@@ -7,7 +7,6 @@ import AuthModal from './AuthModal.jsx';
 import ProductDetail from './ProductDetail.jsx';
 import AdminDashboard from './AdminDashboard.jsx';
 import FirebaseSetup from './FirebaseSetup.jsx';
-import FirebaseStatus from './FirebaseStatus.jsx';
 import Cart from './Cart.jsx';
 import Checkout from './Checkout.jsx';
 import Watchlist from './Watchlist.jsx';
@@ -281,9 +280,6 @@ function FullApp() {
             />
           </ErrorBoundary>
         )}
-
-        {/* Firebase Status Indicator */}
-        <FirebaseStatus />
       </div>
     </ErrorBoundary>
   );
