@@ -19,6 +19,7 @@ window.ProductManager = {
     getByCategory: (cat) => FirebaseProductManager.getByCategorySync(cat),
     getFeatured: () => FirebaseProductManager.getFeaturedSync(),
     getDailyDeals: () => FirebaseProductManager.getDailyDealsSync(),
+    getAllWithDeals: () => FirebaseProductManager.getAllSync(), // Add missing method
     // Async methods
     getAllAsync: () => FirebaseProductManager.getAll(),
     getByIdAsync: (id) => FirebaseProductManager.getById(id),
