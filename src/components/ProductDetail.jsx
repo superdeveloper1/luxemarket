@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate }) {
   const [selectedColor, setSelectedColor] = React.useState(null);
@@ -219,7 +220,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     return () => window.removeEventListener('click', debugClickListener, true);
   }, []);
 
-  return (
+  return createPortal(
     <div
       className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-8 overflow-y-auto z-[99999]"
       onClick={(e) => {
@@ -538,7 +539,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }
 
-export default ProductDetail;
+export default React.memo(ProductDetail);
