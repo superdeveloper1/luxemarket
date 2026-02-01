@@ -82,7 +82,7 @@ function Watchlist({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4 modal-overlay modal-backdrop">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -141,8 +141,8 @@ function Watchlist({ isOpen, onClose }) {
                           onClick={() => addToCart(product)}
                           disabled={product.stock === 0}
                           className={`flex-1 text-sm py-2 px-3 rounded transition-colors ${product.stock === 0
-                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                              : 'btn btn-primary'
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'btn btn-primary'
                             }`}
                         >
                           {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}

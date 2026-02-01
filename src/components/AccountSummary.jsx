@@ -88,7 +88,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4 modal-overlay modal-backdrop">
       <div className="bg-white rounded-lg max-w-6xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
@@ -158,8 +158,8 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                           <p className="text-sm text-gray-500">{order.date}</p>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                            order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                              'bg-yellow-100 text-yellow-800'
+                          order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                            'bg-yellow-100 text-yellow-800'
                           }`}>
                           {order.status}
                         </span>

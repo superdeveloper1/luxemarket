@@ -1,12 +1,12 @@
 import React from 'react';
 
-function ConfirmationModal({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  title = "Confirm Action", 
-  message = "Are you sure you want to proceed?", 
-  confirmText = "Confirm", 
+function ConfirmationModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = "Confirm Action",
+  message = "Are you sure you want to proceed?",
+  confirmText = "Confirm",
   cancelText = "Cancel",
   type = "danger", // "danger", "warning", "info"
   itemDetails = null
@@ -62,7 +62,7 @@ function ConfirmationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[100] animate-[fadeIn_0.2s_ease-out]">
+    <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[9999] animate-[fadeIn_0.2s_ease-out]">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden modal-content">
         {/* Header */}
         <div className={`p-6 border-b ${styles.border}`}>
@@ -82,8 +82,8 @@ function ConfirmationModal({
           <div className="p-6 bg-gray-50 border-b border-gray-200">
             <div className="flex items-center gap-4">
               {itemDetails.image && (
-                <img 
-                  src={itemDetails.image} 
+                <img
+                  src={itemDetails.image}
                   alt={itemDetails.name}
                   className="w-16 h-16 object-cover rounded border"
                   onError={(e) => {

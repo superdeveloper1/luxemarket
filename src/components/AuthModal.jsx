@@ -32,7 +32,7 @@ function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] animate-[fadeIn_0.2s_ease-out] modal-overlay modal-backdrop" onClick={onClose}>
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden relative m-4" onClick={e => e.stopPropagation()}>
                 <button
                     onClick={onClose}
@@ -50,8 +50,8 @@ function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
                             {isRegistering ? 'Create Account' : 'Welcome Back'}
                         </h2>
                         <p className="text-gray-500 text-sm mt-1">
-                            {isRegistering 
-                                ? 'Create an account to complete your purchase' 
+                            {isRegistering
+                                ? 'Create an account to complete your purchase'
                                 : 'Sign in to add items to cart and checkout'
                             }
                         </p>

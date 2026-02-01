@@ -638,12 +638,12 @@ body {
 /* Ensure header doesn't interfere with content below */
 header {
     position: relative;
-    z-index: 100;
+    z-index: 50;
 }
 
 /* Header sticky positioning fix */
 header .sticky {
-    z-index: 100 !important;
+    z-index: 50 !important;
 }
 
 /* Ensure main content doesn't overlap */
