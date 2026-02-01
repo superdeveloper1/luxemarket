@@ -19,10 +19,12 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Clear relevant caches
+// Clear ALL local storage to force fresh data
 if (typeof Storage !== 'undefined') {
-  // Force refresh Firebase cache
-  sessionStorage.setItem('firebase_cache_bust', Date.now().toString());
+  localStorage.removeItem('luxemarket_products');
+  localStorage.removeItem('luxemarket_daily_deals');
+  localStorage.removeItem('luxemarket_homepage_order');
+  sessionStorage.clear();
 }
 
 // Initialize Firebase and make it available globally
