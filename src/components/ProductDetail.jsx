@@ -15,7 +15,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
         setSelectedColor(product.colors[0].name);
       }
       setCurrentImageIndex(0);
-      
+
       // Check if product is in watchlist
       if (window.WatchlistManager) {
         setIsInWatchlist(window.WatchlistManager.isInWatchlist(product.id));
@@ -89,7 +89,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
   React.useEffect(() => {
     // Lock body scroll when modal is open
     document.body.style.overflow = 'hidden';
-    
+
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
@@ -104,7 +104,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       // Restore body scroll when modal closes
       document.body.style.overflow = 'unset';
@@ -119,17 +119,17 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       onOpenAuth(false); // false = show login form
       return;
     }
-    
+
     if (product.stock === 0) {
       showToast('This product is out of stock', 'error');
       return;
     }
-    
+
     if (quantity > product.stock) {
       showToast(`Only ${product.stock} items available`, 'error');
       return;
     }
-    
+
     try {
       const success = CartManager.add(product.id, quantity);
       if (success) {
@@ -164,17 +164,17 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       onOpenAuth(true); // true = show register form for new users wanting to buy
       return;
     }
-    
+
     if (product.stock === 0) {
       showToast('This product is out of stock', 'error');
       return;
     }
-    
+
     if (quantity > product.stock) {
       showToast(`Only ${product.stock} items available`, 'error');
       return;
     }
-    
+
     try {
       // Add to cart first
       const success = CartManager.add(product.id, quantity);
@@ -182,10 +182,10 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
         onCartUpdate();
         // Dispatch cart update event for other components
         window.dispatchEvent(new CustomEvent('cartUpdated'));
-        
+
         // Close product detail modal
         onClose();
-        
+
         // Trigger checkout process
         setTimeout(() => {
           // Dispatch event to open checkout
@@ -200,6 +200,12 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
       showToast(error.message || 'Failed to process purchase', 'error');
     }
   };
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
+  const descriptionThreshold = 200;
+  const isDescriptionTooLong = product.description && product.description.length > descriptionThreshold;
+  const displayDescription = isDescriptionTooLong && !isDescriptionExpanded
+    ? product.description.substring(0, descriptionThreshold) + '...'
+    : product.description;
 
   return (
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
@@ -212,9 +218,9 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
               <p className="text-xs text-gray-500 mt-1">Use ← → keys or click thumbnails to navigate</p>
             )}
           </div>
-          <button 
-            onClick={onClose} 
-            className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors" 
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-3xl leading-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
             title="Close (Esc)"
           >
             ×
@@ -245,7 +251,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                       className="w-full h-full object-cover"
                     />
                   )}
-                  
+
                   {/* Image/Video Counter */}
                   {mediaItems.length > 1 && (
                     <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white text-sm px-3 py-1 rounded-full">
@@ -261,17 +267,16 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                     {mediaItems.map((media, index) => {
                       const isVideo = typeof media === 'object' && media.type === 'video';
                       const thumbnailSrc = isVideo ? media.thumbnail : (typeof media === 'string' ? media : media.url);
-                      
+
                       return (
                         <button
                           key={index}
                           onClick={() => goToImage(index)}
                           onMouseEnter={() => goToImage(index)}
-                          className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden relative transition-all hover:scale-105 ${
-                            index === currentImageIndex 
-                              ? 'border-blue-500 shadow-md' 
-                              : 'border-gray-300 hover:border-gray-400'
-                          }`}
+                          className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden relative transition-all hover:scale-105 ${index === currentImageIndex
+                            ? 'border-blue-500 shadow-md'
+                            : 'border-gray-300 hover:border-gray-400'
+                            }`}
                           title={isVideo ? 'Play video' : `View image ${index + 1}`}
                         >
                           <img
@@ -325,8 +330,16 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
                   <div className="text-gray-600 leading-relaxed break-words">
-                    {product.description}
+                    {displayDescription}
                   </div>
+                  {isDescriptionTooLong && (
+                    <button
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-sm mt-2 flex items-center gap-1 transition-colors"
+                    >
+                      {isDescriptionExpanded ? 'Show Less ↑' : 'Show More ↓'}
+                    </button>
+                  )}
                 </div>
 
                 {/* Color Selection */}
@@ -338,11 +351,10 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                         <button
                           key={index}
                           onClick={() => handleColorChange(color.name)}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                            selectedColor === color.name
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                          }`}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all ${selectedColor === color.name
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <div
@@ -420,20 +432,19 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                   <button
                     onClick={handleAddToCart}
                     disabled={product.stock === 0}
-                    className={`w-full py-4 text-lg font-semibold transition-all ${
-                      product.stock === 0
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'btn btn-primary hover:shadow-lg'
-                    }`}
+                    className={`w-full py-4 text-lg font-semibold transition-all ${product.stock === 0
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'btn btn-primary hover:shadow-lg'
+                      }`}
                   >
-                    {product.stock === 0 
-                      ? 'Out of Stock' 
+                    {product.stock === 0
+                      ? 'Out of Stock'
                       : !currentUser
                         ? 'Sign In to Add to Cart'
                         : `Add ${quantity} to Cart - $${(product.price * quantity).toFixed(2)}`
                     }
                   </button>
-                  
+
                   {/* Buy Now Button */}
                   {product.stock > 0 && (
                     <button
@@ -446,15 +457,14 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                       }
                     </button>
                   )}
-                  
+
                   {/* Watchlist Button */}
                   <button
                     onClick={handleWatchlistToggle}
-                    className={`w-full py-3 text-base font-medium rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
-                      isInWatchlist
-                        ? 'bg-red-50 border-red-500 text-red-600 hover:bg-red-100'
-                        : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
-                    }`}
+                    className={`w-full py-3 text-base font-medium rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${isInWatchlist
+                      ? 'bg-red-50 border-red-500 text-red-600 hover:bg-red-100'
+                      : 'bg-white border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
+                      }`}
                   >
                     <div className={`icon-heart text-lg ${isInWatchlist ? 'fill-current' : ''}`}></div>
                     {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
@@ -462,10 +472,10 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                 </div>
               </div>
             </div>
-            
+
             {/* Related Items Section */}
-            <RelatedItems 
-              currentProduct={product} 
+            <RelatedItems
+              currentProduct={product}
               onProductClick={async (productId) => {
                 // Close current modal and open new product
                 try {
@@ -473,26 +483,26 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                     console.error('ProductManager not initialized');
                     return;
                   }
-                  
+
                   let newProduct;
                   if (window.ProductManager.getByIdAsync) {
                     newProduct = await window.ProductManager.getByIdAsync(productId);
                   } else {
                     newProduct = window.ProductManager.getById(productId);
                   }
-                  
+
                   if (newProduct) {
                     onClose();
                     setTimeout(() => {
-                      window.dispatchEvent(new CustomEvent('openProduct', { 
-                        detail: { productId } 
+                      window.dispatchEvent(new CustomEvent('openProduct', {
+                        detail: { productId }
                       }));
                     }, 100);
                   }
                 } catch (error) {
                   console.error('Error loading related product:', error);
                 }
-              }} 
+              }}
             />
           </div>
         </div>

@@ -59,6 +59,13 @@ function ProductPreview({ product, isVisible }) {
     setCurrentImageIndex(index);
   };
 
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = React.useState(false);
+  const descriptionThreshold = 150;
+  const isDescriptionTooLong = product.description && product.description.length > descriptionThreshold;
+  const displayDescription = isDescriptionTooLong && !isDescriptionExpanded
+    ? product.description.substring(0, descriptionThreshold) + '...'
+    : product.description;
+
   return (
     <div className="bg-white p-6 rounded-lg shadow mb-8 border-l-4 border-blue-500">
       <div className="flex items-center gap-3 mb-4">
@@ -84,7 +91,7 @@ function ProductPreview({ product, isVisible }) {
                 e.target.src = 'https://via.placeholder.com/400x400?text=No+Image';
               }}
             />
-            
+
             {/* Navigation arrows - always visible */}
             {currentImages.length > 1 && (
               <>
@@ -100,7 +107,7 @@ function ProductPreview({ product, isVisible }) {
                 >
                   →
                 </button>
-                
+
                 {/* Image counter */}
                 <div className="absolute top-3 right-3 bg-black bg-opacity-80 text-white text-lg px-4 py-2 rounded">
                   {currentImageIndex + 1} / {currentImages.length}
@@ -116,11 +123,10 @@ function ProductPreview({ product, isVisible }) {
                 <button
                   key={index}
                   onClick={() => goToImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 ${
-                    index === currentImageIndex 
-                      ? 'border-blue-500 shadow-lg' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
+                  className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 ${index === currentImageIndex
+                    ? 'border-blue-500 shadow-lg'
+                    : 'border-gray-300 hover:border-gray-400'
+                    }`}
                 >
                   <img
                     src={image}
@@ -162,9 +168,17 @@ function ProductPreview({ product, isVisible }) {
 
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-600">
-              {product.description || 'No description provided'}
-            </p>
+            <div className="text-gray-600 leading-relaxed break-words">
+              {displayDescription}
+            </div>
+            {isDescriptionTooLong && (
+              <button
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm mt-1 flex items-center gap-1 transition-colors"
+              >
+                {isDescriptionExpanded ? 'Show Less ↑' : 'Show More ↓'}
+              </button>
+            )}
           </div>
 
           {/* Simple Color Selection */}
@@ -178,11 +192,10 @@ function ProductPreview({ product, isVisible }) {
                   <button
                     key={index}
                     onClick={() => handleColorChange(color.name)}
-                    className={`w-full p-3 rounded-md border-2 text-left ${
-                      selectedColor === color.name
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
+                    className={`w-full p-3 rounded-md border-2 text-left ${selectedColor === color.name
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
