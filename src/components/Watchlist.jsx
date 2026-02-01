@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { showToast } from '../utils/simpleToast.js';
 
 function Watchlist({ isOpen, onClose }) {
@@ -56,7 +57,7 @@ function Watchlist({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   // Use direct rendering instead of Portal to debug event issues
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop"
       onClick={onClose}
@@ -158,7 +159,7 @@ function Watchlist({ isOpen, onClose }) {
         )}
       </div>
     </div>
-  );
+    , document.body);
 }
 
 export default Watchlist;

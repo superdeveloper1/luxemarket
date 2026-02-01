@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
     const [isRegistering, setIsRegistering] = React.useState(isRegister);
@@ -31,7 +32,7 @@ function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {
         setFormData({ name: '', email: '', password: '' });
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out] modal-overlay modal-backdrop" onClick={onClose}>
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden relative m-4" onClick={e => e.stopPropagation()}>
                 <button

@@ -17,7 +17,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
 
       // Check if product is in watchlist
       if (window.WatchlistManager) {
-        setIsInWatchlist(window.WatchlistManager.isInWatchlist(product.id));
+        setIsInWatchlist(window.WatchlistManager.has(product.id));
       }
     }
   }, [product]);
@@ -147,7 +147,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
 
   const handleWatchlistToggle = () => {
     if (window.WatchlistManager) {
-      const added = window.WatchlistManager.toggleWatchlist(product.id);
+      // Updated to pass full product object as required by new sync logic
+      const added = window.WatchlistManager.toggle(product);
       setIsInWatchlist(added);
       showToast(
         added ? `Added ${product.name} to watchlist` : `Removed ${product.name} from watchlist`,
@@ -206,41 +207,19 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     ? product.description.substring(0, descriptionThreshold) + '...'
     : product.description;
 
-  // Debug: Global click listener to see what's catching the events
-  React.useEffect(() => {
-    const debugClickListener = (e) => {
-      console.log('🌍 GLOBAL CLICK:', e.target);
-      console.log('   Classes:', e.target.className);
-      // Log z-index of the target
-      const zIndex = window.getComputedStyle(e.target).zIndex;
-      console.log('   Z-Index:', zIndex);
-    };
-    // Capture phase listener on window
-    window.addEventListener('click', debugClickListener, true);
-    return () => window.removeEventListener('click', debugClickListener, true);
-  }, []);
-
   return createPortal(
     <div
       className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-8 overflow-y-auto z-[99999]"
-      onClick={(e) => {
-        console.log('🎯 BACKDROP CLICKED (React)!');
-        onClose();
-      }}
+      onClick={onClose}
       style={{
         pointerEvents: 'auto',
-        cursor: 'pointer',
-        border: '5px solid red' // VISUAL DEBUG
+        cursor: 'pointer'
       }}
     >
       <div
         className="product-modal bg-white rounded-lg max-w-3xl w-full my-8 shadow-2xl relative"
         style={{ maxWidth: 'calc(100vw - 8rem)', maxHeight: 'calc(100vh - 8rem)' }}
-        onClick={(e) => {
-          console.log('📦 CONTENT CLICKED - stopping propagation');
-          // Temporarily commenting out stopPropagation to see if it bubbles to global
-          e.stopPropagation();
-        }}
+        onClick={(e) => e.stopPropagation()}
       >        {/* Fixed Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-lg">
           <div>

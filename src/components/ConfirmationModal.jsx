@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 function ConfirmationModal({
   isOpen,
@@ -61,7 +62,7 @@ function ConfirmationModal({
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -139,7 +140,7 @@ function ConfirmationModal({
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }
 
 export default ConfirmationModal;

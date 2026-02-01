@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 function AccountSummary({ isOpen, onClose, currentUser }) {
   const [orders, setOrders] = React.useState([]);
@@ -88,7 +89,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-[fadeIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -201,7 +202,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
         </div>
       </div>
     </div>
-  );
+    , document.body);
 }
 
 export default AccountSummary;
