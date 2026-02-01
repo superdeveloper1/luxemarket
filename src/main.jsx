@@ -29,6 +29,12 @@ if (typeof Storage !== 'undefined') {
     // Clear session storage too
     sessionStorage.clear();
 
+    // Delete IndexedDB database if it exists
+    if (typeof indexedDB !== 'undefined') {
+      indexedDB.deleteDatabase('LuxeMarketDB');
+      console.log('🗑️ IndexedDB: LuxeMarketDB scheduled for deletion');
+    }
+
     // Set migration key BEFORE reload to avoid loops
     localStorage.setItem(MIGRATION_KEY, 'done');
 
