@@ -10,7 +10,7 @@ import FirebaseProductManager from './managers/FirebaseProductManager.js'
 // Import other managers
 import './managers/CartManager.js'
 import './managers/CategoryManager.js'
-import './utils/watchlist.js'
+
 
 // Migration: Clear old corrupted data once to fix "incognito only" issues
 const M_KEY = 'luxemarket_data_reset_v5';
