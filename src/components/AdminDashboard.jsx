@@ -17,93 +17,41 @@ function DailyDealsManager({ products, onUpdate }) {
     loadDailyDeals();
   }, []);
 
-  const loadDailyDeals = async () => {
-    try {
-      if (!window.ProductManager) {
-        console.error('ProductManager not initialized');
-        return;
-      }
-      
-      // Use Firebase ProductManager methods
-      const allProducts = window.ProductManager.getAll();
-      const deals = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
-      setDailyDeals(deals);
-    } catch (error) {
-      console.error('Error loading daily deals:', error);
-    }
+  const loadDailyDeals = () => {
+    const deals = ProductManager.getDailyDeals();
+    setDailyDeals(deals);
   };
 
-  const addToDailyDeals = async () => {
+  const addToDailyDeals = () => {
     if (!selectedProduct || discountPercent <= 0) {
       showToast('Please select a product and enter a valid discount', 'error');
       return;
     }
 
-    try {
-      if (!window.ProductManager) {
-        console.error('ProductManager not initialized');
-        return;
-      }
-      
-      const productId = parseInt(selectedProduct);
-      const product = window.ProductManager.getById(productId);
-      
-      if (product) {
-        const originalPrice = product.originalPrice || product.price;
-        const discountedPrice = originalPrice * (1 - discountPercent / 100);
-        
-        await window.ProductManager.update(productId, {
-          isDailyDeal: true,
-          dailyDeal: true,
-          discountPercent: discountPercent,
-          originalPrice: originalPrice,
-          price: discountedPrice
-        });
-        
-        await loadDailyDeals();
-        onUpdate();
-        setSelectedProduct('');
-        setDiscountPercent(20);
-        showToast('Product added to daily deals!', 'success');
-        
-        // Notify home page to refresh
-        window.dispatchEvent(new CustomEvent('adminUpdate'));
-      }
-    } catch (error) {
-      console.error('Error adding to daily deals:', error);
-      showToast('Failed to add to daily deals', 'error');
-    }
+    ProductManager.addToDailyDeals(parseInt(selectedProduct), discountPercent);
+    loadDailyDeals();
+    onUpdate();
+    setSelectedProduct('');
+    setDiscountPercent(20);
+    showToast('Product added to daily deals!', 'success');
+    
+    // Notify home page to refresh
+    window.dispatchEvent(new CustomEvent('adminUpdate'));
   };
 
-  const removeFromDailyDeals = async (productId) => {
-    try {
-      if (!window.ProductManager) {
-        console.error('ProductManager not initialized');
-        return;
-      }
-      
-      const product = window.ProductManager.getById(productId);
-      if (product) {
-        const originalPrice = product.originalPrice || product.price;
-        
-        await window.ProductManager.update(productId, {
-          isDailyDeal: false,
-          dailyDeal: false,
-          discountPercent: 0,
-          price: originalPrice
-        });
-        
-        await loadDailyDeals();
-        onUpdate();
-        showToast('Product removed from daily deals', 'success');
-        
-        // Notify home page to refresh
-        window.dispatchEvent(new CustomEvent('adminUpdate'));
-      }
-    } catch (error) {
-      console.error('Error removing from daily deals:', error);
-      showToast('Failed to remove from daily deals', 'error');
-    }
+  const removeFromDailyDeals = (productId) => {
+    ProductManager.removeFromDailyDeals(productId);
+    loadDailyDeals();
+    onUpdate();
+    showToast('Product removed from daily deals', 'success');
+    
+    // Notify home page to refresh
+    window.dispatchEvent(new CustomEvent('adminUpdate'));
+  };
+
+  const getProductName = (productId) => {
+    const product = products.find(p => p.id === productId);
+    return product ? product.name : 'Unknown Product';
   };
 
   return (
@@ -164,14 +112,15 @@ function DailyDealsManager({ products, onUpdate }) {
           <p className="text-gray-500 text-center py-4">No daily deals active</p>
         ) : (
           <div className="space-y-3">
-            {dailyDeals.map(product => {
+            {dailyDeals.map(deal => {
+              const product = products.find(p => p.id === deal.productId);
               if (!product) return null;
               
-              const originalPrice = product.originalPrice || product.price;
-              const discountPercent = product.discountPercent || 0;
+              const discountAmount = product.price * (deal.discountPercent / 100);
+              const salePrice = product.price - discountAmount;
               
               return (
-                <div key={product.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                <div key={deal.productId} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-4">
                     <img 
                       src={product.image} 
@@ -181,16 +130,16 @@ function DailyDealsManager({ products, onUpdate }) {
                     <div>
                       <h4 className="font-semibold text-gray-900">{product.name}</h4>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
-                        <span className="text-sm text-gray-500 line-through">${originalPrice.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-red-600">${salePrice.toFixed(2)}</span>
+                        <span className="text-sm text-gray-500 line-through">${product.price.toFixed(2)}</span>
                         <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          {discountPercent}% OFF
+                          {deal.discountPercent}% OFF
                         </span>
                       </div>
                     </div>
                   </div>
                   <button
-                    onClick={() => removeFromDailyDeals(product.id)}
+                    onClick={() => removeFromDailyDeals(deal.productId)}
                     className="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-lg transition-colors"
                     title="Remove from daily deals"
                   >
@@ -218,24 +167,9 @@ function HomePageManager({ products, onUpdate }) {
   }, [products]);
 
   const loadHomePageProducts = () => {
-    if (!window.ProductManager) {
-      console.error('ProductManager not initialized');
-      return;
-    }
+    const homeProducts = ProductManager.getHomePageProducts();
+    setHomePageProducts(homeProducts);
     
-    const allProducts = window.ProductManager.getAll();
-    const homeProductIds = JSON.parse(localStorage.getItem('luxemarket_homepage_order') || '[]');
-    
-    if (homeProductIds.length > 0) {
-      const homeProducts = homeProductIds
-        .map(id => allProducts.find(p => p.id === id))
-        .filter(p => p !== undefined);
-      setHomePageProducts(homeProducts);
-    } else {
-      // Default: first 12 products
-      setHomePageProducts(allProducts.slice(0, 12));
-    }
-  };
     // Get products not on home page
     const homeProductIds = new Set(homeProducts.map(p => p.id));
     const available = products.filter(p => !homeProductIds.has(p.id));
@@ -264,15 +198,7 @@ function HomePageManager({ products, onUpdate }) {
     if (draggedFrom === 'home') {
       // Reordering within home page
       if (draggedIndex === dropIndex) return;
-      
-      // Reorder the home page products
-      const newHomeProducts = [...homePageProducts];
-      const [removed] = newHomeProducts.splice(draggedIndex, 1);
-      newHomeProducts.splice(dropIndex, 0, removed);
-      
-      // Save to localStorage
-      const homeProductIds = newHomeProducts.map(p => p.id);
-      localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homeProductIds));
+      ProductManager.reorderHomePageProducts(draggedIndex, dropIndex);
     } else {
       // Adding from available to home page
       const productToAdd = availableProducts[draggedIndex];
@@ -741,11 +667,15 @@ function AdminDashboard() {
         await window.ProductManager.delete(deleteConfirmation.product.id);
         CategoryManager.syncWithProducts();
         await refreshData();
-      showToast(`"${deleteConfirmation.product.name}" deleted successfully`, "success");
-      
-      // If we were editing this product, clear the form
-      if (editingProduct && editingProduct.id === deleteConfirmation.product.id) {
-        resetForm();
+        showToast(`"${deleteConfirmation.product.name}" deleted successfully`, "success");
+        
+        // If we were editing this product, clear the form
+        if (editingProduct && editingProduct.id === deleteConfirmation.product.id) {
+          resetForm();
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        showToast("Error deleting product", "error");
       }
     }
     setDeleteConfirmation({ isOpen: false, product: null });
