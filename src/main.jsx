@@ -13,10 +13,10 @@ import './managers/CategoryManager.js'
 import './utils/watchlist.js'
 
 // Migration: Clear old corrupted data once to fix "incognito only" issues
-const MIGRATION_KEY = 'luxemarket_data_reset_v4';
+const M_KEY = 'luxemarket_data_reset_v5';
 if (typeof Storage !== 'undefined') {
-  if (!localStorage.getItem(MIGRATION_KEY)) {
-    console.log('🧹 LuxeMarket: Running AGGRESSIVE one-time data cleanup (v4)...');
+  if (!localStorage.getItem(M_KEY)) {
+    console.log('🧹 LuxeMarket: Running AGGRESSIVE one-time data cleanup (v5)...');
 
     // Clear every single key that starts with luxemarket
     const keys = Object.keys(localStorage);
