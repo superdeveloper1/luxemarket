@@ -63,7 +63,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cart-modal" style={{ isolation: 'isolate' }} onClick={onClose}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cart-modal" onClick={onClose}>
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">

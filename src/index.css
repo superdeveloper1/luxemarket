@@ -461,8 +461,10 @@ body {
 
     /* Ensure modal is always on top */
     .modal-overlay {
-        z-index: 9999 !important;
+        z-index: 2147483647 !important;
         position: fixed !important;
+        cursor: pointer;
+        /* Visual feedback for clickability */
     }
 
     /* Modal slide-in animation */

@@ -62,7 +62,7 @@ function ConfirmationModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out]" style={{ isolation: 'isolate' }} onClick={onClose}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-[99999] animate-[fadeIn_0.2s_ease-out]" onClick={onClose}>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className={`p-6 border-b ${styles.border}`}>
