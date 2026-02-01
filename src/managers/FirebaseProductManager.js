@@ -18,6 +18,11 @@ const FirebaseProductManager = (() => {
             cachedProducts = await productService.getAll();
             isInitialized = true;
             console.log(`✅ Loaded ${cachedProducts.length} products from Firebase`);
+            if (cachedProducts.length > 0) {
+                console.log('📦 Sample product:', cachedProducts[0]);
+            } else {
+                console.warn('⚠️ No products found in Firebase!');
+            }
         } catch (error) {
             console.error('❌ Failed to initialize Firebase ProductManager:', error);
             cachedProducts = [];

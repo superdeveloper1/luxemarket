@@ -113,14 +113,22 @@ function FeaturedProductsSection() {
     const loadProducts = React.useCallback(async () => {
         try {
             setLoading(true);
+            setProducts([]); // Clear old products first
+            
             if (window.ProductManager) {
                 // Wait for products to load from Firebase
                 let allProducts;
                 if (window.ProductManager.getAllAsync) {
+                    console.log('🔥 Loading products from Firebase...');
                     allProducts = await window.ProductManager.getAllAsync();
+                    console.log('🔥 Loaded from Firebase:', allProducts.length, 'products');
+                    console.log('🔥 First product:', allProducts[0]);
                 } else {
+                    console.log('⚠️ Using sync method');
                     allProducts = window.ProductManager.getAll();
                 }
+                
+                console.log('📦 Total products available:', allProducts.length);
                 
                 // Check if products have stock field
                 const firstProduct = allProducts[0];

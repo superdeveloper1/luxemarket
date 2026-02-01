@@ -1,6 +1,5 @@
 import React from 'react';
 import { showToast } from '../utils/simpleToast.js';
-import ProductManager from '../managers/ProductManager.js';
 import CategoryManager from '../managers/CategoryManager.js';
 import ColorManager from './ColorManager.jsx';
 import EnhancedImageManager from './EnhancedImageManager.jsx';
@@ -18,41 +17,93 @@ function DailyDealsManager({ products, onUpdate }) {
     loadDailyDeals();
   }, []);
 
-  const loadDailyDeals = () => {
-    const deals = ProductManager.getDailyDeals();
-    setDailyDeals(deals);
+  const loadDailyDeals = async () => {
+    try {
+      if (!window.ProductManager) {
+        console.error('ProductManager not initialized');
+        return;
+      }
+      
+      // Use Firebase ProductManager methods
+      const allProducts = window.ProductManager.getAll();
+      const deals = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
+      setDailyDeals(deals);
+    } catch (error) {
+      console.error('Error loading daily deals:', error);
+    }
   };
 
-  const addToDailyDeals = () => {
+  const addToDailyDeals = async () => {
     if (!selectedProduct || discountPercent <= 0) {
       showToast('Please select a product and enter a valid discount', 'error');
       return;
     }
 
-    ProductManager.addToDailyDeals(parseInt(selectedProduct), discountPercent);
-    loadDailyDeals();
-    onUpdate();
-    setSelectedProduct('');
-    setDiscountPercent(20);
-    showToast('Product added to daily deals!', 'success');
-    
-    // Notify home page to refresh
-    window.dispatchEvent(new CustomEvent('adminUpdate'));
+    try {
+      if (!window.ProductManager) {
+        console.error('ProductManager not initialized');
+        return;
+      }
+      
+      const productId = parseInt(selectedProduct);
+      const product = window.ProductManager.getById(productId);
+      
+      if (product) {
+        const originalPrice = product.originalPrice || product.price;
+        const discountedPrice = originalPrice * (1 - discountPercent / 100);
+        
+        await window.ProductManager.update(productId, {
+          isDailyDeal: true,
+          dailyDeal: true,
+          discountPercent: discountPercent,
+          originalPrice: originalPrice,
+          price: discountedPrice
+        });
+        
+        await loadDailyDeals();
+        onUpdate();
+        setSelectedProduct('');
+        setDiscountPercent(20);
+        showToast('Product added to daily deals!', 'success');
+        
+        // Notify home page to refresh
+        window.dispatchEvent(new CustomEvent('adminUpdate'));
+      }
+    } catch (error) {
+      console.error('Error adding to daily deals:', error);
+      showToast('Failed to add to daily deals', 'error');
+    }
   };
 
-  const removeFromDailyDeals = (productId) => {
-    ProductManager.removeFromDailyDeals(productId);
-    loadDailyDeals();
-    onUpdate();
-    showToast('Product removed from daily deals', 'success');
-    
-    // Notify home page to refresh
-    window.dispatchEvent(new CustomEvent('adminUpdate'));
-  };
-
-  const getProductName = (productId) => {
-    const product = products.find(p => p.id === productId);
-    return product ? product.name : 'Unknown Product';
+  const removeFromDailyDeals = async (productId) => {
+    try {
+      if (!window.ProductManager) {
+        console.error('ProductManager not initialized');
+        return;
+      }
+      
+      const product = window.ProductManager.getById(productId);
+      if (product) {
+        const originalPrice = product.originalPrice || product.price;
+        
+        await window.ProductManager.update(productId, {
+          isDailyDeal: false,
+          dailyDeal: false,
+          discountPercent: 0,
+          price: originalPrice
+        });
+        
+        await loadDailyDeals();
+        onUpdate();
+        showToast('Product removed from daily deals', 'success');
+        
+        // Notify home page to refresh
+        window.dispatchEvent(new CustomEvent('adminUpdate'));
+      }
+    } catch (error) {
+      console.error('Error removing from daily deals:', error);
+      showToast('Failed to remove from daily deals', 'error');
+    }
   };
 
   return (
@@ -113,15 +164,14 @@ function DailyDealsManager({ products, onUpdate }) {
           <p className="text-gray-500 text-center py-4">No daily deals active</p>
         ) : (
           <div className="space-y-3">
-            {dailyDeals.map(deal => {
-              const product = products.find(p => p.id === deal.productId);
+            {dailyDeals.map(product => {
               if (!product) return null;
               
-              const discountAmount = product.price * (deal.discountPercent / 100);
-              const salePrice = product.price - discountAmount;
+              const originalPrice = product.originalPrice || product.price;
+              const discountPercent = product.discountPercent || 0;
               
               return (
-                <div key={deal.productId} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                <div key={product.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-4">
                     <img 
                       src={product.image} 
@@ -131,16 +181,16 @@ function DailyDealsManager({ products, onUpdate }) {
                     <div>
                       <h4 className="font-semibold text-gray-900">{product.name}</h4>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-red-600">${salePrice.toFixed(2)}</span>
-                        <span className="text-sm text-gray-500 line-through">${product.price.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
+                        <span className="text-sm text-gray-500 line-through">${originalPrice.toFixed(2)}</span>
                         <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          {deal.discountPercent}% OFF
+                          {discountPercent}% OFF
                         </span>
                       </div>
                     </div>
                   </div>
                   <button
-                    onClick={() => removeFromDailyDeals(deal.productId)}
+                    onClick={() => removeFromDailyDeals(product.id)}
                     className="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-lg transition-colors"
                     title="Remove from daily deals"
                   >
@@ -168,9 +218,24 @@ function HomePageManager({ products, onUpdate }) {
   }, [products]);
 
   const loadHomePageProducts = () => {
-    const homeProducts = ProductManager.getHomePageProducts();
-    setHomePageProducts(homeProducts);
+    if (!window.ProductManager) {
+      console.error('ProductManager not initialized');
+      return;
+    }
     
+    const allProducts = window.ProductManager.getAll();
+    const homeProductIds = JSON.parse(localStorage.getItem('luxemarket_homepage_order') || '[]');
+    
+    if (homeProductIds.length > 0) {
+      const homeProducts = homeProductIds
+        .map(id => allProducts.find(p => p.id === id))
+        .filter(p => p !== undefined);
+      setHomePageProducts(homeProducts);
+    } else {
+      // Default: first 12 products
+      setHomePageProducts(allProducts.slice(0, 12));
+    }
+  };
     // Get products not on home page
     const homeProductIds = new Set(homeProducts.map(p => p.id));
     const available = products.filter(p => !homeProductIds.has(p.id));
@@ -199,7 +264,15 @@ function HomePageManager({ products, onUpdate }) {
     if (draggedFrom === 'home') {
       // Reordering within home page
       if (draggedIndex === dropIndex) return;
-      ProductManager.reorderHomePageProducts(draggedIndex, dropIndex);
+      
+      // Reorder the home page products
+      const newHomeProducts = [...homePageProducts];
+      const [removed] = newHomeProducts.splice(draggedIndex, 1);
+      newHomeProducts.splice(dropIndex, 0, removed);
+      
+      // Save to localStorage
+      const homeProductIds = newHomeProducts.map(p => p.id);
+      localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homeProductIds));
     } else {
       // Adding from available to home page
       const productToAdd = availableProducts[draggedIndex];
@@ -452,12 +525,30 @@ function AdminDashboard() {
     });
   };
 
-  const refreshData = () => {
-    setProducts(ProductManager.getAll());
-    setCategories(CategoryManager.getAll());
-    
-    // Notify other components about admin updates
-    window.dispatchEvent(new CustomEvent('adminUpdate'));
+  const refreshData = async () => {
+    try {
+      if (!window.ProductManager) {
+        console.error('ProductManager not initialized');
+        return;
+      }
+      
+      // Use async method if available
+      let allProducts;
+      if (window.ProductManager.getAllAsync) {
+        allProducts = await window.ProductManager.getAllAsync();
+      } else {
+        allProducts = window.ProductManager.getAll();
+      }
+      
+      setProducts(allProducts);
+      setCategories(CategoryManager.getAll());
+      
+      // Notify other components about admin updates
+      window.dispatchEvent(new CustomEvent('adminUpdate'));
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      showToast('Failed to load products', 'error');
+    }
   };
 
   const handleChange = (e) => {
@@ -506,47 +597,57 @@ function AdminDashboard() {
     setEditingProduct(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Parse sizes array
-    const sizesArray = form.sizes ? form.sizes.split(',').map(size => size.trim()).filter(size => size) : [];
+    try {
+      if (!window.ProductManager) {
+        console.error('ProductManager not initialized');
+        return;
+      }
+      
+      // Parse sizes array
+      const sizesArray = form.sizes ? form.sizes.split(',').map(size => size.trim()).filter(size => size) : [];
 
-    // Convert enhanced images back to simple URLs for compatibility
-    let imageUrls = [];
-    if (form.images && form.images.length > 0) {
-      imageUrls = form.images.map(img => typeof img === 'string' ? img : img.url);
-    } else if (form.image.trim()) {
-      imageUrls = [form.image.trim()];
+      // Convert enhanced images back to simple URLs for compatibility
+      let imageUrls = [];
+      if (form.images && form.images.length > 0) {
+        imageUrls = form.images.map(img => typeof img === 'string' ? img : img.url);
+      } else if (form.image.trim()) {
+        imageUrls = [form.image.trim()];
+      }
+
+      const payload = {
+        name: form.name.trim(),
+        price: parseFloat(form.price),
+        category: form.category.trim(),
+        image: form.image.trim() || (imageUrls.length > 0 ? imageUrls[0] : ''),
+        images: imageUrls,
+        enhancedImages: form.images, // Store enhanced images with angle info
+        description: form.description.trim(),
+        videoUrl: form.videoUrl.trim(),
+        colors: form.colors,
+        sizes: sizesArray,
+        rating: parseFloat(form.rating) || 4.0,
+        reviews: parseInt(form.reviews) || 0,
+        stock: parseInt(form.stock) || 0
+      };
+
+      if (editingProduct) {
+        await window.ProductManager.update(editingProduct.id, payload);
+        showToast("Product updated successfully", "success");
+      } else {
+        await window.ProductManager.add(payload);
+        showToast("Product added successfully", "success");
+      }
+
+      CategoryManager.syncWithProducts();
+      await refreshData();
+      resetForm();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      showToast('Failed to save product', 'error');
     }
-
-    const payload = {
-      name: form.name.trim(),
-      price: parseFloat(form.price),
-      category: form.category.trim(),
-      image: form.image.trim() || (imageUrls.length > 0 ? imageUrls[0] : ''),
-      images: imageUrls,
-      enhancedImages: form.images, // Store enhanced images with angle info
-      description: form.description.trim(),
-      videoUrl: form.videoUrl.trim(),
-      colors: form.colors,
-      sizes: sizesArray,
-      rating: parseFloat(form.rating) || 4.0,
-      reviews: parseInt(form.reviews) || 0,
-      stock: parseInt(form.stock) || 0
-    };
-
-    if (editingProduct) {
-      ProductManager.update(editingProduct.id, payload);
-      showToast("Product updated successfully", "success");
-    } else {
-      ProductManager.add(payload);
-      showToast("Product added successfully", "success");
-    }
-
-    CategoryManager.syncWithProducts();
-    refreshData();
-    resetForm();
   };
 
   const handleEdit = (product) => {
@@ -629,11 +730,17 @@ function AdminDashboard() {
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteConfirmation.product) {
-      ProductManager.delete(deleteConfirmation.product.id);
-      CategoryManager.syncWithProducts();
-      refreshData();
+      try {
+        if (!window.ProductManager) {
+          console.error('ProductManager not initialized');
+          return;
+        }
+        
+        await window.ProductManager.delete(deleteConfirmation.product.id);
+        CategoryManager.syncWithProducts();
+        await refreshData();
       showToast(`"${deleteConfirmation.product.name}" deleted successfully`, "success");
       
       // If we were editing this product, clear the form

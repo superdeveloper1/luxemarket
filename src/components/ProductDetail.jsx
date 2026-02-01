@@ -1,6 +1,5 @@
 import React from 'react';
 import { showToast } from '../utils/simpleToast.js';
-import ProductManager from '../managers/ProductManager.js';
 import CartManager from '../managers/CartManager.js';
 import RelatedItems from './RelatedItems.jsx';
 
@@ -467,16 +466,31 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
             {/* Related Items Section */}
             <RelatedItems 
               currentProduct={product} 
-              onProductClick={(productId) => {
+              onProductClick={async (productId) => {
                 // Close current modal and open new product
-                const newProduct = ProductManager.getById(productId);
-                if (newProduct) {
-                  onClose();
-                  setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('openProduct', { 
-                      detail: { productId } 
-                    }));
-                  }, 100);
+                try {
+                  if (!window.ProductManager) {
+                    console.error('ProductManager not initialized');
+                    return;
+                  }
+                  
+                  let newProduct;
+                  if (window.ProductManager.getByIdAsync) {
+                    newProduct = await window.ProductManager.getByIdAsync(productId);
+                  } else {
+                    newProduct = window.ProductManager.getById(productId);
+                  }
+                  
+                  if (newProduct) {
+                    onClose();
+                    setTimeout(() => {
+                      window.dispatchEvent(new CustomEvent('openProduct', { 
+                        detail: { productId } 
+                      }));
+                    }, 100);
+                  }
+                } catch (error) {
+                  console.error('Error loading related product:', error);
                 }
               }} 
             />

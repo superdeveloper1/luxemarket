@@ -12,7 +12,6 @@ import Checkout from './Checkout.jsx';
 import Watchlist from './Watchlist.jsx';
 import AccountSummary from './AccountSummary.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
-import ProductManager from '../managers/ProductManager.js';
 import CartManager from '../managers/CartManager.js';
 import { showToast } from '../utils/simpleToast.js';
 
@@ -74,9 +73,21 @@ function FullApp() {
 
   // Listen for product detail requests
   React.useEffect(() => {
-    const handleOpenProduct = (event) => {
+    const handleOpenProduct = async (event) => {
       try {
-        const product = ProductManager.getById(event.detail.productId);
+        if (!window.ProductManager) {
+          console.error('ProductManager not initialized');
+          return;
+        }
+        
+        // Use async method if available, otherwise fall back to sync
+        let product;
+        if (window.ProductManager.getByIdAsync) {
+          product = await window.ProductManager.getByIdAsync(event.detail.productId);
+        } else {
+          product = window.ProductManager.getById(event.detail.productId);
+        }
+        
         if (product) {
           setSelectedProduct(product);
         }
