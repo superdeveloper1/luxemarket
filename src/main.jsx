@@ -19,29 +19,133 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Clear ALL local storage to force fresh data
+// Clear ONLY products cache, NOT the user's home page order or deals
 if (typeof Storage !== 'undefined') {
   localStorage.removeItem('luxemarket_products');
-  localStorage.removeItem('luxemarket_daily_deals');
-  localStorage.removeItem('luxemarket_homepage_order');
+  // localStorage.removeItem('luxemarket_daily_deals'); // Keep these!
+  // localStorage.removeItem('luxemarket_homepage_order'); // Keep these!
   sessionStorage.clear();
 }
 
 // Initialize Firebase and make it available globally
 window.ProductManager = {
-    getAll: () => FirebaseProductManager.getAllSync(),
-    getById: (id) => FirebaseProductManager.getByIdSync(id),
-    getByCategory: (cat) => FirebaseProductManager.getByCategorySync(cat),
-    getFeatured: () => FirebaseProductManager.getFeaturedSync(),
-    getDailyDeals: () => FirebaseProductManager.getDailyDealsSync(),
-    getAllWithDeals: () => FirebaseProductManager.getAllSync(), // Add missing method
-    // Async methods
-    getAllAsync: () => FirebaseProductManager.getAll(),
-    getByIdAsync: (id) => FirebaseProductManager.getById(id),
-    add: (product) => FirebaseProductManager.add(product),
-    update: (id, updates) => FirebaseProductManager.update(id, updates),
-    delete: (id) => FirebaseProductManager.remove(id),
-    refresh: () => FirebaseProductManager.refresh()
+  getAll: () => FirebaseProductManager.getAllSync(),
+  getById: (id) => FirebaseProductManager.getByIdSync(id),
+  getByCategory: (cat) => FirebaseProductManager.getByCategorySync(cat),
+  getFeatured: () => FirebaseProductManager.getFeaturedSync(),
+  // Updated getDailyDeals to use localStorage if available, falling back to Firebase property
+  getDailyDeals: () => {
+    const localDeals = localStorage.getItem('luxemarket_daily_deals');
+    let deals = [];
+    if (localDeals) {
+      deals = JSON.parse(localDeals);
+    } else {
+      deals = FirebaseProductManager.getDailyDealsSync().map(p => ({ productId: p.id, discountPercent: p.discountPercent || 20 }));
+    }
+
+    // De-duplicate by productId to prevent the "x4" count issue if data is corrupted
+    const uniqueDealsMap = new Map();
+    deals.forEach(deal => {
+      if (deal && deal.productId) {
+        uniqueDealsMap.set(deal.productId.toString(), deal);
+      }
+    });
+    return Array.from(uniqueDealsMap.values());
+  },
+  getAllWithDeals: () => {
+    const products = FirebaseProductManager.getAllSync();
+    const deals = window.ProductManager.getDailyDeals();
+    return products.map(product => {
+      const deal = deals.find(d => d.productId == product.id);
+      if (deal) {
+        const discountAmount = product.price * (deal.discountPercent / 100);
+        return {
+          ...product,
+          originalPrice: product.price,
+          price: product.price - discountAmount,
+          discountPercent: deal.discountPercent,
+          isDailyDeal: true
+        };
+      }
+      return product;
+    });
+  },
+  // Add missing methods for Admin Dashboard
+  addToDailyDeals: (productId, discountPercent) => {
+    const deals = window.ProductManager.getDailyDeals();
+    const existingIndex = deals.findIndex(deal => deal.productId == productId);
+    const dealData = {
+      productId: productId,
+      discountPercent: Math.max(0, Math.min(90, discountPercent)),
+      addedDate: new Date().toISOString()
+    };
+    if (existingIndex >= 0) deals[existingIndex] = dealData;
+    else deals.push(dealData);
+    localStorage.setItem('luxemarket_daily_deals', JSON.stringify(deals));
+    return true;
+  },
+  removeFromDailyDeals: (productId) => {
+    const deals = window.ProductManager.getDailyDeals();
+    const filtered = deals.filter(deal => deal.productId != productId);
+    localStorage.setItem('luxemarket_daily_deals', JSON.stringify(filtered));
+    return true;
+  },
+  getHomePageOrder: () => {
+    const order = localStorage.getItem('luxemarket_homepage_order');
+    return order ? JSON.parse(order) : [];
+  },
+  getHomePageProducts: (limit = 12, passedProducts = null) => {
+    const customOrder = window.ProductManager.getHomePageOrder();
+    const allWithDeals = passedProducts || window.ProductManager.getAllWithDeals();
+
+    if (customOrder.length > 0) {
+      const ordered = [];
+      customOrder.forEach(id => {
+        const p = allWithDeals.find(item => item.id == id);
+        if (p) ordered.push(p);
+      });
+
+      // Fallback: If custom order returns nothing (e.g. invalid IDs), show all
+      if (ordered.length > 0) {
+        return ordered.slice(0, limit);
+      }
+    }
+    return allWithDeals.slice(0, limit);
+  },
+  reorderHomePageProducts: (fromIndex, toIndex) => {
+    const currentOrder = window.ProductManager.getHomePageOrder();
+    const allProducts = FirebaseProductManager.getAllSync();
+    let workingOrder = currentOrder.length > 0 ? [...currentOrder] : allProducts.slice(0, 12).map(p => p.id);
+    const [movedItem] = workingOrder.splice(fromIndex, 1);
+    workingOrder.splice(toIndex, 0, movedItem);
+    localStorage.setItem('luxemarket_homepage_order', JSON.stringify(workingOrder));
+    return workingOrder;
+  },
+  // Async methods
+  getAllAsync: () => FirebaseProductManager.getAll(),
+  getAllWithDealsAsync: async () => {
+    const products = await FirebaseProductManager.getAll();
+    const deals = window.ProductManager.getDailyDeals();
+    return products.map(product => {
+      const deal = deals.find(d => d.productId == product.id);
+      if (deal) {
+        const discountAmount = product.price * (deal.discountPercent / 100);
+        return {
+          ...product,
+          originalPrice: product.price,
+          price: product.price - discountAmount,
+          discountPercent: deal.discountPercent,
+          isDailyDeal: true
+        };
+      }
+      return product;
+    });
+  },
+  getByIdAsync: (id) => FirebaseProductManager.getById(id),
+  add: (product) => FirebaseProductManager.add(product),
+  update: (id, updates) => FirebaseProductManager.update(id, updates),
+  delete: (id) => FirebaseProductManager.remove(id),
+  refresh: () => FirebaseProductManager.refresh()
 };
 
 console.log('🔥 Firebase ProductManager initialized');

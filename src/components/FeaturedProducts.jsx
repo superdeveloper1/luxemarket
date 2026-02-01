@@ -3,70 +3,69 @@ import React from 'react';
 // Minimal ProductCard - Only image and name for home page, with daily deals support
 function ProductCard({ product, onProductClick }) {
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
-    
+
     // Get all available images for the product
-    const productImages = product.images && product.images.length > 0 
-        ? product.images 
+    const productImages = product.images && product.images.length > 0
+        ? product.images
         : [product.image || 'https://via.placeholder.com/300x300?text=No+Image'];
-    
+
     const displayImage = productImages[currentImageIndex];
 
     // Auto-carousel effect - cycle through images every 3 seconds
     React.useEffect(() => {
         if (productImages.length <= 1) return; // No carousel if only one image
-        
+
         const interval = setInterval(() => {
-            setCurrentImageIndex((prevIndex) => 
+            setCurrentImageIndex((prevIndex) =>
                 (prevIndex + 1) % productImages.length
             );
         }, 3000); // Change image every 3 seconds
-        
+
         return () => clearInterval(interval);
     }, [productImages.length]);
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer minimal-product-card"
-             onClick={() => onProductClick(product.id)}>
-            <div 
+            onClick={() => onProductClick(product.id)}>
+            <div
                 className="relative aspect-square overflow-hidden bg-gray-100 product-image-container"
             >
-                <img 
-                    src={displayImage} 
+                <img
+                    src={displayImage}
                     alt={product.name}
                     className="w-full h-full object-cover product-image transition-opacity duration-500"
                     key={currentImageIndex} // Force re-render for fade effect
                 />
-                
+
                 {/* Daily Deal Badge */}
                 {product.isDailyDeal && (
                     <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
                         🔥 {product.discountPercent}% OFF
                     </div>
                 )}
-                
+
                 {/* Image Indicators - Show dots if multiple images */}
                 {productImages.length > 1 && (
                     <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
                         {productImages.map((_, index) => (
                             <div
                                 key={index}
-                                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                    index === currentImageIndex 
-                                        ? 'bg-white w-4' 
-                                        : 'bg-white/50'
-                                }`}
+                                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex
+                                    ? 'bg-white w-4'
+                                    : 'bg-white/50'
+                                    }`}
                             />
                         ))}
                     </div>
                 )}
             </div>
-            
+
             <div className="p-4 text-center">
                 <h3 className="font-semibold text-gray-900 text-sm mb-1 product-name-hover line-clamp-2">
                     {product.name}
                 </h3>
                 <p className="text-xs text-gray-500">{product.category}</p>
-                
+
                 {/* Show pricing for daily deals only */}
                 {product.isDailyDeal && (
                     <div className="mt-2">
@@ -86,10 +85,10 @@ function FeaturedProducts({ products, onProductClick }) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 home-products-grid">
             {products && products.length > 0 ? products.map(product => (
-                <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    onProductClick={onProductClick} 
+                <ProductCard
+                    key={product.id}
+                    product={product}
+                    onProductClick={onProductClick}
                 />
             )) : (
                 <div className="col-span-full text-center py-12">
@@ -114,23 +113,26 @@ function FeaturedProductsSection() {
         try {
             setLoading(true);
             setProducts([]); // Clear old products first
-            
+
             if (window.ProductManager) {
                 // Debug: Log which method we're using
                 console.log('🔍 FrontPage: Loading products...');
-                
+
                 let allProducts;
-                if (window.ProductManager.getAllAsync) {
+                if (window.ProductManager.getAllWithDealsAsync) {
+                    console.log('🔥 FrontPage: Using getAllWithDealsAsync from Firebase...');
+                    allProducts = await window.ProductManager.getAllWithDealsAsync();
+                } else if (window.ProductManager.getAllAsync) {
                     console.log('🔥 FrontPage: Using getAllAsync from Firebase...');
                     allProducts = await window.ProductManager.getAllAsync();
                 } else {
                     console.log('⚠️ FrontPage: Using sync method');
                     allProducts = window.ProductManager.getAll();
                 }
-                
+
                 console.log('📦 FrontPage: Total products loaded:', allProducts.length);
                 console.log('📦 FrontPage: First product:', allProducts[0]);
-                
+
                 // Check if products have stock field
                 const firstProduct = allProducts[0];
                 if (firstProduct && typeof firstProduct.stock === 'undefined') {
@@ -140,9 +142,9 @@ function FeaturedProductsSection() {
                         allProducts = window.ProductManager.getAll();
                     }
                 }
-                
+
                 let productsToShow;
-                
+
                 // Apply daily deals filter first if active
                 if (showDealsOnly) {
                     productsToShow = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
@@ -161,12 +163,16 @@ function FeaturedProductsSection() {
                     productsToShow = allProducts;
                     console.log('📋 Showing all products:', productsToShow.length);
                 }
-                // Default: show home page products (limited to 12)
+                // Default: show home page products (respecting admin order)
                 else {
-                    productsToShow = allProducts.slice(0, 12);
+                    if (window.ProductManager.getHomePageProducts) {
+                        productsToShow = window.ProductManager.getHomePageProducts(12, allProducts);
+                    } else {
+                        productsToShow = allProducts.slice(0, 12);
+                    }
                     console.log('🏠 Home page: Setting', productsToShow.length, 'products');
                 }
-                
+
                 console.log('🔥 Daily deals found:', productsToShow.filter(p => p.isDailyDeal || p.dailyDeal).length);
                 setProducts(productsToShow);
                 setCurrentPage(1); // Reset to first page when products change
@@ -182,13 +188,13 @@ function FeaturedProductsSection() {
 
     React.useEffect(() => {
         loadProducts();
-        
+
         // Listen for admin updates
         const handleAdminUpdate = () => {
             console.log('🔄 Admin update detected, refreshing home page products...');
             loadProducts();
         };
-        
+
         // Listen for category filter events
         const handleCategoryFilter = (event) => {
             const { category } = event.detail;
@@ -196,7 +202,7 @@ function FeaturedProductsSection() {
             setCategoryFilter(category);
             setShowDealsOnly(false); // Clear deals filter when category is selected
             setShowAllProducts(false); // Clear show all when filtering
-            
+
             // Scroll to products section
             setTimeout(() => {
                 if (sectionRef.current) {
@@ -204,14 +210,14 @@ function FeaturedProductsSection() {
                 }
             }, 100);
         };
-        
+
         // Listen for daily deals filter events
         const handleDealsFilter = () => {
             console.log('🔥 Daily deals filter event received');
             setShowDealsOnly(true);
             setCategoryFilter(''); // Clear category filter when deals is selected
             setShowAllProducts(false); // Clear show all when filtering
-            
+
             // Scroll to products section
             setTimeout(() => {
                 if (sectionRef.current) {
@@ -219,14 +225,14 @@ function FeaturedProductsSection() {
                 }
             }, 100);
         };
-        
+
         // Listen for show all products event
         const handleShowAllProducts = () => {
             console.log('📋 Show all products event received');
             setShowAllProducts(true);
             setCategoryFilter('');
             setShowDealsOnly(false);
-            
+
             // Scroll to products section
             setTimeout(() => {
                 if (sectionRef.current) {
@@ -234,12 +240,12 @@ function FeaturedProductsSection() {
                 }
             }, 100);
         };
-        
+
         window.addEventListener('adminUpdate', handleAdminUpdate);
         window.addEventListener('filterByCategory', handleCategoryFilter);
         window.addEventListener('filterByDeals', handleDealsFilter);
         window.addEventListener('showAllProducts', handleShowAllProducts);
-        
+
         return () => {
             window.removeEventListener('adminUpdate', handleAdminUpdate);
             window.removeEventListener('filterByCategory', handleCategoryFilter);
@@ -284,10 +290,10 @@ function FeaturedProductsSection() {
             <div className="container-custom">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                        {showDealsOnly 
-                            ? '🔥 Daily Deals' 
-                            : categoryFilter && categoryFilter !== 'All Categories' 
-                                ? `${categoryFilter} Products` 
+                        {showDealsOnly
+                            ? '🔥 Daily Deals'
+                            : categoryFilter && categoryFilter !== 'All Categories'
+                                ? `${categoryFilter} Products`
                                 : showAllProducts
                                     ? 'All Products'
                                     : 'Featured Products'
@@ -317,14 +323,14 @@ function FeaturedProductsSection() {
                         </button>
                     ) : null}
                 </div>
-                
+
                 <div className="home-products-grid">
-                    <FeaturedProducts 
-                        products={currentProducts} 
-                        onProductClick={handleProductClick} 
+                    <FeaturedProducts
+                        products={currentProducts}
+                        onProductClick={handleProductClick}
                     />
                 </div>
-                
+
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 mt-12">
@@ -335,23 +341,22 @@ function FeaturedProductsSection() {
                         >
                             ← Previous
                         </button>
-                        
+
                         <div className="flex gap-2">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                                 <button
                                     key={page}
                                     onClick={() => handlePageChange(page)}
-                                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                                        currentPage === page
-                                            ? 'bg-[var(--primary-color)] text-white'
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                    }`}
+                                    className={`px-4 py-2 rounded-md font-medium transition-colors ${currentPage === page
+                                        ? 'bg-[var(--primary-color)] text-white'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        }`}
                                 >
                                     {page}
                                 </button>
                             ))}
                         </div>
-                        
+
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
@@ -361,11 +366,11 @@ function FeaturedProductsSection() {
                         </button>
                     </div>
                 )}
-                
+
                 {/* Product Count and Actions */}
                 <div className="text-center mt-8">
                     {!showAllProducts && !categoryFilter && !showDealsOnly && (
-                        <button 
+                        <button
                             onClick={() => {
                                 setShowAllProducts(true);
                                 setCategoryFilter('');
@@ -377,7 +382,7 @@ function FeaturedProductsSection() {
                             View All Products
                         </button>
                     )}
-                    
+
                     <p className="text-sm text-gray-500 mt-4">
                         {showDealsOnly
                             ? `Showing ${products.length} daily deals`

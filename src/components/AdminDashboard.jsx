@@ -28,13 +28,13 @@ function DailyDealsManager({ products, onUpdate }) {
       return;
     }
 
-    ProductManager.addToDailyDeals(parseInt(selectedProduct), discountPercent);
+    ProductManager.addToDailyDeals(selectedProduct, discountPercent);
     loadDailyDeals();
     onUpdate();
     setSelectedProduct('');
     setDiscountPercent(20);
     showToast('Product added to daily deals!', 'success');
-    
+
     // Notify home page to refresh
     window.dispatchEvent(new CustomEvent('adminUpdate'));
   };
@@ -44,13 +44,13 @@ function DailyDealsManager({ products, onUpdate }) {
     loadDailyDeals();
     onUpdate();
     showToast('Product removed from daily deals', 'success');
-    
+
     // Notify home page to refresh
     window.dispatchEvent(new CustomEvent('adminUpdate'));
   };
 
   const getProductName = (productId) => {
-    const product = products.find(p => p.id === productId);
+    const product = products.find(p => p.id == productId);
     return product ? product.name : 'Unknown Product';
   };
 
@@ -113,17 +113,17 @@ function DailyDealsManager({ products, onUpdate }) {
         ) : (
           <div className="space-y-3">
             {dailyDeals.map(deal => {
-              const product = products.find(p => p.id === deal.productId);
+              const product = products.find(p => p.id == deal.productId);
               if (!product) return null;
-              
+
               const discountAmount = product.price * (deal.discountPercent / 100);
               const salePrice = product.price - discountAmount;
-              
+
               return (
                 <div key={deal.productId} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-4">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.name}
                       className="w-12 h-12 object-cover rounded-lg"
                     />
@@ -169,12 +169,12 @@ function HomePageManager({ products, onUpdate }) {
   const loadHomePageProducts = () => {
     const homeProducts = ProductManager.getHomePageProducts();
     setHomePageProducts(homeProducts);
-    
+
     // Get products not on home page
-    const homeProductIds = new Set(homeProducts.map(p => p.id));
-    const available = products.filter(p => !homeProductIds.has(p.id));
+    const homeProductIds = new Set(homeProducts.map(p => p.id.toString()));
+    const available = products.filter(p => !homeProductIds.has(p.id.toString()));
     setAvailableProducts(available);
-    
+
     console.log('🏠 Home page products:', homeProducts.length);
     console.log('📦 Available products:', available.length);
   };
@@ -192,7 +192,7 @@ function HomePageManager({ products, onUpdate }) {
 
   const handleDropOnHome = (e, dropIndex) => {
     e.preventDefault();
-    
+
     if (draggedIndex === null) return;
 
     if (draggedFrom === 'home') {
@@ -208,22 +208,22 @@ function HomePageManager({ products, onUpdate }) {
         setDraggedFrom(null);
         return;
       }
-      
+
       // Add to home page at specific position
       const newHomeProducts = [...homePageProducts];
       newHomeProducts.splice(dropIndex, 0, productToAdd);
-      
+
       // Save to localStorage
       const homeProductIds = newHomeProducts.map(p => p.id);
       localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homeProductIds));
     }
-    
+
     loadHomePageProducts();
     onUpdate();
     setDraggedIndex(null);
     setDraggedFrom(null);
     showToast('Home page updated!', 'success');
-    
+
     // Notify home page to refresh
     window.dispatchEvent(new CustomEvent('adminUpdate'));
   };
@@ -233,11 +233,11 @@ function HomePageManager({ products, onUpdate }) {
       showToast('Home page can only have 12 products', 'error');
       return;
     }
-    
+
     const newHomeProducts = [...homePageProducts, product];
     const homeProductIds = newHomeProducts.map(p => p.id);
     localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homeProductIds));
-    
+
     loadHomePageProducts();
     onUpdate();
     showToast(`"${product.name}" added to home page`, 'success');
@@ -248,7 +248,7 @@ function HomePageManager({ products, onUpdate }) {
     const newHomeProducts = homePageProducts.filter((_, i) => i !== index);
     const homeProductIds = newHomeProducts.map(p => p.id);
     localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homeProductIds));
-    
+
     loadHomePageProducts();
     onUpdate();
     showToast('Product removed from home page', 'success');
@@ -291,7 +291,7 @@ function HomePageManager({ products, onUpdate }) {
             </span>
           )}
         </h3>
-        
+
         {homePageProducts.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
             <div className="text-4xl mb-3">🏠</div>
@@ -307,13 +307,12 @@ function HomePageManager({ products, onUpdate }) {
                 onDragStart={(e) => handleDragStart(e, index, 'home')}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDropOnHome(e, index)}
-                className={`relative bg-white border-2 rounded-lg overflow-hidden cursor-move transition-all group ${
-                  draggedIndex === index && draggedFrom === 'home' ? 'border-blue-500 opacity-50' : 'border-gray-200 hover:border-blue-300'
-                }`}
+                className={`relative bg-white border-2 rounded-lg overflow-hidden cursor-move transition-all group ${draggedIndex === index && draggedFrom === 'home' ? 'border-blue-500 opacity-50' : 'border-gray-200 hover:border-blue-300'
+                  }`}
               >
                 <div className="aspect-square bg-gray-100">
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -351,7 +350,7 @@ function HomePageManager({ products, onUpdate }) {
         <h3 className="text-lg font-semibold mb-4">
           Available Products ({availableProducts.length})
         </h3>
-        
+
         {availableProducts.length === 0 ? (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
             <p className="text-gray-500">All products are on the home page</p>
@@ -363,13 +362,12 @@ function HomePageManager({ products, onUpdate }) {
                 key={product.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, index, 'available')}
-                className={`relative bg-white border-2 rounded-lg overflow-hidden cursor-move transition-all group ${
-                  draggedIndex === index && draggedFrom === 'available' ? 'border-green-500 opacity-50' : 'border-gray-200 hover:border-green-300'
-                }`}
+                className={`relative bg-white border-2 rounded-lg overflow-hidden cursor-move transition-all group ${draggedIndex === index && draggedFrom === 'available' ? 'border-green-500 opacity-50' : 'border-gray-200 hover:border-green-300'
+                  }`}
               >
                 <div className="aspect-square bg-gray-100">
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -457,10 +455,10 @@ function AdminDashboard() {
         console.error('ProductManager not initialized');
         return;
       }
-      
+
       // Debug: Log which method we're using
       console.log('🔍 AdminDashboard: Loading products...');
-      
+
       let allProducts;
       if (window.ProductManager.getAllAsync) {
         console.log('🔥 AdminDashboard: Using getAllAsync from Firebase...');
@@ -469,13 +467,13 @@ function AdminDashboard() {
         console.log('⚠️ AdminDashboard: Using sync method');
         allProducts = window.ProductManager.getAll();
       }
-      
+
       console.log('📦 AdminDashboard: Total products loaded:', allProducts.length);
       console.log('📦 AdminDashboard: First product:', allProducts[0]);
-      
+
       setProducts(allProducts);
       setCategories(CategoryManager.getAll());
-      
+
       // Notify other components about admin updates
       window.dispatchEvent(new CustomEvent('adminUpdate'));
     } catch (error) {
@@ -504,8 +502,8 @@ function AdminDashboard() {
   }, []);
 
   const handleImageUpdate = React.useCallback((newImages) => {
-    setForm(prev => ({ 
-      ...prev, 
+    setForm(prev => ({
+      ...prev,
       images: newImages,
       image: newImages.length > 0 ? (typeof newImages[0] === 'string' ? newImages[0] : newImages[0].url) : prev.image
     }));
@@ -532,13 +530,13 @@ function AdminDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       if (!window.ProductManager) {
         console.error('ProductManager not initialized');
         return;
       }
-      
+
       // Parse sizes array
       const sizesArray = form.sizes ? form.sizes.split(',').map(size => size.trim()).filter(size => size) : [];
 
@@ -585,10 +583,10 @@ function AdminDashboard() {
 
   const handleEdit = (product) => {
     setEditingProduct(product);
-    
+
     // Convert arrays back to strings for form editing
     const sizesString = product.sizes ? product.sizes.join(', ') : '';
-    
+
     // Use enhanced images if available, otherwise convert simple URLs
     let imagesToEdit = [];
     if (product.enhancedImages && product.enhancedImages.length > 0) {
@@ -601,7 +599,7 @@ function AdminDashboard() {
         description: ''
       }));
     }
-    
+
     setForm({
       name: product.name,
       price: product.price,
@@ -621,12 +619,12 @@ function AdminDashboard() {
     setTimeout(() => {
       const formSection = document.getElementById('product-form-section');
       if (formSection) {
-        formSection.scrollIntoView({ 
-          behavior: 'smooth', 
+        formSection.scrollIntoView({
+          behavior: 'smooth',
           block: 'start',
           inline: 'nearest'
         });
-        
+
         // Add a subtle highlight effect
         formSection.classList.add('highlight-form');
         setTimeout(() => {
@@ -654,7 +652,7 @@ function AdminDashboard() {
   };
 
   const handleDelete = (id) => {
-    const product = products.find(p => p.id === id);
+    const product = products.find(p => p.id == id);
     if (product) {
       setDeleteConfirmation({
         isOpen: true,
@@ -670,14 +668,14 @@ function AdminDashboard() {
           console.error('ProductManager not initialized');
           return;
         }
-        
+
         await window.ProductManager.delete(deleteConfirmation.product.id);
         CategoryManager.syncWithProducts();
         await refreshData();
         showToast(`"${deleteConfirmation.product.name}" deleted successfully`, "success");
-        
+
         // If we were editing this product, clear the form
-        if (editingProduct && editingProduct.id === deleteConfirmation.product.id) {
+        if (editingProduct && editingProduct.id == deleteConfirmation.product.id) {
           resetForm();
         }
       } catch (error) {
@@ -729,8 +727,8 @@ function AdminDashboard() {
               <p className="text-gray-600">Manage your products, categories, and store settings</p>
             </div>
           </div>
-          <a 
-            href="index.html" 
+          <a
+            href="index.html"
             className="btn btn-secondary flex items-center gap-2"
           >
             <div className="icon-arrow-left text-sm"></div>
@@ -776,56 +774,56 @@ function AdminDashboard() {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-              <input 
-                name="name" 
-                value={form.name} 
-                onChange={handleChange} 
-                placeholder="Enter product name" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
-                required 
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Enter product name"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-              <input 
-                name="price" 
-                type="number" 
-                step="0.01" 
-                value={form.price} 
-                onChange={handleChange} 
-                placeholder="0.00" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
-                required 
+              <input
+                name="price"
+                type="number"
+                step="0.01"
+                value={form.price}
+                onChange={handleChange}
+                placeholder="0.00"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
-              <input 
-                name="stock" 
-                type="number" 
-                min="0" 
-                value={form.stock} 
-                onChange={handleChange} 
-                placeholder="0" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
-                required 
+              <input
+                name="stock"
+                type="number"
+                min="0"
+                value={form.stock}
+                onChange={handleChange}
+                placeholder="0"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                required
               />
               <p className="text-xs text-gray-500 mt-1">Number of items available for sale</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <div className="flex gap-2">
-                <input 
-                  name="category" 
-                  value={form.category} 
-                  onChange={handleChange} 
-                  placeholder="Enter or select category" 
-                  className="flex-1 border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
-                  list="category-list" 
-                  required 
+                <input
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  placeholder="Enter or select category"
+                  className="flex-1 border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                  list="category-list"
+                  required
                 />
                 <button
                   type="button"
@@ -847,22 +845,22 @@ function AdminDashboard() {
                 {categories.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Main Image URL</label>
-              <input 
-                name="image" 
-                value={form.image} 
-                onChange={handleChange} 
-                placeholder="https://example.com/image.jpg" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+              <input
+                name="image"
+                value={form.image}
+                onChange={handleChange}
+                placeholder="https://example.com/image.jpg"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
               />
               {form.image && (
                 <div className="mt-2">
                   <p className="text-sm font-medium text-gray-700 mb-1">Main Image Preview</p>
-                  <img 
-                    src={form.image} 
-                    alt="Main product image preview" 
+                  <img
+                    src={form.image}
+                    alt="Main product image preview"
                     className="w-24 h-24 object-cover rounded border hover:border-[var(--primary-color)] transition-colors"
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -871,10 +869,10 @@ function AdminDashboard() {
                 </div>
               )}
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Product Images</label>
-              
+
               {/* Toggle between simple and enhanced image management */}
               <div className="flex items-center gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2">
@@ -903,11 +901,11 @@ function AdminDashboard() {
               ) : (
                 <>
                   <div className="flex gap-2 mb-2">
-                    <input 
-                      value={imageInput} 
-                      onChange={(e) => setImageInput(e.target.value)} 
-                      placeholder="https://example.com/additional-image.jpg" 
-                      className="flex-1 border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+                    <input
+                      value={imageInput}
+                      onChange={(e) => setImageInput(e.target.value)}
+                      placeholder="https://example.com/additional-image.jpg"
+                      className="flex-1 border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
                     />
                     <button
                       type="button"
@@ -917,7 +915,7 @@ function AdminDashboard() {
                       Add Image
                     </button>
                   </div>
-                  
+
                   {/* Image Grid */}
                   {form.images.length === 0 ? (
                     <div className="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -945,7 +943,7 @@ function AdminDashboard() {
                                   e.target.src = 'https://via.placeholder.com/80x80?text=Error';
                                 }}
                               />
-                              
+
                               {/* Delete button - larger and always visible on hover */}
                               <button
                                 type="button"
@@ -955,7 +953,7 @@ function AdminDashboard() {
                               >
                                 🗑️
                               </button>
-                              
+
                               {/* Position indicator */}
                               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center opacity-0 group-hover:opacity-100 transition-opacity rounded-b">
                                 #{index + 1}
@@ -966,56 +964,56 @@ function AdminDashboard() {
                       </div>
                     </div>
                   )}
-                  
+
                   <p className="text-xs text-gray-500 mt-1">Add multiple images showing different angles of the product</p>
                 </>
               )}
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Video URL (Optional)</label>
-              <input 
-                name="videoUrl" 
-                value={form.videoUrl} 
-                onChange={handleChange} 
-                placeholder="https://example.com/video.mp4" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+              <input
+                name="videoUrl"
+                value={form.videoUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/video.mp4"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
               />
               <p className="text-xs text-gray-500 mt-1">Add a video URL for product demonstrations</p>
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Colors</label>
-              <ColorManager 
+              <ColorManager
                 colors={form.colors}
                 onChange={handleColorChange}
               />
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Sizes (comma-separated)</label>
-              <input 
-                name="sizes" 
-                value={form.sizes} 
-                onChange={handleChange} 
-                placeholder="S, M, L, XL or 7, 8, 9, 10, 11, 12" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
+              <input
+                name="sizes"
+                value={form.sizes}
+                onChange={handleChange}
+                placeholder="S, M, L, XL or 7, 8, 9, 10, 11, 12"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
               />
               <p className="text-xs text-gray-500 mt-1">Enter sizes separated by commas</p>
             </div>
-            
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea 
-                name="description" 
-                value={form.description} 
-                onChange={handleChange} 
-                placeholder="Enter product description" 
-                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent" 
-                rows="3" 
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                placeholder="Enter product description"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                rows="3"
               />
             </div>
-            
+
             <div className="md:col-span-2 flex gap-4">
               <button type="submit" className="btn btn-primary px-6 py-3">
                 {editingProduct ? "Update Product" : "Add Product"}
@@ -1030,8 +1028,8 @@ function AdminDashboard() {
         </div>
 
         {/* Product Preview */}
-        <ProductPreview 
-          product={previewProduct} 
+        <ProductPreview
+          product={previewProduct}
           isVisible={showPreview && (form.name || form.image || form.description || form.colors.length > 0)}
         />
 
@@ -1052,8 +1050,8 @@ function AdminDashboard() {
             {categories.map(cat => (
               <div key={cat} className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
                 <span className="text-gray-700">{cat}</span>
-                <button 
-                  onClick={() => handleDeleteCategory(cat)} 
+                <button
+                  onClick={() => handleDeleteCategory(cat)}
                   className="text-red-500 hover:text-red-700 font-bold"
                   title="Delete category"
                 >
@@ -1091,8 +1089,8 @@ function AdminDashboard() {
                 onClick={() => {
                   const formSection = document.getElementById('product-form-section');
                   if (formSection) {
-                    formSection.scrollIntoView({ 
-                      behavior: 'smooth', 
+                    formSection.scrollIntoView({
+                      behavior: 'smooth',
                       block: 'start',
                       inline: 'nearest'
                     });
@@ -1105,98 +1103,96 @@ function AdminDashboard() {
               </button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products
               .filter(product => categoryFilter === 'All Categories' || product.category === categoryFilter)
               .map(product => (
-              <div 
-                key={product.id} 
-                className={`border rounded-lg overflow-hidden hover:shadow-md transition-all ${
-                  editingProduct && editingProduct.id === product.id 
-                    ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)]/20 bg-blue-50/30' 
+                <div
+                  key={product.id}
+                  className={`border rounded-lg overflow-hidden hover:shadow-md transition-all ${editingProduct && editingProduct.id === product.id
+                    ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)]/20 bg-blue-50/30'
                     : 'border-gray-200'
-                }`}
-              >
-                <div className="aspect-square overflow-hidden bg-gray-100 relative">
-                  {editingProduct && editingProduct.id === product.id && (
-                    <div className="absolute top-2 left-2 bg-[var(--primary-color)] text-white text-xs px-2 py-1 rounded-full font-medium">
-                      Editing
-                    </div>
-                  )}
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
-                    }}
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{product.name}</h3>
-                  <div className="mb-1">
-                    {product.isDailyDeal ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
-                        <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
-                        <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          {product.discountPercent}% OFF
-                        </span>
+                    }`}
+                >
+                  <div className="aspect-square overflow-hidden bg-gray-100 relative">
+                    {editingProduct && editingProduct.id === product.id && (
+                      <div className="absolute top-2 left-2 bg-[var(--primary-color)] text-white text-xs px-2 py-1 rounded-full font-medium">
+                        Editing
                       </div>
-                    ) : (
-                      <p className="text-xl font-bold text-[var(--primary-color)]">${product.price.toFixed(2)}</p>
                     )}
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+                      }}
+                    />
                   </div>
-                  <p className="text-sm text-gray-500 mb-2">{product.category}</p>
-                  
-                  {/* Stock Information - Admin Only */}
-                  <div className="mb-2">
-                    {product.stock === 0 ? (
-                      <span className="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
-                        Out of Stock (0)
-                      </span>
-                    ) : product.stock <= 5 ? (
-                      <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
-                        Low Stock ({product.stock})
-                      </span>
-                    ) : (
-                      <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                        In Stock ({product.stock})
-                      </span>
-                    )}
-                  </div>
-                  
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-2">{product.description}</p>
-                  {product.videoUrl && (
-                    <div className="flex items-center gap-1 text-xs text-blue-600 mb-4">
-                      <div className="icon-play text-xs"></div>
-                      <span>Video available</span>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{product.name}</h3>
+                    <div className="mb-1">
+                      {product.isDailyDeal ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
+                          <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                          <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                            {product.discountPercent}% OFF
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-xl font-bold text-[var(--primary-color)]">${product.price.toFixed(2)}</p>
+                      )}
                     </div>
-                  )}
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => handleEdit(product)} 
-                      className={`btn flex-1 text-sm ${
-                        editingProduct && editingProduct.id === product.id
+                    <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+
+                    {/* Stock Information - Admin Only */}
+                    <div className="mb-2">
+                      {product.stock === 0 ? (
+                        <span className="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                          Out of Stock (0)
+                        </span>
+                      ) : product.stock <= 5 ? (
+                        <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
+                          Low Stock ({product.stock})
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          In Stock ({product.stock})
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">{product.description}</p>
+                    {product.videoUrl && (
+                      <div className="flex items-center gap-1 text-xs text-blue-600 mb-4">
+                        <div className="icon-play text-xs"></div>
+                        <span>Video available</span>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className={`btn flex-1 text-sm ${editingProduct && editingProduct.id === product.id
                           ? 'btn-primary'
                           : 'btn-secondary'
-                      }`}
-                    >
-                      {editingProduct && editingProduct.id === product.id ? 'Editing...' : 'Edit'}
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(product.id)} 
-                      className="btn bg-red-600 hover:bg-red-700 text-white flex-1 text-sm"
-                    >
-                      Delete
-                    </button>
+                          }`}
+                      >
+                        {editingProduct && editingProduct.id === product.id ? 'Editing...' : 'Edit'}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="btn bg-red-600 hover:bg-red-700 text-white flex-1 text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
-          
+
           {products.filter(product => categoryFilter === 'All Categories' || product.category === categoryFilter).length === 0 && (
             <div className="text-center py-12">
               <div className="icon-shopping-bag text-4xl text-gray-300 mx-auto mb-3"></div>
