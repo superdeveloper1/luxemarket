@@ -83,7 +83,7 @@ function ProductCard({ product, onProductClick }) {
 
 function FeaturedProducts({ products, onProductClick }) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 home-products-grid">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 home-products-grid">
             {products && products.length > 0 ? products.map(product => (
                 <ProductCard
                     key={product.id}
@@ -106,7 +106,7 @@ function FeaturedProductsSection() {
     const [showDealsOnly, setShowDealsOnly] = React.useState(false);
     const [showAllProducts, setShowAllProducts] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
-    const itemsPerPage = 12;
+    const itemsPerPage = 36;
     const sectionRef = React.useRef(null);
 
     const loadProducts = React.useCallback(async () => {
@@ -166,9 +166,9 @@ function FeaturedProductsSection() {
                 // Default: show home page products (respecting admin order)
                 else {
                     if (window.ProductManager.getHomePageProducts) {
-                        productsToShow = window.ProductManager.getHomePageProducts(12, allProducts);
+                        productsToShow = window.ProductManager.getHomePageProducts(36, allProducts);
                     } else {
-                        productsToShow = allProducts.slice(0, 12);
+                        productsToShow = allProducts.slice(0, 36);
                     }
                     console.log('🏠 Home page: Setting', productsToShow.length, 'products');
                 }

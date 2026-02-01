@@ -1,4 +1,4 @@
- // ===============================
+// ===============================
 // LuxeMarket ProductManager
 // Centralized product data layer
 // ===============================
@@ -23,16 +23,16 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300"
             ],
             colors: [
-                { 
-                    name: "Black", 
+                {
+                    name: "Black",
                     hex: "#000000",
                     images: [
                         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
                         "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300"
                     ]
                 },
-                { 
-                    name: "White", 
+                {
+                    name: "White",
                     hex: "#FFFFFF",
                     images: [
                         "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300",
@@ -58,16 +58,16 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300"
             ],
             colors: [
-                { 
-                    name: "Black", 
+                {
+                    name: "Black",
                     hex: "#000000",
                     images: [
                         "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300",
                         "https://images.unsplash.com/photo-1520975954732-35dd22299614?w=300"
                     ]
                 },
-                { 
-                    name: "Brown", 
+                {
+                    name: "Brown",
                     hex: "#8B4513",
                     images: [
                         "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300",
@@ -93,16 +93,16 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=300"
             ],
             colors: [
-                { 
-                    name: "Silver", 
+                {
+                    name: "Silver",
                     hex: "#C0C0C0",
                     images: [
                         "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300",
                         "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=300"
                     ]
                 },
-                { 
-                    name: "Black", 
+                {
+                    name: "Black",
                     hex: "#000000",
                     images: [
                         "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=300",
@@ -128,16 +128,16 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=300"
             ],
             colors: [
-                { 
-                    name: "Gray", 
+                {
+                    name: "Gray",
                     hex: "#808080",
                     images: [
                         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300",
                         "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300"
                     ]
                 },
-                { 
-                    name: "Navy", 
+                {
+                    name: "Navy",
                     hex: "#000080",
                     images: [
                         "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=300",
@@ -163,24 +163,24 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300"
             ],
             colors: [
-                { 
-                    name: "White", 
+                {
+                    name: "White",
                     hex: "#FFFFFF",
                     images: [
                         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
                         "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300"
                     ]
                 },
-                { 
-                    name: "Black", 
+                {
+                    name: "Black",
                     hex: "#000000",
                     images: [
                         "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300",
                         "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=300"
                     ]
                 },
-                { 
-                    name: "Red", 
+                {
+                    name: "Red",
                     hex: "#EF4444",
                     images: [
                         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
@@ -205,16 +205,16 @@ const ProductManager = (() => {
                 "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=300"
             ],
             colors: [
-                { 
-                    name: "Black", 
+                {
+                    name: "Black",
                     hex: "#000000",
                     images: [
                         "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300",
                         "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=300"
                     ]
                 },
-                { 
-                    name: "Blue", 
+                {
+                    name: "Blue",
                     hex: "#3B82F6",
                     images: [
                         "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300"
@@ -485,7 +485,7 @@ const ProductManager = (() => {
         addToDailyDeals(productId, discountPercent) {
             const deals = this.getDailyDeals();
             const existingIndex = deals.findIndex(deal => deal.productId === productId);
-            
+
             const dealData = {
                 productId: productId,
                 discountPercent: Math.max(0, Math.min(90, discountPercent)), // 0-90% discount
@@ -515,7 +515,7 @@ const ProductManager = (() => {
 
             const deals = this.getDailyDeals();
             const deal = deals.find(d => d.productId === productId);
-            
+
             if (deal) {
                 const discountAmount = product.price * (deal.discountPercent / 100);
                 return {
@@ -545,10 +545,10 @@ const ProductManager = (() => {
             return true;
         },
 
-        getHomePageProducts(limit = 12) {
+        getHomePageProducts(limit = 36) {
             const customOrder = this.getHomePageOrder();
             const allProducts = this.getAllWithDeals();
-            
+
             if (customOrder.length > 0) {
                 // Use ONLY custom order - don't auto-fill
                 const orderedProducts = [];
@@ -571,14 +571,14 @@ const ProductManager = (() => {
         reorderHomePageProducts(fromIndex, toIndex) {
             const currentOrder = this.getHomePageOrder();
             const allProducts = this.getAllWithDeals();
-            
+
             // If no custom order exists, create one from current products
             let workingOrder = currentOrder.length > 0 ? [...currentOrder] : allProducts.slice(0, 12).map(p => p.id);
-            
+
             // Perform the reorder
             const [movedItem] = workingOrder.splice(fromIndex, 1);
             workingOrder.splice(toIndex, 0, movedItem);
-            
+
             this.setHomePageOrder(workingOrder);
             return workingOrder;
         },
@@ -611,14 +611,14 @@ const ProductManager = (() => {
         fixCategoryCase(targetCategory = 'Furniture') {
             const allProducts = this.getAll();
             let fixed = 0;
-            
+
             allProducts.forEach(product => {
                 if (product.category && product.category.toLowerCase() === targetCategory.toLowerCase() && product.category !== targetCategory) {
                     this.update(product.id, { category: targetCategory });
                     fixed++;
                 }
             });
-            
+
             return fixed;
         },
 
@@ -627,7 +627,7 @@ const ProductManager = (() => {
             if (this._autoSaveInterval) {
                 clearInterval(this._autoSaveInterval);
             }
-            
+
             this._autoSaveInterval = setInterval(() => {
                 try {
                     save(products);
@@ -636,7 +636,7 @@ const ProductManager = (() => {
                     console.error('❌ Auto-save failed:', error);
                 }
             }, intervalMs);
-            
+
             return this._autoSaveInterval;
         },
 
@@ -654,10 +654,10 @@ const ProductManager = (() => {
                 // Also save daily deals and home page order
                 const dailyDeals = this.getDailyDeals();
                 const homePageOrder = this.getHomePageOrder();
-                
+
                 localStorage.setItem('luxemarket_daily_deals', JSON.stringify(dailyDeals));
                 localStorage.setItem('luxemarket_homepage_order', JSON.stringify(homePageOrder));
-                
+
                 console.log('💾 Force saved all product data');
                 return true;
             } catch (error) {
@@ -675,10 +675,10 @@ const ProductManager = (() => {
                 timestamp: new Date().toISOString(),
                 version: localStorage.getItem(VERSION_KEY)
             };
-            
+
             const backupKey = `luxemarket_backup_${Date.now()}`;
             localStorage.setItem(backupKey, JSON.stringify(backup));
-            
+
             console.log('📦 Created backup:', backupKey);
             return backupKey;
         },
@@ -689,28 +689,28 @@ const ProductManager = (() => {
                 if (!backupData) {
                     throw new Error('Backup not found');
                 }
-                
+
                 const backup = JSON.parse(backupData);
-                
+
                 // Restore products
                 products = backup.products || [];
                 save(products);
-                
+
                 // Restore daily deals
                 if (backup.dailyDeals) {
                     localStorage.setItem('luxemarket_daily_deals', JSON.stringify(backup.dailyDeals));
                 }
-                
+
                 // Restore home page order
                 if (backup.homePageOrder) {
                     localStorage.setItem('luxemarket_homepage_order', JSON.stringify(backup.homePageOrder));
                 }
-                
+
                 // Restore version
                 if (backup.version) {
                     localStorage.setItem(VERSION_KEY, backup.version);
                 }
-                
+
                 console.log('📦 Restored from backup:', backupKey);
                 return true;
             } catch (error) {
