@@ -16,6 +16,9 @@ import CartManager from '../managers/CartManager.js';
 import WatchlistManager from '../managers/WatchlistManager.js';
 import { showToast } from '../utils/simpleToast.js';
 
+// ⭐ NEW: Import the working modal controller
+import ProductDetailWrapper from './common/ProductDetailWrapper.jsx';
+
 // ✅ Fallback product list for seeding
 const fallbackProducts = [
   {
@@ -95,6 +98,29 @@ function FullApp() {
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
+  }, []);
+
+  // ⭐ NEW: Listen for product card clicks
+  React.useEffect(() => {
+    const handleOpenProduct = (e) => {
+      const id = e.detail.productId;
+
+      const stored = localStorage.getItem("luxemarket_products");
+      if (!stored) return;
+
+      try {
+        const products = JSON.parse(stored);
+        const found = products.find((p) => p.id === id);
+        if (found) {
+          setSelectedProduct(found);
+        }
+      } catch (err) {
+        console.error("Failed to load product from localStorage", err);
+      }
+    };
+
+    window.addEventListener("openProduct", handleOpenProduct);
+    return () => window.removeEventListener("openProduct", handleOpenProduct);
   }, []);
 
   const handleOpenAuth = (isRegister = false) => {
@@ -223,17 +249,16 @@ function FullApp() {
           </ErrorBoundary>
         )}
 
-        {selectedProduct && (
-          <ErrorBoundary>
-            <ProductDetail
-              product={selectedProduct}
-              onClose={() => setSelectedProduct(null)}
-              currentUser={currentUser}
-              onOpenAuth={handleOpenAuth}
-              onCartUpdate={handleCartUpdate}
-            />
-          </ErrorBoundary>
-        )}
+        {/* ⭐ NEW: Product Detail Modal Controller */}
+        <ErrorBoundary>
+          <ProductDetailWrapper
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            currentUser={currentUser}
+            onOpenAuth={handleOpenAuth}
+            onCartUpdate={handleCartUpdate}
+          />
+        </ErrorBoundary>
 
         {cartOpen && (
           <ErrorBoundary>
