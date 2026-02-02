@@ -1,0 +1,1073 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #2563EB;
+    --primary-hover: #1D4ED8;
+    --secondary-color: #F3F4F6;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --bg-body: #FFFFFF;
+    --accent-color: #F59E0B;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+@layer components {
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 200ms;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: #ffffff;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-primary:focus {
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary-color);
+    }
+
+    .btn-secondary {
+        background-color: #ffffff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background-color: #f9fafb;
+    }
+
+    .btn-secondary:focus {
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6b7280;
+    }
+
+    .btn-ghost {
+        color: #4b5563;
+    }
+
+    .btn-ghost:hover {
+        background-color: #f3f4f6;
+    }
+
+    .container-custom {
+        max-width: 80rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .container-custom {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .container-custom {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    }
+
+    @keyframes zoomIn {
+        from {
+            transform: scale(1);
+        }
+
+        to {
+            transform: scale(1.1);
+        }
+    }
+
+    .animate-zoom {
+        animation: zoomIn 20s linear infinite alternate;
+    }
+
+    .card {
+        background-color: #ffffff;
+        border-radius: 0.75rem;
+        border: 1px solid #f3f4f6;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    /* Color picker animations */
+    @keyframes colorPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .color-picker-button:hover {
+        animation: colorPulse 0.3s ease-in-out;
+    }
+
+    /* Drag and drop styles */
+    .dragging {
+        opacity: 0.5;
+        transform: rotate(5deg) scale(1.05);
+        z-index: 1000;
+    }
+
+    .drag-over {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 2px var(--primary-color);
+        border-radius: 8px;
+    }
+
+    @keyframes dragPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+        }
+    }
+
+    .drag-target {
+        animation: dragPulse 1s ease-in-out infinite;
+    }
+
+    /* Form highlight animation */
+    @keyframes formHighlight {
+        0% {
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        50% {
+            box-shadow: 0 0 0 10px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            border-color: transparent;
+        }
+    }
+
+    .highlight-form {
+        animation: formHighlight 2s ease-out;
+        border: 2px solid transparent;
+    }
+
+    /* Modal backdrop blur effect */
+    .modal-backdrop {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: auto;
+    }
+
+    /* Ensure modal backdrop is clickable */
+    .modal-backdrop > div:first-child {
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    /* Ensure modal content blocks backdrop clicks */
+    .modal-backdrop > div:last-child {
+        pointer-events: auto;
+    }
+
+    /* Product detail modal styles */
+    .product-modal {
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    /* Carousel improvements */
+    .carousel-image {
+        transition: transform 0.3s ease;
+    }
+
+    .carousel-nav {
+        transition: all 0.2s ease;
+    }
+
+    .carousel-nav:hover {
+        transform: scale(1.1);
+    }
+
+    .carousel-dot {
+        transition: all 0.2s ease;
+    }
+
+    .carousel-dot:hover {
+        transform: scale(1.2);
+    }
+
+    .carousel-thumbnail {
+        transition: all 0.2s ease;
+    }
+
+    .carousel-thumbnail:hover {
+        transform: scale(1.05);
+    }
+
+    /* Product card hover image transitions */
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image {
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform-origin: center;
+        will-change: transform, opacity;
+    }
+
+    .product-image.transitioning {
+        opacity: 0;
+        transform: scale(1.1) translateY(-5px);
+    }
+
+    .product-image:not(.transitioning) {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    .product-card:hover .product-image:not(.transitioning) {
+        transform: scale(1.03);
+    }
+
+    /* Interactive carousel dots */
+    .carousel-dot-interactive {
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        position: relative;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .carousel-dot-interactive:hover {
+        transform: scale(1.4);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        background-color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    .carousel-dot-interactive.active {
+        transform: scale(1.2);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+        background-color: rgba(255, 255, 255, 1) !important;
+    }
+
+    .carousel-dot-interactive:active {
+        transform: scale(1.0);
+        transition-duration: 0.1s;
+    }
+
+    /* Manual control indicator */
+    .manual-control-indicator {
+        animation: pulseBlue 2s ease-in-out infinite;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    @keyframes pulseBlue {
+
+        0%,
+        100% {
+            background-color: #2563eb;
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+            transform: scale(1);
+        }
+
+        50% {
+            background-color: #1d4ed8;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: scale(1.05);
+        }
+    }
+
+    /* Smooth fade transitions for image changes */
+    @keyframes imageSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(1.08) translateY(-8px);
+            filter: blur(1px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    /* Auto carousel fade animation */
+    @keyframes carouselFade {
+        0% {
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 1;
+        }
+
+        90% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0;
+        }
+    }
+
+    /* Product card image carousel - smooth fade effect */
+    .minimal-product-card .product-image {
+        animation: carouselFade 3s ease-in-out;
+    }
+
+    .image-slide-in {
+        animation: imageSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* Enhanced hover effects for product cards */
+    .product-card {
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        will-change: transform, box-shadow;
+        position: relative;
+    }
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #2563eb, #7c3aed, #2563eb);
+        border-radius: 0.75rem;
+        opacity: 0;
+        z-index: -1;
+        transition: opacity 0.4s ease;
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
+    }
+
+    @keyframes gradientShift {
+
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .product-card:hover::before {
+        opacity: 0.1;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Smooth image preloading effect */
+    .product-image-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+            linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
+            linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .product-image-container.loading::before {
+        opacity: 1;
+    }
+
+    /* Ensure modal is always on top but not interfering with backdrop clicks */
+    .modal-overlay {
+        z-index: 99999 !important;
+        position: fixed !important;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    /* Ensure modal content blocks backdrop clicks */
+    .modal-overlay > div {
+        pointer-events: auto;
+    }
+
+    /* Modal slide-in animation */
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .modal-content {
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    /* Admin dashboard animations */
+    @keyframes adminIconPulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .admin-icon:hover {
+        animation: adminIconPulse 0.6s ease-in-out;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1e40af 100%);
+    }
+}
+
+/* Enhanced Image Manager Styles */
+.enhanced-image-card {
+    transition: all 0.3s ease;
+}
+
+.enhanced-image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.angle-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+}
+
+.image-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 50%);
+}
+
+/* Image angle indicators */
+.angle-indicator {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Enhanced drag feedback */
+.enhanced-dragging {
+    opacity: 0.8;
+    transform: scale(1.05) rotate(3deg);
+    z-index: 50;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.enhanced-drag-over {
+    border: 2px dashed var(--primary-color);
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: scale(1.02);
+}
+
+/* Product Detail Carousel Styles */
+.carousel-dot {
+    transition: all 0.3s ease;
+}
+
+.carousel-dot:hover {
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+/* Smooth image transitions */
+.carousel-image {
+    transition: opacity 0.3s ease;
+}
+
+/* Navigation arrow animations */
+.carousel-nav {
+    transition: all 0.2s ease;
+}
+
+.carousel-nav:hover {
+    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Thumbnail hover effects */
+.carousel-thumbnail {
+    transition: all 0.2s ease;
+}
+
+.carousel-thumbnail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-thumbnail.active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* Cart button specific styles */
+.cart-button {
+    transition: all 0.2s ease;
+}
+
+.cart-button:hover {
+    transform: scale(1.05);
+}
+
+.cart-button:active {
+    transform: scale(0.95);
+}
+
+/* Cart modal styles */
+.cart-modal {
+    backdrop-filter: blur(4px);
+}
+
+.cart-modal .cart-item {
+    transition: all 0.2s ease;
+}
+
+.cart-modal .cart-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transitions for cart updates */
+.cart-count-badge {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-count-badge.updated {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    53%,
+    80%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    40%,
+    43% {
+        transform: translate3d(0, -8px, 0);
+    }
+
+    70% {
+        transform: translate3d(0, -4px, 0);
+    }
+
+    90% {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+
+/* Hero carousel fixes */
+.hero-carousel {
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+}
+
+.hero-carousel .absolute {
+    position: absolute;
+}
+
+/* Ensure proper stacking order */
+.hero-carousel-slide {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.hero-carousel-slide.active {
+    z-index: 2;
+}
+
+.hero-carousel-controls {
+    position: absolute;
+    z-index: 10;
+}
+
+.hero-carousel-indicators {
+    position: absolute;
+    z-index: 10;
+}
+
+/* Fix any potential overflow issues */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    contain: layout style paint;
+    z-index: 1;
+}
+
+/* Ensure header doesn't interfere with content below */
+header {
+    position: relative;
+    z-index: 10;
+}
+
+/* Header sticky positioning fix */
+header .sticky {
+    z-index: 10 !important;
+}
+
+/* Ensure main content doesn't overlap */
+main {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+}
+
+/* Featured products section should be below hero */
+.featured-products-section {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    padding-top: 2rem;
+}
+
+/* Search dropdown should be above other content but below modals */
+.search-dropdown {
+    z-index: 30 !important;
+}
+
+/* Category dropdown should be above other content but below modals */
+.category-dropdown {
+    z-index: 20 !important;
+}
+
+/* Additional carousel overlap fixes */
+.hero-carousel-slide img {
+    transform: none !important;
+    will-change: auto;
+}
+
+.hero-carousel-slide.active img {
+    transform: none !important;
+}
+
+/* Prevent any transform issues */
+.hero-section * {
+    transform-style: flat;
+}
+
+/* Ensure proper containment */
+.hero-section {
+    contain: layout style paint size;
+    will-change: auto;
+}
+
+/* Fix any potential animation conflicts */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: none;
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Ensure smooth transitions without transform conflicts */
+.hero-carousel-slide {
+    will-change: opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Products-only page improvements */
+.products-only-page {
+    padding-top: 1rem;
+}
+
+.products-filters {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.products-grid-enhanced {
+    gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .products-grid-enhanced {
+        gap: 1rem;
+    }
+
+    .products-filters {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .products-filters .flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Home page with carousel and featured products */
+.home-page-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.featured-products-home {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.featured-products-home .container-custom {
+    position: relative;
+}
+
+.featured-products-home h2 {
+    position: relative;
+}
+
+.featured-products-home h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+/* Enhanced product grid for home page */
+.home-products-grid {
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .home-products-grid {
+        gap: 1rem;
+    }
+}
+
+/* View all products button enhancement */
+.view-all-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e40af 100%);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.view-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+/* Buy Now button styling */
+.buy-now-btn {
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.buy-now-btn:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(234, 88, 12, 0.4);
+}
+
+.buy-now-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+}
+
+/* Enhanced stock status styling */
+.stock-status {
+    animation: pulse 2s infinite;
+}
+
+.stock-status.low-stock {
+    animation: pulse 1s infinite;
+}
+
+.stock-status.out-of-stock {
+    animation: none;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Minimal product cards for home page */
+.minimal-product-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.minimal-product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.minimal-product-card .product-image {
+    transition: transform 0.3s ease;
+}
+
+.minimal-product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Clean text truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Hover effects for product names */
+.product-name-hover {
+    transition: color 0.2s ease;
+}
+
+.product-name-hover:hover {
+    color: var(--primary-color);
+}
+
+/* Ensure consistent aspect ratios */
+.product-image-container {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.product-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.minimal-product-card:hover .product-image-container::before {
+    transform: translateX(100%);
+}
+
+/* Daily Deals styling */
+.daily-deal-badge {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    animation: dealPulse 2s infinite;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+@keyframes dealPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
+    }
+}
+
+/* Home page manager drag and drop */
+.draggable-product {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.draggable-product:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.draggable-product.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg) scale(1.05);
+    z-index: 1000;
+}
+
+.drop-zone {
+    border: 2px dashed #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Admin section styling */
+.admin-section {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.admin-section:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Daily deals product cards */
+.deal-product-card {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fecaca;
+    transition: all 0.3s ease;
+}
+
+.deal-product-card:hover {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+/* Home page order indicators */
+.order-indicator {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.home-page-product {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.home-page-product:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.home-page-product.dragging {
+    opacity: 0.7;
+    transform: rotate(3deg) scale(1.02);
+    z-index: 100;
+}

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="cache-bust" content="1769918700000" />
+  <title>LuxeMarket - Premium Shopping Experience</title>
+
+  <script>
+    // AGGRESSIVE EARLY RESET (v4) - Fixes "Works only in Incognito"
+    (function () {
+      const M_KEY = 'luxemarket_data_reset_v5';
+      if (typeof localStorage !== 'undefined' && !localStorage.getItem(M_KEY)) {
+        console.log('🚀 LuxeMarket: PERFORMING EMERGENCY DATA RESET (v5)...');
+
+        // Clear Storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Unregister Service Workers
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            for (let r of regs) r.unregister();
+          });
+        }
+
+        // Delete DB
+        if (window.indexedDB) indexedDB.deleteDatabase('LuxeMarketDB');
+
+        // Clear Caches
+        if (window.caches) {
+          caches.keys().then(keys => {
+            for (let k of keys) caches.delete(k);
+          });
+        }
+
+        // Set key and REFRESH
+        localStorage.setItem(M_KEY, 'done');
+        window.location.reload(true); // Force reload from server
+      }
+    })();
+  </script>
+
+  <!-- Icon Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Icon mappings for the app */
+    .icon-shopping-bag::before {
+      content: '\f290';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-chevron-down::before {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-chevron-up::before {
+      content: '\f077';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-chevron-left::before {
+      content: '\f053';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-chevron-right::before {
+      content: '\f054';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-search::before {
+      content: '\f002';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-shopping-cart::before {
+      content: '\f07a';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-user::before {
+      content: '\f007';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-heart::before {
+      content: '\f004';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-star::before {
+      content: '\f005';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-bell::before {
+      content: '\f0f3';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-menu::before {
+      content: '\f0c9';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-x::before {
+      content: '\f00d';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-lock::before {
+      content: '\f023';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-arrow-right::before {
+      content: '\f061';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-arrow-left::before {
+      content: '\f060';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-shield-check::before {
+      content: '\f2f7';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-facebook::before {
+      content: '\f09a';
+      font-family: 'Font Awesome 6 Brands';
+      font-weight: 400;
+    }
+
+    .icon-twitter::before {
+      content: '\f099';
+      font-family: 'Font Awesome 6 Brands';
+      font-weight: 400;
+    }
+
+    .icon-instagram::before {
+      content: '\f16d';
+      font-family: 'Font Awesome 6 Brands';
+      font-weight: 400;
+    }
+
+    .icon-triangle-alert::before {
+      content: '\f071';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-play::before {
+      content: '\f04b';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-camera::before {
+      content: '\f030';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-palette::before {
+      content: '\f53f';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-arrows-alt::before {
+      content: '\f0b2';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-grip-vertical::before {
+      content: '\f58e';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-arrow-up::before {
+      content: '\f062';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-info-circle::before {
+      content: '\f05a';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-cog::before {
+      content: '\f013';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-tools::before {
+      content: '\f7d9';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-chart-line::before {
+      content: '\f201';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-database::before {
+      content: '\f1c0';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-store::before {
+      content: '\f54e';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-eye::before {
+      content: '\f06e';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+
+    .icon-check::before {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <div id="modal-root"></div>
+  <script type="module" src="src/main.jsx"></script>
+</body>
+
+</html>

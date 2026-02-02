@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+        continue-on-error: false
+        
+      - name: List build output
+        run: |
+          echo "Checking docs directory..."
+          ls -la docs/ || echo "docs directory not found"
+        
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p deploy
+          if [ -d "docs" ]; then
+            cp -r docs/* deploy/
+            echo "Copied docs to deploy"
+          else
+            echo "Error: docs directory not found"
+            exit 1
+          fi
+          cp .nojekyll deploy/ 2>/dev/null || echo "No .nojekyll file"
+        
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          cname: false
