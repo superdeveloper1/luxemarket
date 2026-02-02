@@ -2,6 +2,12 @@ import React from 'react';
 import { showToast } from '../utils/simpleToast.js';
 
 function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth, onLogout, onOpenCart, onOpenWatchlist, onOpenAccountSummary }) {
+    // Test if component is mounting
+    React.useEffect(() => {
+        console.log('Header component mounted successfully!');
+        alert('Header component loaded!');
+    }, []);
+
     // All state declarations at the top
     const [categoryOpen, setCategoryOpen] = React.useState(false);
     const [categories, setCategories] = React.useState([
@@ -328,6 +334,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                             </div>
                             <button
                                 onClick={() => {
+                                    alert('Search button clicked!');
                                     console.log('Search button clicked - triggering search');
                                     handleSearch();
                                 }}
