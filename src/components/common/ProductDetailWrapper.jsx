@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "./Modal.jsx";
-import ProductDetail from "../ProductDetail.jsx";
+import ProductDetail from "./ProductDetail.jsx";
 
 export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUpdate }) {
   const [isOpen, setIsOpen] = React.useState(false);

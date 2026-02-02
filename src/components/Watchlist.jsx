@@ -1,5 +1,5 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
+import Modal from './common/Modal.jsx';
 import { showToast } from '../utils/simpleToast.js';
 
 function Watchlist({ isOpen, onClose }) {
@@ -35,37 +35,11 @@ function Watchlist({ isOpen, onClose }) {
     window.dispatchEvent(new CustomEvent('openProduct', { detail: { productId } }));
   };
 
-  // Close on Escape key
-  React.useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
-  // Use direct rendering instead of Portal to debug event issues
-  return createPortal(
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cursor-pointer"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-[fadeIn_0.2s_ease-out] cursor-default"
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-4xl">
+      <div className="flex flex-col h-full">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
           <div>
@@ -158,8 +132,8 @@ function Watchlist({ isOpen, onClose }) {
           </div>
         )}
       </div>
-    </div>
-    , document.body);
+    </Modal>
+  );
 }
 
 export default Watchlist;

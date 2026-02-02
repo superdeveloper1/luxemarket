@@ -726,11 +726,6 @@ main {
     padding-top: 2rem;
 }
 
-/* Modal overlays should be highest */
-.modal-overlay {
-    z-index: 99999 !important;
-}
-
 /* Search dropdown should be above other content but below modals */
 .search-dropdown {
     z-index: 30 !important;

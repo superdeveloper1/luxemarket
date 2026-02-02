@@ -1,5 +1,5 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
+import Modal from './common/Modal.jsx';
 import { showToast } from '../utils/simpleToast.js';
 
 function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
@@ -41,30 +41,11 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
     }
   };
 
-  // Close on Escape key
-  React.useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
-  return createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] flex items-center justify-center p-4 modal-overlay modal-backdrop cart-modal cursor-pointer" onClick={onClose}>
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl relative cursor-default" onClick={(e) => e.stopPropagation()}>
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-4xl">
+      <div className="flex flex-col h-full cursor-default">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 p-6 flex justify-between items-center">
           <div>
@@ -167,8 +148,8 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
           </div>
         )}
       </div>
-    </div>
-    , document.body);
+    </Modal>
+  );
 }
 
 export default Cart;
