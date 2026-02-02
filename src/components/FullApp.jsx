@@ -65,6 +65,18 @@ function FullApp() {
   const [accountSummaryOpen, setAccountSummaryOpen] = React.useState(false);
 
   React.useEffect(() => {
+    // Restore user session on app load
+    const savedUser = sessionStorage.getItem('luxemarket_user');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Failed to parse saved user session:', error);
+        sessionStorage.removeItem('luxemarket_user');
+      }
+    }
+
     const updateCartCount = () => {
       try {
         const count = CartManager.getItemCount();
@@ -75,10 +87,8 @@ function FullApp() {
     };
 
     updateCartCount();
-    window.addEventListener('cartUpdated', updateCartCount);
-    return () => {
-      window.removeEventListener('cartUpdated', updateCartCount);
-    };
+    window.addEventListener('cartUpdate', updateCartCount);
+    return () => window.removeEventListener('cartUpdate', updateCartCount);
   }, []);
 
   React.useEffect(() => {
@@ -145,6 +155,7 @@ function FullApp() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    sessionStorage.removeItem('luxemarket_user');
     showToast('You have been logged out', 'info');
   };
 

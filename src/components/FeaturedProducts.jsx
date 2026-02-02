@@ -323,7 +323,7 @@ function FeaturedProductsSection() {
 
                 <div className="home-products-grid">
                     <FeaturedProducts
-                        products={Products}
+                        products={currentProducts}
                         onProductClick={handleProductClick}
                     />
                 </div>

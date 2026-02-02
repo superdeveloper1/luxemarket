@@ -225,6 +225,18 @@ body {
     .modal-backdrop {
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
+        pointer-events: auto;
+    }
+
+    /* Ensure modal backdrop is clickable */
+    .modal-backdrop > div:first-child {
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    /* Ensure modal content blocks backdrop clicks */
+    .modal-backdrop > div:last-child {
+        pointer-events: auto;
     }
 
     /* Product detail modal styles */
@@ -459,12 +471,17 @@ body {
         opacity: 1;
     }
 
-    /* Ensure modal is always on top */
+    /* Ensure modal is always on top but not interfering with backdrop clicks */
     .modal-overlay {
-        z-index: 2147483647 !important;
+        z-index: 99999 !important;
         position: fixed !important;
         cursor: pointer;
-        /* Visual feedback for clickability */
+        pointer-events: auto;
+    }
+
+    /* Ensure modal content blocks backdrop clicks */
+    .modal-overlay > div {
+        pointer-events: auto;
     }
 
     /* Modal slide-in animation */

@@ -1,3 +1,4 @@
+import React from 'react';
 import Modal from './common/Modal.jsx';
 
 function AuthModal({ isOpen, isRegister = false, onClose, onLogin }) {

@@ -21,9 +21,19 @@ const Modal = ({
 }) => {
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         setMounted(true);
-        return () => setMounted(false);
+        
+        // Create modal-root if it doesn't exist
+        if (!document.getElementById('modal-root')) {
+          const modalRoot = document.createElement('div');
+          modalRoot.id = 'modal-root';
+          document.body.appendChild(modalRoot);
+        }
+
+        return () => {
+          setMounted(false);
+        };
     }, []);
 
     // Handle ESC key
@@ -54,19 +64,18 @@ const Modal = ({
 
     return createPortal(
         <div
-            className="fixed inset-0 flex items-center justify-center p-4 modal-backdrop"
-            style={{ zIndex: 99999 }} // Increase z-index significantly
+            className="fixed inset-0 flex items-center justify-center p-4 modal-backdrop bg-black bg-opacity-50 cursor-pointer"
+            style={{ zIndex: 99999 }}
+            onClick={(e) => {
+                // Only close if clicking on the backdrop, not modal content
+                if (e.target === e.currentTarget) {
+                    onClose();
+                }
+            }}
         >
-            {/* Backdrop Layer - Click to Close */}
-            <div
-                className="absolute inset-0 bg-black bg-opacity-50 transition-opacity opacity-100 cursor-pointer"
-                onClick={onClose}
-                aria-hidden="true"
-            />
-
             {/* Modal Content - Stop Propagation */}
             <div
-                className={`bg-white rounded-lg shadow-xl w-full ${maxWidth} relative z-10 overflow-hidden animate-[fadeIn_0.2s_ease-out]`}
+                className={`bg-white rounded-lg shadow-xl w-full ${maxWidth} relative z-10 overflow-hidden animate-[fadeIn_0.2s_ease-out] max-h-[90vh] overflow-y-auto`}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"

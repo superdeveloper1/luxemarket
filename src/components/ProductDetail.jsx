@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import RelatedItems from './RelatedItems.jsx';
 import CartManager from '../managers/CartManager.js';
 import { showToast } from '../utils/simpleToast.js';
@@ -27,7 +26,11 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
 
   if (!product) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" onClick={onClose}>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] modal-overlay modal-backdrop" onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }}>
         <div className="bg-white rounded-lg p-8" onClick={(e) => e.stopPropagation()}>
           <p>Product not found</p>
           <button onClick={onClose} className="btn btn-primary mt-4">Close</button>
@@ -210,20 +213,10 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
     ? product.description.substring(0, descriptionThreshold) + '...'
     : product.description;
 
-  return createPortal(
-    <div
-      className="modal-overlay fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center p-8 overflow-y-auto z-[99999]"
-      onClick={onClose}
-      style={{
-        pointerEvents: 'auto',
-        cursor: 'pointer'
-      }}
-    >
-      <div
-        className="product-modal bg-white rounded-lg max-w-3xl w-full my-8 shadow-2xl relative"
-        style={{ maxWidth: 'calc(100vw - 8rem)', maxHeight: 'calc(100vh - 8rem)' }}
-        onClick={(e) => e.stopPropagation()}
-      >        {/* Fixed Header */}
+  return (
+    <>
+      <div className="flex flex-col h-full">
+        {/* Fixed Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center rounded-t-lg">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Product Details</h2>
@@ -241,7 +234,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
         </div>
 
         {/* Scrollable Content */}
-        <div className="max-h-[calc(90vh-80px)] overflow-y-auto">
+        <div className="flex-grow overflow-y-auto">
           <div className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image Section */}
@@ -520,8 +513,8 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
           </div>
         </div>
       </div>
-    </div>
-    , document.body);
+    </>
+  );
 }
 
 export default React.memo(ProductDetail);

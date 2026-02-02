@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "./Modal.jsx";
-import ProductDetail from "./ProductDetail.jsx";
+import ProductDetail from "../ProductDetail.jsx";
 
 export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUpdate }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -10,8 +10,29 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
     const handleOpen = (e) => {
       const id = e.detail.productId;
 
+      // Try to get the product from ProductManager first (since that's what's being displayed)
+      if (window.ProductManager) {
+        let product;
+        if (window.ProductManager.getByIdAsync) {
+          // For async, we'd need to handle this differently
+          product = window.ProductManager.getById(id);
+        } else {
+          product = window.ProductManager.getById(id);
+        }
+        
+        if (product) {
+          setProduct(product);
+          setIsOpen(true);
+          return;
+        }
+      }
+
+      // Fallback to localStorage
       const stored = localStorage.getItem("luxemarket_products");
-      if (!stored) return;
+      
+      if (!stored) {
+        return;
+      }
 
       const products = JSON.parse(stored);
       const found = products.find((p) => p.id === id);
@@ -32,7 +53,7 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={close} maxWidth="max-w-3xl">
+    <Modal isOpen={isOpen} onClose={close} maxWidth="max-w-2xl">
       {product && (
         <ProductDetail
           product={product}
