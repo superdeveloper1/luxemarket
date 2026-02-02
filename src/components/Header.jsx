@@ -104,6 +104,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     }, [searchTerm, searchCategory]);
 
     const handleSearch = (term, cat) => {
+        console.log('handleSearch called with:', { term, cat, searchTerm, searchCategory });
         try {
             // Handle arguments: if passed as event handler or undefined, use state
             // If called from button with no args, term is event - handle that
@@ -326,7 +327,10 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                 </div>
                             </div>
                             <button
-                                onClick={() => handleSearch()}
+                                onClick={() => {
+                                    console.log('Search button clicked - triggering search');
+                                    handleSearch();
+                                }}
                                 className="btn btn-primary rounded-full px-6 ml-2 h-10 md:h-11 text-base font-semibold min-w-[100px] hidden md:block hover:shadow-md transition-shadow"
                             >
                                 Search
