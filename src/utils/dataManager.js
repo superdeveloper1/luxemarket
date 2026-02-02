@@ -180,10 +180,14 @@ class DataManager {
         let total = 0;
         for (let key in localStorage) {
             if (key.startsWith('luxemarket_')) {
-                total += localStorage[key].length;
+                const value = localStorage[key];
+                if (value && typeof value === 'string') {
+                    total += value.length;
+                }
             }
         }
-        return `${(total / 1024).toFixed(2)} KB`;
+        const kb = total / 1024;
+        return `${(kb && !isNaN(kb) ? kb.toFixed(2) : '0.00')} KB`;
     }
 
     // Recovery methods
