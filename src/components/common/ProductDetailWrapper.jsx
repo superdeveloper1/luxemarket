@@ -8,10 +8,12 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
 
   React.useEffect(() => {
     const handleOpen = (e) => {
+      console.log('ProductDetailWrapper received openProduct event:', e.detail);
       const id = e.detail.productId;
 
       // Try to get the product from ProductManager first (since that's what's being displayed)
       if (window.ProductManager) {
+        console.log('ProductManager available, trying to get product:', id);
         let product;
         if (window.ProductManager.getByIdAsync) {
           // For async, we'd need to handle this differently
@@ -21,16 +23,22 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
         }
         
         if (product) {
+          console.log('Product found in ProductManager:', product);
           setProduct(product);
           setIsOpen(true);
           return;
+        } else {
+          console.log('Product not found in ProductManager');
         }
+      } else {
+        console.log('ProductManager not available');
       }
 
       // Fallback to localStorage
       const stored = localStorage.getItem("luxemarket_products");
       
       if (!stored) {
+        console.log('No products found in localStorage');
         return;
       }
 
@@ -38,8 +46,11 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
       const found = products.find((p) => p.id === id);
 
       if (found) {
+        console.log('Product found in localStorage:', found);
         setProduct(found);
         setIsOpen(true);
+      } else {
+        console.log('Product not found with id:', id);
       }
     };
 

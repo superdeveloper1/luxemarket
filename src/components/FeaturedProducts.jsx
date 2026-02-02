@@ -26,10 +26,19 @@ function ProductCard({ product, onProductClick }) {
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer minimal-product-card"
-            onClick={() => {
-                console.log('ProductCard clicked:', product.id);
-                if (onProductClick) onProductClick(product.id);
-            }}>
+            onClick={(e) => {
+                console.log('ProductCard clicked:', product.id, e.target);
+                e.preventDefault();
+                e.stopPropagation();
+                if (onProductClick) {
+                    console.log('Calling onProductClick with:', product.id);
+                    onProductClick(product.id);
+                } else {
+                    console.log('onProductClick is not available');
+                }
+            }}
+            style={{ pointerEvents: 'auto', zIndex: 1 }}
+        >
             <div
                 className="relative aspect-square overflow-hidden bg-gray-100 product-image-container"
             >
@@ -252,7 +261,10 @@ function FeaturedProductsSection() {
     }, [loadProducts]);
 
     const handleProductClick = (productId) => {
-        window.dispatchEvent(new CustomEvent('openProduct', { detail: { productId } }));
+        console.log('handleProductClick called with productId:', productId);
+        const event = new CustomEvent('openProduct', { detail: { productId } });
+        console.log('Dispatching openProduct event:', event);
+        window.dispatchEvent(event);
     };
 
     // Calculate pagination
