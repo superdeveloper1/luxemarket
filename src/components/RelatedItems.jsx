@@ -48,7 +48,7 @@ function RelatedItems({ currentProduct, onProductClick }) {
                             <p className="text-xs text-gray-500 mb-2">{product.category}</p>
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-bold text-[var(--primary-color)]">
-                                    ${product.price.toFixed(2)}
+                                    ${product.price ? product.price.toFixed(2) : '0.00'}
                                 </span>
                                 <div className="flex items-center gap-1 text-xs text-gray-500">
                                     <div className="icon-star text-yellow-400 fill-current text-[10px]"></div>

@@ -117,7 +117,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                     <div className="icon-dollar-sign text-2xl text-green-600 mr-3"></div>
                     <div>
                       <p className="text-sm text-green-600 font-medium">Total Spent</p>
-                      <p className="text-2xl font-bold text-green-900">${stats.totalSpent.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-green-900">${stats.totalSpent ? stats.totalSpent.toFixed(2) : '0.00'}</p>
                     </div>
                   </div>
                 </div>
@@ -154,7 +154,7 @@ function AccountSummary({ isOpen, onClose, currentUser }) {
                     </div>
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-gray-600">{order.items} items</p>
-                      <p className="font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                      <p className="font-bold text-gray-900">${order.total ? order.total.toFixed(2) : '0.00'}</p>
                     </div>
                   </div>
                 ))}

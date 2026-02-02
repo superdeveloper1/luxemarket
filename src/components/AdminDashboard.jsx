@@ -78,7 +78,7 @@ function DailyDealsManager({ products, onUpdate }) {
               <option value="">Select a product...</option>
               {products.map(product => (
                 <option key={product.id} value={product.id}>
-                  {product.name} - ${product.price.toFixed(2)}
+                  {product.name} - ${product.price ? product.price.toFixed(2) : '0.00'}
                 </option>
               ))}
             </select>
@@ -130,8 +130,8 @@ function DailyDealsManager({ products, onUpdate }) {
                     <div>
                       <h4 className="font-semibold text-gray-900">{product.name}</h4>
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-red-600">${salePrice.toFixed(2)}</span>
-                        <span className="text-sm text-gray-500 line-through">${product.price.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-red-600">${salePrice ? salePrice.toFixed(2) : '0.00'}</span>
+                        <span className="text-sm text-gray-500 line-through">${product.price ? product.price.toFixed(2) : '0.00'}</span>
                         <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
                           {deal.discountPercent}% OFF
                         </span>
@@ -1124,14 +1124,14 @@ function AdminDashboard() {
                     <div className="mb-1">
                       {product.isDailyDeal ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-red-600">${product.price.toFixed(2)}</span>
-                          <span className="text-sm text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                          <span className="text-lg font-bold text-red-600">${product.price ? product.price.toFixed(2) : '0.00'}</span>
+                          <span className="text-sm text-gray-500 line-through">${product.originalPrice ? product.originalPrice.toFixed(2) : '0.00'}</span>
                           <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
                             {product.discountPercent}% OFF
                           </span>
                         </div>
                       ) : (
-                        <p className="text-xl font-bold text-[var(--primary-color)]">${product.price.toFixed(2)}</p>
+                        <p className="text-xl font-bold text-[var(--primary-color)]">${product.price ? product.price.toFixed(2) : '0.00'}</p>
                       )}
                     </div>
                     <p className="text-sm text-gray-500 mb-2">{product.category}</p>

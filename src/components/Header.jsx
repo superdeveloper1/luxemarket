@@ -353,7 +353,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                                         </div>
                                                     </div>
                                                     <div className="text-base font-black text-[var(--primary-color)]">
-                                                        ${product.price.toFixed(2)}
+                                                        ${product.price ? product.price.toFixed(2) : '0.00'}
                                                     </div>
                                                 </button>
                                             ))}

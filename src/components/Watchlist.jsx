@@ -97,7 +97,7 @@ function Watchlist({ isOpen, onClose }) {
                         <div className="icon-x"></div>
                       </button>
                     </div>
-                    <p className="text-[var(--primary-color)] font-bold mt-1">${product.price.toFixed(2)}</p>
+                    <p className="text-[var(--primary-color)] font-bold mt-1">${product.price ? product.price.toFixed(2) : '0.00'}</p>
                     <p className="text-xs text-gray-500 mt-1">{product.category}</p>
                     <div className="flex gap-2 mt-3">
                       <button

@@ -92,7 +92,7 @@ function ConfirmationModal({
             <div className="flex-1">
               <h4 className="font-semibold text-gray-900">{itemDetails.name}</h4>
               {itemDetails.price && (
-                <p className="text-sm text-gray-600">${itemDetails.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">${itemDetails.price ? itemDetails.price.toFixed(2) : '0.00'}</p>
               )}
               {itemDetails.category && (
                 <p className="text-xs text-gray-500">{itemDetails.category}</p>
