@@ -2,12 +2,6 @@ import React from 'react';
 import { showToast } from '../utils/simpleToast.js';
 
 function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth, onLogout, onOpenCart, onOpenWatchlist, onOpenAccountSummary }) {
-    // Test if component is mounting
-    React.useEffect(() => {
-        console.log('Header component mounted successfully!');
-        document.title = 'HEADER LOADED'; // Visual test
-    }, []);
-
     // All state declarations at the top
     const [categoryOpen, setCategoryOpen] = React.useState(false);
     const [categories, setCategories] = React.useState([
@@ -110,46 +104,19 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     }, [searchTerm, searchCategory]);
 
     const handleSearch = (term, cat) => {
-        console.log('handleSearch called with:', { term, cat, searchTerm, searchCategory });
         try {
             // Handle arguments: if passed as event handler or undefined, use state
-            // If called from button with no args, term is event - handle that
             let actualTerm = searchTerm;
             let actualCat = searchCategory;
 
-            // If term is a string, use it. If it's an event (object), ignore it and use state.
+            // If term is a string, use it
             if (typeof term === 'string') {
                 actualTerm = term;
             }
 
-            // If cat is a string, use it.
+            // If cat is a string, use it
             if (typeof cat === 'string') {
                 actualCat = cat;
-            }
-
-            // Special case for clearing search if explicitly passed empty string
-            if (term === '') {
-                actualTerm = '';
-            }
-
-            let url = 'index.html?';
-            const params = [];
-
-            // Check if actualTerm is valid
-            if (actualTerm && typeof actualTerm === 'string' && actualTerm.trim()) {
-                params.push(`search=${encodeURIComponent(actualTerm.trim())}`);
-            }
-
-            // If category is provided and not 'All'
-            if (actualCat && typeof actualCat === 'string' && actualCat !== 'All Categories') {
-                params.push(`category=${encodeURIComponent(actualCat)}`);
-            }
-
-            const finalUrl = url + params.join('&') + '#featured-products';
-
-            // Update URL without page reload
-            if (window.history.pushState) {
-                window.history.pushState({}, '', finalUrl);
             }
 
             // Dispatch category filter event if category is selected
