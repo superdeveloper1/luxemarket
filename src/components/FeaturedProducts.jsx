@@ -206,6 +206,7 @@ function FeaturedProductsSection() {
 
         // Listen for category filter events
         const handleCategoryFilter = (event) => {
+            console.log('FeaturedProducts received filterByCategory event:', event.detail.category);
             const { category } = event.detail;
             setCategoryFilter(category);
             setShowDealsOnly(false); // Clear deals filter when category is selected

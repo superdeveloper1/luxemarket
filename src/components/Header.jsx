@@ -306,14 +306,17 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                                         value={searchCategory}
                                         onChange={(e) => {
                                             const newCat = e.target.value;
+                                            console.log('Category dropdown changed to:', newCat);
                                             setSearchCategory(newCat);
                                             
                                             // Dispatch event to filter products by category if not "All Categories"
                                             if (newCat !== 'All Categories') {
+                                                console.log('Dispatching filterByCategory event with:', newCat);
                                                 window.dispatchEvent(new CustomEvent('filterByCategory', {
                                                     detail: { category: newCat }
                                                 }));
                                             } else {
+                                                console.log('Clearing category filter');
                                                 // Clear category filter if "All Categories" is selected
                                                 window.dispatchEvent(new CustomEvent('filterByCategory', {
                                                     detail: { category: '' }
