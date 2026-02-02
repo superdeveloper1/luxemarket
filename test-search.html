@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Search Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        select { padding: 8px; margin: 5px; }
+        #results { margin-top: 20px; padding: 10px; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>Category Search Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Category Search</h2>
+        <select id="categorySelect">
+            <option value="All Categories">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Accessories">Accessories</option>
+        </select>
+        <button onclick="testSearch()">Test Search</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Simulated Products</h2>
+        <div id="products">
+            <div data-category="Electronics">Laptop - $999</div>
+            <div data-category="Fashion">T-Shirt - $29</div>
+            <div data-category="Electronics">Phone - $699</div>
+            <div data-category="Furniture">Chair - $199</div>
+            <div data-category="Fashion">Jeans - $79</div>
+            <div data-category="Accessories">Watch - $299</div>
+        </div>
+    </div>
+    
+    <div id="results">
+        <h3>Results:</h3>
+        <div id="resultText">No test run yet</div>
+    </div>
+
+    <script>
+        // Simulate the event system
+        function testSearch() {
+            const category = document.getElementById('categorySelect').value;
+            const results = document.getElementById('resultText');
+            
+            console.log('=== CATEGORY SEARCH TEST ===');
+            console.log('Selected category:', category);
+            
+            // Simulate the event dispatch
+            if (category && category !== 'All Categories') {
+                console.log('DISPATCHING filterByCategory event with:', category);
+                
+                // Simulate filtering
+                const products = document.querySelectorAll('#products > div');
+                let filteredProducts = [];
+                
+                products.forEach(product => {
+                    const productCategory = product.getAttribute('data-category');
+                    if (productCategory.toLowerCase() === category.toLowerCase()) {
+                        filteredProducts.push(product.textContent);
+                        console.log('Product matches filter:', product.textContent, productCategory);
+                    }
+                });
+                
+                results.innerHTML = `
+                    <strong>Category:</strong> ${category}<br>
+                    <strong>Products Found:</strong> ${filteredProducts.length}<br>
+                    <strong>Items:</strong><br>${filteredProducts.map(p => `• ${p}`).join('<br>')}
+                `;
+                
+                console.log('Filtered products count:', filteredProducts.length);
+                console.log('Filtered products:', filteredProducts);
+            } else {
+                console.log('No category filter applied');
+                results.innerHTML = 'No category filter applied';
+            }
+            
+            console.log('=== END TEST ===');
+        }
+        
+        function clearResults() {
+            document.getElementById('resultText').innerHTML = 'No test run yet';
+            console.clear();
+        }
+        
+        // Test on page load
+        window.onload = function() {
+            console.log('Category Search Test Page Loaded');
+            console.log('Instructions:');
+            console.log('1. Select a category from dropdown');
+            console.log('2. Click "Test Search" button');
+            console.log('3. Check console for detailed logs');
+            console.log('4. Check results section for filtered products');
+        };
+    </script>
+</body>
+</html>
