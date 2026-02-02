@@ -140,8 +140,18 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
 
             const finalUrl = url + params.join('&') + '#featured-products';
 
-            // If both are empty/default, go to home
-            window.location.href = finalUrl;
+            // Update URL without page reload
+            if (window.history.pushState) {
+                window.history.pushState({}, '', finalUrl);
+            }
+
+            // Dispatch category filter event if category is selected
+            if (actualCat && actualCat !== 'All Categories') {
+                window.dispatchEvent(new CustomEvent('filterByCategory', {
+                    detail: { category: actualCat }
+                }));
+            }
+
             setShowSuggestions(false);
         } catch (error) {
             console.error('Search error:', error);
