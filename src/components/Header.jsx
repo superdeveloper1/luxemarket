@@ -121,11 +121,17 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                 actualCat = cat;
             }
 
+            // Debug: Log what we're doing
+            console.log('SEARCH TRIGGERED:', { actualCat, searchTerm, searchCategory });
+
             // Dispatch category filter event if category is selected
             if (actualCat && actualCat !== 'All Categories') {
+                console.log('DISPATCHING filterByCategory event with:', actualCat);
                 window.dispatchEvent(new CustomEvent('filterByCategory', {
                     detail: { category: actualCat }
                 }));
+            } else {
+                console.log('No category filter applied');
             }
 
             setShowSuggestions(false);
