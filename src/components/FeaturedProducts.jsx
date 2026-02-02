@@ -166,10 +166,17 @@ function FeaturedProductsSection() {
                 }
                 // Apply category filter if set
                 else if (categoryFilter && categoryFilter !== 'All Categories') {
+                    console.log('Applying category filter:', categoryFilter);
+                    console.log('Available categories in products:', [...new Set(allProducts.map(p => p.category))]);
                     productsToShow = allProducts.filter(p => {
                         // Case-insensitive category matching to handle any inconsistencies
-                        return p.category && p.category.toLowerCase() === categoryFilter.toLowerCase();
+                        const matches = p.category && p.category.toLowerCase() === categoryFilter.toLowerCase();
+                        if (matches) {
+                            console.log('Product matches filter:', p.name, p.category);
+                        }
+                        return matches;
                     });
+                    console.log('Filtered products count:', productsToShow.length);
                 }
                 // Show all products if requested
                 else if (showAllProducts) {
