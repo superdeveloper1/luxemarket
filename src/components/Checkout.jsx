@@ -225,7 +225,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                               <p className="text-sm">Qty: {item.quantity}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-bold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                              <p className="font-bold">${item.product && item.product.price ? (item.product.price * item.quantity).toFixed(2) : '0.00'}</p>
                             </div>
                           </div>
                         ))}
@@ -421,11 +421,11 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>${getTotal().toFixed(2)}</span>
+                        <span>${getTotal() ? getTotal().toFixed(2) : '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Tax:</span>
-                        <span>${getTax().toFixed(2)}</span>
+                        <span>${getTax() ? getTax().toFixed(2) : '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Shipping:</span>
@@ -434,7 +434,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                       <div className="border-t border-gray-200 pt-2">
                         <div className="flex justify-between font-bold text-lg">
                           <span>Total:</span>
-                          <span>${getGrandTotal().toFixed(2)}</span>
+                          <span>${getGrandTotal() ? getGrandTotal().toFixed(2) : '0.00'}</span>
                         </div>
                       </div>
                     </div>
@@ -442,7 +442,7 @@ function Checkout({ isOpen, onClose, onOrderComplete }) {
                     {getTotal() < 50 && step < 4 && (
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                         <p className="text-sm text-blue-800">
-                          Add ${(50 - getTotal()).toFixed(2)} more for free shipping!
+                          Add ${getTotal() ? (50 - getTotal()).toFixed(2) : '0.00'} more for free shipping!
                         </p>
                       </div>
                     )}

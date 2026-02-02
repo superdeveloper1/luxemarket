@@ -112,9 +112,9 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
                       </div>
                       <div className="text-right">
                         {item.originalPrice > item.price && (
-                          <p className="text-sm text-gray-500 line-through">${item.originalPrice.toFixed(2)}</p>
+                          <p className="text-sm text-gray-500 line-through">${item.originalPrice ? item.originalPrice.toFixed(2) : '0.00'}</p>
                         )}
-                        <p className="font-bold text-gray-900 text-lg">${item.price.toFixed(2)}</p>
+                        <p className="font-bold text-gray-900 text-lg">${item.price ? item.price.toFixed(2) : '0.00'}</p>
                       </div>
                     </div>
                   </div>
@@ -129,7 +129,7 @@ function Cart({ isOpen, onClose, onCartUpdate, onCheckout }) {
           <div className="bg-gray-50 p-6 border-t border-gray-200">
             <div className="flex justify-between items-center mb-6">
               <span className="text-gray-600 font-medium">Subtotal</span>
-              <span className="text-2xl font-black text-gray-900">${total.toFixed(2)}</span>
+              <span className="text-2xl font-black text-gray-900">${total ? total.toFixed(2) : '0.00'}</span>
             </div>
             <div className="flex gap-3">
               <button

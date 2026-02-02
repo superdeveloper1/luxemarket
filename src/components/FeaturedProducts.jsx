@@ -73,8 +73,8 @@ function ProductCard({ product, onProductClick }) {
                 {product.isDailyDeal && (
                     <div className="mt-2">
                         <div className="flex items-center justify-center gap-2">
-                            <span className="text-sm font-bold text-red-600">${product.price.toFixed(2)}</span>
-                            <span className="text-xs text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                            <span className="text-sm font-bold text-red-600">${product.price ? product.price.toFixed(2) : '0.00'}</span>
+                            <span className="text-xs text-gray-500 line-through">${product.originalPrice ? product.originalPrice.toFixed(2) : '0.00'}</span>
                         </div>
                         <p className="text-xs text-red-600 font-medium">Daily Deal!</p>
                     </div>

@@ -310,7 +310,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words">{product.name}</h1>
                   <div className="text-2xl font-bold text-blue-600 mb-4">
-                    ${product.price.toFixed(2)}
+                    ${product.price ? product.price.toFixed(2) : '0.00'}
                   </div>
                   <div className="flex items-center gap-3 mb-6">
                     <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
@@ -447,7 +447,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                       ? 'Out of Stock'
                       : !currentUser
                         ? 'Sign In to Add to Cart'
-                        : `Add ${quantity} to Cart - $${(product.price * quantity).toFixed(2)}`
+                        : `Add ${quantity} to Cart - $${product.price ? (product.price * quantity).toFixed(2) : '0.00'}`
                     }
                   </button>
 
@@ -459,7 +459,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                     >
                       {!currentUser
                         ? '🚀 Sign In to Buy Now'
-                        : `🚀 Buy Now - $${(product.price * quantity).toFixed(2)}`
+                        : `🚀 Buy Now - $${product.price ? (product.price * quantity).toFixed(2) : '0.00'}`
                       }
                     </button>
                   )}
