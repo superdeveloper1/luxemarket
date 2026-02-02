@@ -135,6 +135,7 @@ function FeaturedProductsSection() {
     setLoading(false);
   }, []);
     const loadProducts = React.useCallback(async () => {
+        console.log('loadProducts called with filters:', { categoryFilter, showDealsOnly, showAllProducts });
         try {
             setLoading(true);
             setProducts([]); // Clear old products first
