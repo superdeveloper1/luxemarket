@@ -5,7 +5,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
     // Test if component is mounting
     React.useEffect(() => {
         console.log('Header component mounted successfully!');
-        alert('Header component loaded!');
+        document.title = 'HEADER LOADED'; // Visual test
     }, []);
 
     // All state declarations at the top
@@ -334,7 +334,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                             </div>
                             <button
                                 onClick={() => {
-                                    alert('Search button clicked!');
+                                    document.title = 'SEARCH CLICKED!';
                                     console.log('Search button clicked - triggering search');
                                     handleSearch();
                                 }}
