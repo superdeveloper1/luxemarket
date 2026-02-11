@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/luxemarket/',
   build: {
-    outDir: 'docs',
+    outDir: 'dist',
     chunkSizeWarningLimit: 1000
   }
 })
