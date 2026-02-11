@@ -1,14 +1,12 @@
- import { defineConfig } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+
 
 export default defineConfig({
   plugins: [react()],
   base: '/luxemarket/',
   build: {
-    outDir: path.resolve(__dirname, 'docs'),
+    outDir: 'docs',
+    chunkSizeWarningLimit: 1000
   }
 })
-build: {
-  chunkSizeWarningLimit: 1000
-}
