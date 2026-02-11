@@ -1,10 +1,12 @@
 import React from 'react';
 import { showToast } from '../utils/simpleToast.js';
+// ProductManager is available globally via window.ProductManager (Firebase)
 import CategoryManager from '../managers/CategoryManager.js';
 import ColorManager from './ColorManager.jsx';
 import EnhancedImageManager from './EnhancedImageManager.jsx';
 import ConfirmationModal from './ConfirmationModal.jsx';
 import ProductPreview from './ProductPreview.jsx';
+import ThreeDViewer from './ThreeDViewer.jsx';
 // import DataManagementPanel from './DataManagementPanel.jsx';
 
 // Daily Deals Manager Component
@@ -406,6 +408,8 @@ function AdminDashboard() {
     images: [],
     description: "",
     videoUrl: "",
+    modelUrl: "",
+    modelImage: "",
     colors: [],
     sizes: "",
     rating: 4.0,
@@ -424,6 +428,8 @@ function AdminDashboard() {
   });
   const [showPreview, setShowPreview] = React.useState(true);
   const [showGoToTop, setShowGoToTop] = React.useState(false);
+  const [active3DPreview, setActive3DPreview] = React.useState(false);
+  const [systemResetConfirmation, setSystemResetConfirmation] = React.useState(false);
 
   React.useEffect(() => {
     refreshData();
@@ -471,6 +477,26 @@ function AdminDashboard() {
     }
   };
 
+  const handleSystemReset = async () => {
+    console.log('[AdminDashboard] handleSystemReset clicked');
+    console.log('[AdminDashboard] ProductManager available:', !!ProductManager);
+    console.log('[AdminDashboard] resetToDefaults available:', !!ProductManager?.resetToDefaults);
+
+    if (ProductManager && ProductManager.resetToDefaults) {
+      ProductManager.resetToDefaults();
+      showToast('System reset triggered. Reloading...', 'success');
+
+      // Close modal and refresh after a short delay
+      setSystemResetConfirmation(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } else {
+      console.error('[AdminDashboard] Reset feature missing from ProductManager');
+      showToast('Reset feature not available - Check Console', 'error');
+    }
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -507,6 +533,8 @@ function AdminDashboard() {
       images: [],
       description: "",
       videoUrl: "",
+      modelUrl: "",
+      modelImage: "",
       colors: [],
       sizes: "",
       rating: 4.0,
@@ -515,6 +543,7 @@ function AdminDashboard() {
     });
     setImageInput("");
     setEditingProduct(null);
+    setActive3DPreview(false);
   };
 
   const handleSubmit = async (e) => {
@@ -546,6 +575,8 @@ function AdminDashboard() {
         enhancedImages: form.images, // Store enhanced images with angle info
         description: form.description.trim(),
         videoUrl: form.videoUrl.trim(),
+        modelUrl: (form.modelUrl || "").trim(),
+        modelImage: (form.modelImage || "").trim(),
         colors: form.colors,
         sizes: sizesArray,
         rating: parseFloat(form.rating) || 4.0,
@@ -597,6 +628,8 @@ function AdminDashboard() {
       images: imagesToEdit,
       description: product.description,
       videoUrl: product.videoUrl || "",
+      modelUrl: product.modelUrl || "",
+      modelImage: product.modelImage || "",
       colors: product.colors || [],
       sizes: sizesString,
       rating: product.rating || 4.0,
@@ -971,6 +1004,114 @@ function AdminDashboard() {
               <p className="text-xs text-gray-500 mt-1">Add a video URL for product demonstrations</p>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">3D Model URL (Optional)</label>
+              <input
+                name="modelUrl"
+                value={form.modelUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/model.glb"
+                className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">Add a direct URL to a .glb or .gltf file</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">3D Model Thumbnail (Optional)</label>
+              <div className="flex gap-2">
+                <input
+                  name="modelImage"
+                  value={form.modelImage}
+                  onChange={handleChange}
+                  placeholder="https://example.com/3d-thumbnail.jpg"
+                  className="flex-1 border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+                />
+                <label className="btn btn-secondary px-4 flex items-center justify-center cursor-pointer whitespace-nowrap">
+                  <div className="icon-camera mr-2 text-sm"></div>
+                  Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                          showToast('Image too large (max 5MB)', 'error');
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setForm(prev => ({ ...prev, modelImage: reader.result }));
+                          showToast('Thumbnail uploaded successfully', 'success');
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Custom thumbnail image for the 3D model (defaults to main image)</p>
+              {form.modelImage && (
+                <div className="mt-2">
+                  <p className="text-sm font-medium text-gray-700 mb-1">Thumbnail Preview</p>
+                  <img
+                    src={form.modelImage}
+                    alt="3D Model Thumbnail Preview"
+                    className="w-24 h-24 object-cover rounded border hover:border-[var(--primary-color)] transition-colors"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {(form.modelUrl || form.modelImage) && (
+              <div className="mt-2 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-sm font-medium text-gray-700">3D Model Section Preview</p>
+                  {form.modelUrl && form.modelImage && (
+                    <button
+                      type="button"
+                      onClick={() => setActive3DPreview(!active3DPreview)}
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      {active3DPreview ? 'Show Thumbnail' : 'Test 3D Model'}
+                    </button>
+                  )}
+                </div>
+                <div className="w-full h-64 rounded border overflow-hidden bg-slate-50 relative">
+                  {(!active3DPreview && form.modelImage) ? (
+                    <div
+                      className="w-full h-full relative cursor-pointer group"
+                      onClick={() => form.modelUrl && setActive3DPreview(true)}
+                      title={form.modelUrl ? "Click to load 3D model" : "Thumbnail preview"}
+                    >
+                      <img
+                        src={form.modelImage}
+                        alt="3D Model Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      {form.modelUrl && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all">
+                          <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                            <span className="text-3xl">🧊</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : form.modelUrl ? (
+                    <ThreeDViewer modelUrl={form.modelUrl} className="bg-slate-50" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      No preview available
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Colors</label>
               <ColorManager
@@ -1154,12 +1295,19 @@ function AdminDashboard() {
                     </div>
 
                     <p className="text-sm text-gray-600 line-clamp-2 mb-2">{product.description}</p>
-                    {product.videoUrl && (
-                      <div className="flex items-center gap-1 text-xs text-blue-600 mb-4">
-                        <div className="icon-play text-xs"></div>
-                        <span>Video available</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 mb-4">
+                      {product.videoUrl && (
+                        <div className="flex items-center gap-1 text-xs text-blue-600">
+                          <div className="icon-play text-xs"></div>
+                          <span>Video</span>
+                        </div>
+                      )}
+                      {(product.modelUrl || product.modelImage) && (
+                        <div className="flex items-center gap-1 text-xs text-indigo-600">
+                          <span>🧊 3D Model</span>
+                        </div>
+                      )}
+                    </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(product)}
@@ -1190,8 +1338,35 @@ function AdminDashboard() {
           )}
         </div>
 
-        {/* Daily Deals Management */}
         <DailyDealsManager products={products} onUpdate={refreshData} />
+
+        {/* System Management Section */}
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+              <span className="text-xl">⚙️</span>
+              <h2 className="text-lg font-bold text-gray-800">System Management</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex-1">
+                  <h3 className="text-md font-semibold text-gray-900 mb-1">Reset System Data</h3>
+                  <p className="text-sm text-gray-500 max-w-2xl leading-relaxed">
+                    This will clear your local product database and reload the latest default items (version {window.ProductManager?.CURRENT_VERSION || 'latest'}).
+                    Use this if you are experiencing data inconsistencies or want to see the new 3D models.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSystemResetConfirmation(true)}
+                  className="px-6 py-2.5 bg-red-50 text-red-600 font-semibold rounded-lg border border-red-100 hover:bg-red-100 hover:border-red-200 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <span className="text-lg">🔄</span>
+                  Reset to Defaults
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Home Page Product Ordering */}
         <HomePageManager products={products} onUpdate={refreshData} />
@@ -1221,6 +1396,17 @@ function AdminDashboard() {
       />
 
       {/* Category Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={systemResetConfirmation}
+        onClose={() => setSystemResetConfirmation(false)}
+        onConfirm={handleSystemReset}
+        title="Reset System Data"
+        message="Are you sure you want to reset all product data to defaults? This will clear all your manual changes in the admin dashboard and reload the latest system products."
+        confirmText="Yes, Reset Everything"
+        cancelText="No, Keep My Data"
+        type="danger"
+      />
+
       <ConfirmationModal
         isOpen={categoryDeleteConfirmation.isOpen}
         onClose={() => setCategoryDeleteConfirmation({ isOpen: false, categoryName: null })}

@@ -15,7 +15,7 @@ export default function FirebaseSetup() {
     const checkConnection = async () => {
         setStatus('checking');
         setMessage('Checking Firebase connection...');
-        
+
         try {
             const products = await productService.getAll();
             setProductCount(products.length);
@@ -34,7 +34,7 @@ export default function FirebaseSetup() {
     const handleMigrate = async () => {
         setStatus('migrating');
         setMessage('Migrating products to Firebase...');
-        
+
         try {
             await migrateProductsToFirebase();
             await checkConnection();
@@ -45,7 +45,7 @@ export default function FirebaseSetup() {
     };
 
     const getLocalProductCount = () => {
-        const data = localStorage.getItem('luxemarket_products');
+        const data = localStorage.getItem('luxemarket_products_v3');
         return data ? JSON.parse(data).length : 0;
     };
 
@@ -63,7 +63,7 @@ export default function FirebaseSetup() {
                 {/* Setup Steps */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
                     <h2 className="text-xl font-bold mb-4">Setup Steps</h2>
-                    
+
                     <div className="space-y-4">
                         <div className="flex items-start gap-3">
                             <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
@@ -118,7 +118,7 @@ export default function FirebaseSetup() {
                 {/* Status */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
                     <h2 className="text-xl font-bold mb-4">Status</h2>
-                    
+
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-4 bg-gray-50 rounded">
                             <span className="font-semibold">Local Products:</span>
@@ -133,11 +133,10 @@ export default function FirebaseSetup() {
                         )}
 
                         {message && (
-                            <div className={`p-4 rounded ${
-                                status === 'success' ? 'bg-green-50 text-green-800' :
-                                status === 'error' ? 'bg-red-50 text-red-800' :
-                                'bg-blue-50 text-blue-800'
-                            }`}>
+                            <div className={`p-4 rounded ${status === 'success' ? 'bg-green-50 text-green-800' :
+                                    status === 'error' ? 'bg-red-50 text-red-800' :
+                                        'bg-blue-50 text-blue-800'
+                                }`}>
                                 {message}
                             </div>
                         )}
@@ -147,7 +146,7 @@ export default function FirebaseSetup() {
                 {/* Actions */}
                 <div className="bg-white rounded-lg shadow-lg p-6">
                     <h2 className="text-xl font-bold mb-4">Actions</h2>
-                    
+
                     <div className="space-y-3">
                         <button
                             onClick={checkConnection}

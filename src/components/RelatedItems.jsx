@@ -6,16 +6,25 @@ function RelatedItems({ currentProduct, onProductClick }) {
     React.useEffect(() => {
         if (!currentProduct || !window.ProductManager) return;
 
-        // Get products from the same category
-        const allProducts = window.ProductManager.getAll();
-        const related = allProducts
-            .filter(p => 
-                p.id !== currentProduct.id && // Exclude current product
-                p.category === currentProduct.category // Same category
-            )
-            .slice(0, 4); // Limit to 4 items
+        const loadRelated = async () => {
+            let allProducts = [];
+            if (window.ProductManager.getAllAsync) {
+                allProducts = await window.ProductManager.getAllAsync();
+            } else {
+                allProducts = window.ProductManager.getAll();
+            }
 
-        setRelatedProducts(related);
+            const related = allProducts
+                .filter(p =>
+                    p.id !== currentProduct.id && // Exclude current product
+                    p.category === currentProduct.category // Same category
+                )
+                .slice(0, 4); // Limit to 4 items
+
+            setRelatedProducts(related);
+        };
+
+        loadRelated();
     }, [currentProduct]);
 
     if (!relatedProducts || relatedProducts.length === 0) {
@@ -40,6 +49,12 @@ function RelatedItems({ currentProduct, onProductClick }) {
                                 alt={product.name}
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
+                            {/* 3D Model Badge */}
+                            {(product.modelUrl || product.modelImage) && (
+                                <div className="absolute top-2 right-2 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-md z-10" title="3D Model Available">
+                                    🧊
+                                </div>
+                            )}
                         </div>
                         <div className="p-3">
                             <h4 className="font-semibold text-sm text-gray-900 line-clamp-2 mb-1">

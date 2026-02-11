@@ -4,9 +4,9 @@
 // ===============================
 
 const ProductManager = (() => {
-    const STORAGE_KEY = "luxemarket_products";
-    const VERSION_KEY = "luxemarket_data_version";
-    const CURRENT_VERSION = "v2.0";
+    const STORAGE_KEY = "luxemarket_products_v3";
+    const VERSION_KEY = "luxemarket_data_version_v3";
+    const CURRENT_VERSION = "v2.5";
 
     // Default seed products (only used if no data exists)
     const DEFAULT_PRODUCTS = [
@@ -43,7 +43,10 @@ const ProductManager = (() => {
             sizes: [],
             rating: 4.5,
             reviews: 128,
-            stock: 15
+            stock: 15,
+            modelUrl: "https://raw.githubusercontent.com/pmndrs/drei-assets/master/headset.glb?cb=1",
+            modelImage: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800",
+            has3DModel: true
         },
         {
             id: 2,
@@ -431,14 +434,18 @@ const ProductManager = (() => {
             products = [];
             save(products);
         },
-
         // Debug method to reset data
-        resetToDefaults() {
+        resetToDefaults: () => {
             console.log('🔄 Resetting ProductManager to defaults...');
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem(VERSION_KEY);
+            localStorage.removeItem('luxemarket_daily_deals');
+            localStorage.removeItem('luxemarket_homepage_order');
+
+            // Immediately update the closure state so auto-save doesn't revert it
             products = seedIfNeeded();
-            console.log('✅ Reset complete, products:', products.length);
+
+            console.log('✅ Reset complete, internal products updated:', products.length);
             return products;
         },
 
@@ -717,7 +724,7 @@ const ProductManager = (() => {
                 console.error('❌ Restore failed:', error);
                 return false;
             }
-        }
+        },
     };
 })();
 

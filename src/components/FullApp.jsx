@@ -1,4 +1,4 @@
- import React from 'react';
+import React from 'react';
 import Header from './Header.jsx';
 import Hero from './Hero.jsx';
 import FeaturedProductsSection from './FeaturedProducts.jsx';
@@ -19,39 +19,8 @@ import { showToast } from '../utils/simpleToast.js';
 // ⭐ NEW: Import the working modal controller
 import ProductDetailWrapper from './common/ProductDetailWrapper.jsx';
 
-// ✅ Fallback product list for seeding
-const fallbackProducts = [
-  {
-    id: "p001",
-    name: "Nebula Wireless Earbuds",
-    price: 89.99,
-    image: "/assets/earbuds.png",
-    description: "Cosmic sound with galaxy-inspired design.",
-    category: "Audio",
-  },
-  {
-    id: "p002",
-    name: "Luxe Charging Dock",
-    price: 49.99,
-    image: "/assets/dock.png",
-    description: "Premium magnetic dock with ambient glow.",
-    category: "Accessories",
-  },
-];
-
 function FullApp() {
-  // ✅ Seed product data on first visit
-  React.useEffect(() => {
-    const existing = localStorage.getItem("luxemarket_products");
-
-    if (!existing) {
-      console.log("🌟 Seeding fallback product data...");
-      localStorage.setItem(
-        "luxemarket_products",
-        JSON.stringify(fallbackProducts)
-      );
-    }
-  }, []);
+  // Firebase products are loaded via main.jsx, no need for fallback seeding
 
   const [currentView, setCurrentView] = React.useState('home');
   const [cartCount, setCartCount] = React.useState(0);
@@ -115,7 +84,7 @@ function FullApp() {
     const handleOpenProduct = (e) => {
       const id = e.detail.productId;
 
-      const stored = localStorage.getItem("luxemarket_products");
+      const stored = localStorage.getItem("luxemarket_products_v3");
       if (!stored) return;
 
       try {

@@ -12,12 +12,39 @@ const FirebaseProductManager = (() => {
     // Initialize and load products from Firebase
     const init = async () => {
         if (isInitialized) return;
-        
+
         try {
             console.log('🔥 Initializing Firebase ProductManager...');
             cachedProducts = await productService.getAll();
             isInitialized = true;
             console.log(`✅ Loaded ${cachedProducts.length} products from Firebase`);
+
+            // ⭐ HEALER: Automatically fix 3D model URLs
+            let fixedCount = 0;
+            cachedProducts = cachedProducts.map(p => {
+                const needsFix =
+                    // Fix astronaut URLs
+                    (p.modelUrl && p.modelUrl.includes("DamagedHelmet")) ||
+                    // Fix undefined modelUrl for products that should have 3D models
+                    (!p.modelUrl && p.name && (
+                        p.name.toLowerCase().includes('headphone') ||
+                        p.name.toLowerCase().includes('raycon')
+                    ));
+
+                if (needsFix) {
+                    fixedCount++;
+                    return {
+                        ...p,
+                        modelUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/FlightHelmet/glTF/FlightHelmet.gltf",
+                        has3DModel: true
+                    };
+                }
+                return p;
+            });
+            if (fixedCount > 0) {
+                console.log(`🔧 HEALER: Fixed ${fixedCount} products with missing/broken 3D models.`);
+            }
+
             if (cachedProducts.length > 0) {
                 console.log('📦 Sample product:', cachedProducts[0]);
             } else {
@@ -63,7 +90,7 @@ const FirebaseProductManager = (() => {
     const search = async (query) => {
         if (!isInitialized) await init();
         const lowerQuery = query.toLowerCase();
-        return cachedProducts.filter(p => 
+        return cachedProducts.filter(p =>
             p.name.toLowerCase().includes(lowerQuery) ||
             p.description?.toLowerCase().includes(lowerQuery) ||
             p.category.toLowerCase().includes(lowerQuery)

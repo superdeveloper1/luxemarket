@@ -51,10 +51,8 @@ if (typeof Storage !== 'undefined') {
   }
 }
 
-// Ensure the products cache is cleared on every load to force Firebase sync
-if (typeof Storage !== 'undefined') {
-  localStorage.removeItem('luxemarket_products');
-}
+// Firebase products are managed by FirebaseProductManager
+// No need to clear local cache - it would trigger unwanted re-seeding
 
 // Force service worker unregistration for regular window users
 if ('serviceWorker' in navigator) {
@@ -194,7 +192,18 @@ window.ProductManager = {
   add: (product) => FirebaseProductManager.add(product),
   update: (id, updates) => FirebaseProductManager.update(id, updates),
   delete: (id) => FirebaseProductManager.remove(id),
-  refresh: () => FirebaseProductManager.refresh()
+  refresh: () => FirebaseProductManager.refresh(),
+  resetToDefaults: () => {
+    console.log('🔄 Global Reset triggered (Firebase + Local)...');
+    localStorage.removeItem('luxemarket_products_v3');
+    localStorage.removeItem('luxemarket_data_version_v3');
+    localStorage.removeItem('luxemarket_daily_deals');
+    localStorage.removeItem('luxemarket_homepage_order');
+    // Force Firebase refresh if possible
+    if (FirebaseProductManager.refresh) FirebaseProductManager.refresh();
+    console.log('✅ Global Reset complete. Reloading...');
+    window.location.reload();
+  }
 };
 
 console.log('🔥 Firebase ProductManager initialized');

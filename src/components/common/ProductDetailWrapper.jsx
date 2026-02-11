@@ -21,7 +21,7 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
         } else {
           product = window.ProductManager.getById(id);
         }
-        
+
         if (product) {
           console.log('Product found in ProductManager:', product);
           setProduct(product);
@@ -35,8 +35,8 @@ export default function ProductDetailWrapper({ currentUser, onOpenAuth, onCartUp
       }
 
       // Fallback to localStorage
-      const stored = localStorage.getItem("luxemarket_products");
-      
+      const stored = localStorage.getItem("luxemarket_products_v3");
+
       if (!stored) {
         console.log('No products found in localStorage');
         return;

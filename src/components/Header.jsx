@@ -30,8 +30,20 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                 setShowSuggestions(false);
             }
         };
+
+        // Clear search bar when back to home is clicked
+        const handleClearSearch = () => {
+            setSearchTerm('');
+            setShowSuggestions(false);
+        };
+
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        window.addEventListener('clearSearch', handleClearSearch);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('clearSearch', handleClearSearch);
+        };
     }, [categoryOpen, showSuggestions]);
 
     // Dynamic Category Loading
@@ -119,6 +131,16 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
             // If cat is a string, use it
             if (typeof cat === 'string') {
                 actualCat = cat;
+            }
+
+            // Navigate to products section
+            window.location.hash = 'featured-products';
+
+            // Dispatch search event with the term
+            if (actualTerm && actualTerm.trim() !== '') {
+                window.dispatchEvent(new CustomEvent('searchProducts', {
+                    detail: { searchTerm: actualTerm, category: actualCat }
+                }));
             }
 
             // Dispatch category filter event if category is selected
@@ -311,6 +333,37 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                             >
                                 Search
                             </button>
+
+                            {/* Popular Searches - Shows when focused and no search term */}
+                            {showSuggestions && searchTerm.length === 0 && (
+                                <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden z-[30] animate-[fadeIn_0.2s_ease-out]">
+                                    <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Popular searches</span>
+                                        <button
+                                            onClick={() => setShowSuggestions(false)}
+                                            className="text-blue-600 hover:underline text-xs font-medium"
+                                        >
+                                            Refresh
+                                        </button>
+                                    </div>
+                                    <div className="p-4">
+                                        <div className="flex flex-wrap gap-2">
+                                            {['headphones', 'laptop', 'watch', 'jacket', 'furniture', 'accessories', 'electronics'].map(term => (
+                                                <button
+                                                    key={term}
+                                                    onClick={() => {
+                                                        setSearchTerm(term);
+                                                        handleSearch(term, searchCategory);
+                                                    }}
+                                                    className="px-4 py-2 bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-700 rounded-full text-sm font-medium transition-all hover:shadow-md"
+                                                >
+                                                    {term}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Search Suggestions Dropdown */}
                             {showSuggestions && searchTerm.length > 0 && (

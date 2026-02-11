@@ -1,5 +1,6 @@
 import React from 'react';
 import ColorPicker from './ColorPicker.jsx';
+import { parseColorCombination, generateColorCSS, DISPLAY_MODES } from '../utils/colorCombinations.js';
 
 function ColorManager({ colors, onChange }) {
   const [colorList, setColorList] = React.useState(colors || []);
@@ -7,6 +8,9 @@ function ColorManager({ colors, onChange }) {
   const [editingHexIndex, setEditingHexIndex] = React.useState(-1);
   const [newColorName, setNewColorName] = React.useState('');
   const [imageInput, setImageInput] = React.useState('');
+  const [editingColor, setEditingColor] = React.useState(null);
+  const [showColorPicker, setShowColorPicker] = React.useState(false);
+  const [editModalIndex, setEditModalIndex] = React.useState(-1);
 
   // Update parent when colors change - use useCallback to prevent infinite loops
   React.useEffect(() => {
@@ -15,14 +19,17 @@ function ColorManager({ colors, onChange }) {
 
   // Update local state when props change
   React.useEffect(() => {
-    setColorList(colors || []);
+    if (JSON.stringify(colors) !== JSON.stringify(colorList)) {
+      setColorList(colors || []);
+    }
   }, [colors]);
 
   const addColor = (colorData) => {
     const newColor = {
       name: colorData.name,
       hex: colorData.hex,
-      images: []
+      images: [],
+      displayMode: colorData.displayMode
     };
     setColorList(prev => [...prev, newColor]);
   };
@@ -56,6 +63,22 @@ function ColorManager({ colors, onChange }) {
     ));
   };
 
+  // Handle editing existing color with ColorPicker
+  const handleEditColor = (updatedColor) => {
+    if (editingColor && editModalIndex >= 0) {
+      // Update the existing color
+      setColorList(prev => prev.map((color, i) => 
+        i === editModalIndex ? { ...color, ...updatedColor } : color
+      ));
+      setShowColorPicker(false);
+      setEditingColor(null);
+      setEditModalIndex(-1);
+    } else {
+      // Add new color
+      addColor(updatedColor);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -65,6 +88,36 @@ function ColorManager({ colors, onChange }) {
           selectedColor={null}
         />
       </div>
+
+      {/* Enhanced ColorPicker Modal for Editing */}
+      {showColorPicker && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Edit Color: {editingColor?.name || 'New Color'}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowColorPicker(false);
+                  setEditingColor(null);
+                  setEditModalIndex(-1);
+                }}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="border-t border-gray-200 pt-4">
+              <ColorPicker 
+                onColorSelect={handleEditColor}
+                selectedColor={editingColor}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {colorList.length === 0 ? (
         <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -78,14 +131,14 @@ function ColorManager({ colors, onChange }) {
             <div key={index} className="border border-gray-200 rounded-lg p-4 bg-white">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3 flex-1">
-                  {/* Color Swatch - Editable */}
+                  {/* Color Swatch - Enhanced Editable with ColorPicker */}
                   {editingHexIndex === index ? (
                     <div className="flex items-center gap-2">
                       <input
                         type="color"
                         value={color.hex}
                         onChange={(e) => updateColor(index, 'hex', e.target.value)}
-                        className="w-8 h-8 rounded border border-gray-300 cursor-pointer"
+                        className="w-8 h-8 rounded-full border border-gray-300 cursor-pointer"
                       />
                       <input
                         type="text"
@@ -108,20 +161,70 @@ function ColorManager({ colors, onChange }) {
                   ) : (
                     <div className="flex items-center gap-2">
                       <div 
-                        className="w-8 h-8 rounded border border-gray-300 cursor-pointer hover:ring-2 hover:ring-blue-300 transition-all"
+                        className="w-8 h-8 rounded-full border border-gray-300 cursor-pointer hover:ring-2 hover:ring-blue-300 transition-all"
                         style={{ backgroundColor: color.hex }}
-                        onClick={() => setEditingHexIndex(index)}
-                        title="Click to edit color"
+                        onClick={() => {
+                          setEditingColor(color);
+                          setEditModalIndex(index);
+                          setShowColorPicker(true);
+                        }}
+                        title="Click to edit color with advanced picker"
                       ></div>
                       <button
                         type="button"
-                        onClick={() => setEditingHexIndex(index)}
+                        onClick={() => {
+                          setEditingColor(color);
+                          setEditModalIndex(index);
+                          setShowColorPicker(true);
+                        }}
                         className="text-xs text-blue-600 hover:text-blue-800"
                       >
                         Edit color
                       </button>
                     </div>
                   )}
+                  
+                  {/* Enhanced Color Preview with Combination Support */}
+                  <div className="flex items-center gap-2">
+                    {/* Parse and display color combination if it exists */}
+                    {(() => {
+                      const combination = parseColorCombination(color.name);
+                      if (color.displayMode) {
+                        combination.mode = color.displayMode;
+                      }
+                      if (combination.isValid && combination.colors.length > 1) {
+                        // Use stored hex values for combinations if available
+                        if (color.hex && Array.isArray(color.hex) && color.hex.length === combination.colors.length) {
+                            combination.colors.forEach((c, i) => c.hex = color.hex[i]);
+                        }
+                        
+                        const css = generateColorCSS(combination, {
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%'
+                        });
+                        return (
+                          <div
+                            style={css.style}
+                            className={css.className}
+                            dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                          />
+                        );
+                      } else {
+                        return (
+                          <div 
+                            className="w-6 h-6 rounded-full border-2 border-gray-300"
+                            style={{ backgroundColor: color.hex }}
+                          ></div>
+                        );
+                      }
+                    })()}
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-900">{color.name}</span>
+                      <span className="text-sm text-gray-500">{color.hex}</span>
+                    </div>
+                  </div>
                   
                   {/* Color Name - Editable */}
                   {editingIndex === index ? (
@@ -135,17 +238,13 @@ function ColorManager({ colors, onChange }) {
                       autoFocus
                     />
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900">{color.name}</span>
-                      <span className="text-sm text-gray-500">{color.hex}</span>
-                      <button
-                        type="button"
-                        onClick={() => setEditingIndex(index)}
-                        className="text-xs text-blue-600 hover:text-blue-800"
-                      >
-                        Edit name
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEditingIndex(index)}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      Edit name
+                    </button>
                   )}
                 </div>
                 <button

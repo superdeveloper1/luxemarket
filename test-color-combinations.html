@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Color Combination System - Demo</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --text-color: #1f2937;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .demo-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .color-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .color-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .color-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .color-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .color-info {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-section input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .input-section button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .input-section button:hover {
+            background-color: #2563eb;
+        }
+
+        .result-preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-color {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #e5e7eb;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .result-details {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .mode-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .example-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .example-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .example-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .example-desc {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .status.info {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Enhanced Color Combination System</h1>
+        <p class="subtitle">Advanced color parsing and visual representation for any color combination</p>
+
+        <!-- Demo 1: Basic Color Combinations -->
+        <div class="demo-section">
+            <div class="demo-title">1. Basic Color Combinations</div>
+            <div class="input-section">
+                <input type="text" id="colorInput" placeholder="Enter color combination (e.g., black/orange, red/blue/green, navy/white)" />
+                <button onclick="parseColor()">Parse Color</button>
+                <button onclick="clearResult()">Clear</button>
+            </div>
+            
+            <div id="status" class="status info" style="display: none;"></div>
+            
+            <div id="result" class="result-preview" style="display: none;">
+                <div id="resultColor" class="result-color"></div>
+                <div class="result-info">
+                    <div id="resultName" class="result-name"></div>
+                    <div id="resultDetails" class="result-details"></div>
+                </div>
+            </div>
+
+            <div class="demo-title">Display Modes</div>
+            <div class="mode-selector" id="modeSelector" style="display: none;">
+                <!-- Modes will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Demo 2: Common Combinations -->
+        <div class="demo-section">
+            <div class="demo-title">2. Common Color Combinations</div>
+            <div class="examples" id="commonCombinations">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Demo 3: Color Palette -->
+        <div class="demo-section">
+            <div class="demo-title">3. Color Palette</div>
+            <div class="color-grid" id="colorPalette">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Import the color combination system (simulated for demo)
+        const DISPLAY_MODES = {
+            SPLIT_VERTICAL: 'split-vertical',
+            SPLIT_HORIZONTAL: 'split-horizontal',
+            SPLIT_DIAGONAL: 'split-diagonal',
+            GRADIENT_LINEAR: 'gradient-linear',
+            GRADIENT_RADIAL: 'gradient-radial',
+            CHECKERBOARD: 'checkerboard',
+            CONCENTRIC: 'concentric',
+            SINGLE: 'single'
+        };
+
+        // Color name to hex mapping
+        const colorNameToHex = {
+            'black': '#000000', 'white': '#FFFFFF', 'red': '#FF0000', 'green': '#00FF00',
+            'blue': '#0000FF', 'yellow': '#FFFF00', 'cyan': '#00FFFF', 'magenta': '#FF00FF',
+            'gray': '#808080', 'grey': '#808080', 'silver': '#C0C0C0', 'maroon': '#800000',
+            'olive': '#808000', 'lime': '#00FF00', 'aqua': '#00FFFF', 'teal': '#008080',
+            'navy': '#000080', 'fuchsia': '#FF00FF', 'purple': '#800080', 'orange': '#FFA500',
+            'pink': '#FFC0CB', 'brown': '#A52A2A', 'beige': '#F5F5DC', 'tan': '#D2B48C',
+            'khaki': '#F0E68C', 'gold': '#FFD700', 'bronze': '#CD7F32', 'copper': '#B87333',
+            'crimson': '#DC143C', 'scarlet': '#FF2400', 'ruby': '#E0115F', 'cherry': '#DE3163',
+            'rose': '#FF007F', 'coral': '#FF7F50', 'salmon': '#FA8072', 'tomato': '#FF6347',
+            'azure': '#007FFF', 'cobalt': '#0047AB', 'sapphire': '#0F52BA', 'indigo': '#4B0082',
+            'turquoise': '#40E0D0', 'sky': '#87CEEB', 'royal': '#4169E1', 'midnight': '#191970',
+            'emerald': '#50C878', 'jade': '#00A86B', 'forest': '#228B22', 'mint': '#98FF98',
+            'sage': '#9DC183', 'chartreuse': '#7FFF00', 'amber': '#FFBF00', 'mustard': '#FFDB58',
+            'lemon': '#FFF700', 'cream': '#FFFDD0', 'ivory': '#FFFFF0', 'peach': '#FFE5B4',
+            'apricot': '#FBCEB1', 'violet': '#8F00FF', 'lavender': '#E6E6FA', 'plum': '#DDA0DD',
+            'mauve': '#E0B0FF', 'lilac': '#C8A2C8', 'orchid': '#DA70D6', 'chocolate': '#D2691E',
+            'coffee': '#6F4E37', 'mocha': '#967969', 'chestnut': '#954535', 'mahogany': '#C04000',
+            'walnut': '#773F1A', 'oak': '#806517', 'charcoal': '#36454F', 'slate': '#708090',
+            'ash': '#B2BEB5', 'smoke': '#738276', 'pearl': '#EAE0C8', 'platinum': '#E5E4E2',
+            'steel': '#71797E', 'iron': '#4C4646', 'titanium': '#878681', 'chrome': '#C0C0C0',
+            'sand': '#C2B280', 'stone': '#8D8D8D', 'clay': '#B66A50', 'earth': '#8B4513',
+            'moss': '#8A9A5B', 'grass': '#7CFC00', 'leaf': '#228B22', 'sky blue': '#87CEEB',
+            'ocean': '#006994', 'sea': '#2E8B57', 'burgundy': '#800020', 'wine': '#722F37',
+            'champagne': '#F7E7CE', 'taupe': '#483C32', 'nude': '#E3BC9A', 'blush': '#DE5D83',
+            'marigold': '#EAA221', 'denim': '#1560BD', 'charcoal gray': '#36454F', 'off white': '#FAF9F6'
+        };
+
+        function isValidColorName(colorName) {
+            if (!colorName) return false;
+            const normalized = colorName.toLowerCase().trim();
+            return colorNameToHex.hasOwnProperty(normalized);
+        }
+
+        function parseColorCombination(colorName) {
+            if (!colorName || typeof colorName !== 'string') {
+                return { colors: [], isValid: false, error: 'Invalid color name' };
+            }
+
+            const normalized = colorName.trim().toLowerCase();
+            
+            if (!normalized.includes('/') && !normalized.includes(' and ')) {
+                const hex = colorNameToHex[normalized] || '#000000';
+                if (hex !== '#000000' || isValidColorName(normalized)) {
+                    return {
+                        colors: [{ name: colorName, hex }],
+                        isValid: true,
+                        mode: DISPLAY_MODES.SINGLE
+                    };
+                }
+                return { colors: [], isValid: false, error: 'Color not found' };
+            }
+
+            const separators = ['/', ' and ', ' & ', ' + '];
+            let parts = [normalized];
+            const separator = separators.find(sep => normalized.includes(sep));
+            if (separator) {
+                parts = normalized.split(separator).map(p => p.trim()).filter(p => p.length > 0);
+            }
+
+            const colorObjects = parts.map(part => {
+                const hex = colorNameToHex[part] || '#CCCCCC';
+                return {
+                    name: part,
+                    hex: hex === '#000000' && !isValidColorName(part) ? '#CCCCCC' : hex
+                };
+            });
+
+            return {
+                colors: colorObjects,
+                isValid: colorObjects.length > 0,
+                mode: getDisplayMode(colorObjects.length)
+            };
+        }
+
+        function getDisplayMode(colorCount) {
+            switch (colorCount) {
+                case 1: return DISPLAY_MODES.SINGLE;
+                case 2: return DISPLAY_MODES.SPLIT_VERTICAL;
+                case 3: return DISPLAY_MODES.GRADIENT_LINEAR;
+                default: return DISPLAY_MODES.CHECKERBOARD;
+            }
+        }
+
+        function generateColorCSS(colorCombination, options = {}) {
+            const { colors, mode } = colorCombination;
+            
+            if (!colors || colors.length === 0) {
+                return { css: '', className: '' };
+            }
+
+            const {
+                width = '100%',
+                height = '100%',
+                borderRadius = '4px',
+                borderWidth = '2px',
+                borderColor = '#ffffff'
+            } = options;
+
+            switch (mode) {
+                case DISPLAY_MODES.SINGLE:
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background-color: ${colors[0].hex};
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-single'
+                    };
+
+                case DISPLAY_MODES.SPLIT_VERTICAL:
+                    const verticalWidth = `${100 / colors.length}%`;
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            display: flex;
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-split-vertical',
+                        innerHTML: colors.map((color, index) => `
+                            <div style="
+                                flex: 1;
+                                width: ${verticalWidth};
+                                background-color: ${color.hex};
+                                border-right: ${index < colors.length - 1 ? `1px solid ${borderColor}` : 'none'};
+                            "></div>
+                        `).join('')
+                    };
+
+                case DISPLAY_MODES.SPLIT_HORIZONTAL:
+                    const horizontalHeight = `${100 / colors.length}%`;
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            display: flex;
+                            flex-direction: column;
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-split-horizontal',
+                        innerHTML: colors.map((color, index) => `
+                            <div style="
+                                flex: 1;
+                                height: ${horizontalHeight};
+                                background-color: ${color.hex};
+                                border-bottom: ${index < colors.length - 1 ? `1px solid ${borderColor}` : 'none'};
+                            "></div>
+                        `).join('')
+                    };
+
+                case DISPLAY_MODES.SPLIT_DIAGONAL:
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background: repeating-linear-gradient(
+                                45deg,
+                                ${colors.map((color, index) => `${color.hex} ${index * (100 / colors.length)}%, ${color.hex} ${(index + 1) * (100 / colors.length)}%`).join(', ')}
+                            );
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-split-diagonal'
+                    };
+
+                case DISPLAY_MODES.GRADIENT_LINEAR:
+                    const linearColors = colors.map((color, index) => `${color.hex} ${(index / (colors.length - 1)) * 100}%`).join(', ');
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background: linear-gradient(90deg, ${linearColors});
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-gradient-linear'
+                    };
+
+                case DISPLAY_MODES.GRADIENT_RADIAL:
+                    const radialColors = colors.map((color, index) => `${color.hex} ${(index / colors.length) * 100}%`).join(', ');
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background: radial-gradient(circle, ${radialColors});
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-gradient-radial'
+                    };
+
+                case DISPLAY_MODES.CHECKERBOARD:
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background-image: 
+                                ${colors.map((color, index) => `
+                                    linear-gradient(45deg, 
+                                        ${color.hex} 25%, 
+                                        transparent 25%, 
+                                        transparent 75%, 
+                                        ${color.hex} 75%
+                                    )
+                                `).join(', ')};
+                            background-size: ${Math.max(20, 100 / Math.sqrt(colors.length))}px ${Math.max(20, 100 / Math.sqrt(colors.length))}px;
+                            background-position: ${colors.map((_, index) => `
+                                ${index * 10}px ${index * 10}px
+                            `).join(', ')};
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-checkerboard'
+                    };
+
+                case DISPLAY_MODES.CONCENTRIC:
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background: radial-gradient(circle, 
+                                ${colors.map((color, index) => `${color.hex} ${(index / colors.length) * 100}%`).join(', ')}
+                            );
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-concentric'
+                    };
+
+                default:
+                    return {
+                        css: `
+                            width: ${width};
+                            height: ${height};
+                            background-color: ${colors[0].hex};
+                            border-radius: ${borderRadius};
+                            border: ${borderWidth} solid ${borderColor};
+                            overflow: hidden;
+                        `,
+                        className: 'color-single'
+                    };
+            }
+        }
+
+        function getAvailableDisplayModes(colorCount) {
+            const modes = Object.values(DISPLAY_MODES);
+            
+            if (colorCount === 1) {
+                return [DISPLAY_MODES.SINGLE];
+            } else if (colorCount === 2) {
+                return [
+                    DISPLAY_MODES.SINGLE,
+                    DISPLAY_MODES.SPLIT_VERTICAL,
+                    DISPLAY_MODES.SPLIT_HORIZONTAL,
+                    DISPLAY_MODES.SPLIT_DIAGONAL,
+                    DISPLAY_MODES.GRADIENT_LINEAR
+                ];
+            } else if (colorCount === 3) {
+                return [
+                    DISPLAY_MODES.SINGLE,
+                    DISPLAY_MODES.GRADIENT_LINEAR,
+                    DISPLAY_MODES.GRADIENT_RADIAL,
+                    DISPLAY_MODES.CHECKERBOARD
+                ];
+            } else {
+                return [
+                    DISPLAY_MODES.SINGLE,
+                    DISPLAY_MODES.CHECKERBOARD,
+                    DISPLAY_MODES.GRADIENT_LINEAR,
+                    DISPLAY_MODES.GRADIENT_RADIAL
+                ];
+            }
+        }
+
+        // Demo data
+        const commonCombinations = [
+            { name: 'Black/Orange', colors: ['black', 'orange'] },
+            { name: 'Red/Blue', colors: ['red', 'blue'] },
+            { name: 'Navy/White', colors: ['navy', 'white'] },
+            { name: 'Gold/Black', colors: ['gold', 'black'] },
+            { name: 'Green/White', colors: ['green', 'white'] },
+            { name: 'Purple/Gold', colors: ['purple', 'gold'] },
+            { name: 'Red/White/Blue', colors: ['red', 'white', 'blue'] },
+            { name: 'Black/White', colors: ['black', 'white'] },
+            { name: 'Blue/Green', colors: ['blue', 'green'] },
+            { name: 'Pink/Gold', colors: ['pink', 'gold'] }
+        ];
+
+        const colorPalette = [
+            'Black', 'White', 'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Purple',
+            'Pink', 'Brown', 'Gray', 'Silver', 'Gold', 'Cyan', 'Magenta', 'Navy',
+            'Teal', 'Olive', 'Maroon', 'Lime', 'Aqua', 'Coral', 'Salmon', 'Violet',
+            'Indigo', 'Turquoise', 'Emerald', 'Ruby', 'Amber', 'Champagne'
+        ];
+
+        // Initialize the demo
+        function init() {
+            renderCommonCombinations();
+            renderColorPalette();
+        }
+
+        function renderCommonCombinations() {
+            const container = document.getElementById('commonCombinations');
+            container.innerHTML = '';
+            
+            commonCombinations.forEach(combo => {
+                const colorName = combo.colors.join('/');
+                const combination = parseColorCombination(colorName);
+                const css = generateColorCSS(combination, {
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%'
+                });
+
+                const div = document.createElement('div');
+                div.className = 'example-item';
+                div.innerHTML = `
+                    <div class="example-color" style="${css.css}"></div>
+                    <div class="example-name">${combo.name}</div>
+                    <div class="example-desc">${combination.colors.length} color${combination.colors.length > 1 ? 's' : ''}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderColorPalette() {
+            const container = document.getElementById('colorPalette');
+            container.innerHTML = '';
+            
+            colorPalette.forEach(colorName => {
+                const combination = parseColorCombination(colorName);
+                const css = generateColorCSS(combination, {
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%'
+                });
+
+                const div = document.createElement('div');
+                div.className = 'color-item';
+                div.innerHTML = `
+                    <div class="color-preview" style="${css.css}">
+                        ${combination.colors.length > 1 ? combination.colors.length : ''}
+                    </div>
+                    <div class="color-name">${colorName}</div>
+                    <div class="color-info">${combination.colors.length} color${combination.colors.length > 1 ? 's' : ''}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Demo functions
+        function parseColor() {
+            const input = document.getElementById('colorInput').value.trim();
+            if (!input) {
+                showStatus('Please enter a color combination', 'error');
+                return;
+            }
+
+            const combination = parseColorCombination(input);
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const modeSelector = document.getElementById('modeSelector');
+
+            if (!combination.isValid) {
+                showStatus(`Error: ${combination.error}`, 'error');
+                resultDiv.style.display = 'none';
+                modeSelector.style.display = 'none';
+                return;
+            }
+
+            // Show result
+            const css = generateColorCSS(combination, {
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%'
+            });
+
+            document.getElementById('resultColor').style.cssText = css.css;
+            document.getElementById('resultName').textContent = input;
+            document.getElementById('resultDetails').textContent = 
+                `${combination.colors.length} color${combination.colors.length > 1 ? 's' : ''} • ${combination.colors.map(c => c.name).join(', ')}`;
+
+            resultDiv.style.display = 'flex';
+            showStatus(`Successfully parsed "${input}"`, 'success');
+
+            // Show mode selector
+            renderModeSelector(combination);
+        }
+
+        function renderModeSelector(combination) {
+            const modeSelector = document.getElementById('modeSelector');
+            const availableModes = getAvailableDisplayModes(combination.colors.length);
+            
+            modeSelector.innerHTML = '';
+            modeSelector.style.display = 'flex';
+
+            availableModes.forEach(mode => {
+                const btn = document.createElement('button');
+                btn.className = 'mode-btn';
+                btn.textContent = mode.replace('-', ' ');
+                btn.onclick = () => switchMode(combination, mode);
+                modeSelector.appendChild(btn);
+            });
+
+            // Set initial active mode
+            const initialBtn = modeSelector.querySelector('.mode-btn');
+            if (initialBtn) initialBtn.classList.add('active');
+        }
+
+        function switchMode(combination, mode) {
+            const combinationWithMode = { ...combination, mode };
+            const css = generateColorCSS(combinationWithMode, {
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%'
+            });
+
+            document.getElementById('resultColor').style.cssText = css.css;
+            
+            // Update active button
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === mode.replace('-', ' ')) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function clearResult() {
+            document.getElementById('colorInput').value = '';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('modeSelector').style.display = 'none';
+            document.getElementById('status').style.display = 'none';
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>

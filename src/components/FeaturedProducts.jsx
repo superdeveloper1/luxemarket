@@ -56,6 +56,13 @@ function ProductCard({ product, onProductClick }) {
                     </div>
                 )}
 
+                {/* 3D Model Badge */}
+                {(product.modelUrl || product.modelImage) && (
+                    <div className="absolute top-2 right-2 bg-blue-600/90 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg z-10" title="3D Model Available">
+                        🧊
+                    </div>
+                )}
+
                 {/* Image Indicators - Show dots if multiple images */}
                 {productImages.length > 1 && (
                     <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
@@ -115,25 +122,26 @@ function FeaturedProductsSection() {
     const [products, setProducts] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [categoryFilter, setCategoryFilter] = React.useState('');
+    const [searchTerm, setSearchTerm] = React.useState('');
     const [showDealsOnly, setShowDealsOnly] = React.useState(false);
     const [showAllProducts, setShowAllProducts] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 12;
     const sectionRef = React.useRef(null);
-      React.useEffect(() => {
-    const stored = localStorage.getItem('luxemarket_products');
+    React.useEffect(() => {
+        const stored = localStorage.getItem('luxemarket_products_v3');
 
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setProducts(parsed);
-      } catch (err) {
-        console.error('Failed to parse luxemarket_products from localStorage', err);
-      }
-    }
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                setProducts(parsed);
+            } catch (err) {
+                console.error('Failed to parse luxemarket_products_v3 from localStorage', err);
+            }
+        }
 
-    setLoading(false);
-  }, []);
+        setLoading(false);
+    }, []);
     const loadProducts = React.useCallback(async () => {
         console.log('loadProducts called with filters:', { categoryFilter, showDealsOnly, showAllProducts });
         try {
@@ -164,6 +172,15 @@ function FeaturedProductsSection() {
                 // Apply daily deals filter first if active
                 if (showDealsOnly) {
                     productsToShow = allProducts.filter(p => p.isDailyDeal || p.dailyDeal);
+                }
+                // Apply search filter if set
+                else if (searchTerm && searchTerm.trim() !== '') {
+                    const lowerTerm = searchTerm.toLowerCase();
+                    productsToShow = allProducts.filter(p =>
+                        p.name.toLowerCase().includes(lowerTerm) ||
+                        p.description.toLowerCase().includes(lowerTerm) ||
+                        p.category.toLowerCase().includes(lowerTerm)
+                    );
                 }
                 // Apply category filter if set
                 else if (categoryFilter && categoryFilter !== 'All Categories') {
@@ -202,7 +219,7 @@ function FeaturedProductsSection() {
         } finally {
             setLoading(false);
         }
-    }, [categoryFilter, showDealsOnly, showAllProducts]);
+    }, [categoryFilter, showDealsOnly, showAllProducts, searchTerm]);
 
     React.useEffect(() => {
         loadProducts();
@@ -256,16 +273,35 @@ function FeaturedProductsSection() {
             }, 100);
         };
 
+        // Listen for search events
+        const handleSearch = (event) => {
+            const { searchTerm: term, category } = event.detail;
+            console.log('Search event received:', term, category);
+            setSearchTerm(term);
+            if (category && category !== 'All Categories') {
+                setCategoryFilter(category);
+            }
+            setShowDealsOnly(false);
+            setShowAllProducts(false);
+            setTimeout(() => {
+                if (sectionRef.current) {
+                    sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        };
+
         window.addEventListener('adminUpdate', handleAdminUpdate);
         window.addEventListener('filterByCategory', handleCategoryFilter);
         window.addEventListener('filterByDeals', handleDealsFilter);
         window.addEventListener('showAllProducts', handleShowAllProducts);
+        window.addEventListener('searchProducts', handleSearch);
 
         return () => {
             window.removeEventListener('adminUpdate', handleAdminUpdate);
             window.removeEventListener('filterByCategory', handleCategoryFilter);
             window.removeEventListener('filterByDeals', handleDealsFilter);
             window.removeEventListener('showAllProducts', handleShowAllProducts);
+            window.removeEventListener('searchProducts', handleSearch);
         };
     }, [loadProducts]);
 
@@ -310,11 +346,13 @@ function FeaturedProductsSection() {
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">
                         {showDealsOnly
                             ? '🔥 Daily Deals'
-                            : categoryFilter && categoryFilter !== 'All Categories'
-                                ? `${categoryFilter} Products`
-                                : showAllProducts
-                                    ? 'All Products'
-                                    : 'Featured Products'
+                            : searchTerm && searchTerm.trim() !== ''
+                                ? `Search Results for "${searchTerm}"`
+                                : categoryFilter && categoryFilter !== 'All Categories'
+                                    ? `${categoryFilter} Products`
+                                    : showAllProducts
+                                        ? 'All Products'
+                                        : 'Featured Products'
                         }
                     </h2>
                     <p className="text-gray-600 mb-6">
@@ -327,13 +365,16 @@ function FeaturedProductsSection() {
                                     : 'Click on any product to see details, pricing, and purchase options'
                         }
                     </p>
-                    {(categoryFilter && categoryFilter !== 'All Categories') || showDealsOnly || showAllProducts ? (
+                    {(categoryFilter && categoryFilter !== 'All Categories') || showDealsOnly || showAllProducts || searchTerm ? (
                         <button
                             onClick={() => {
+                                setSearchTerm('');
                                 setCategoryFilter('');
                                 setShowDealsOnly(false);
                                 setShowAllProducts(false);
                                 setCurrentPage(1);
+                                // Clear the search bar in header too
+                                window.dispatchEvent(new CustomEvent('clearSearch'));
                             }}
                             className="btn btn-secondary text-sm mb-4"
                         >

@@ -10,8 +10,8 @@ export async function migrateProductsToFirebase() {
         console.log('🔄 Starting Firebase migration...');
 
         // Get products from localStorage
-        const productsData = localStorage.getItem('luxemarket_products');
-        
+        const productsData = localStorage.getItem('luxemarket_products_v3');
+
         if (!productsData) {
             console.log('⚠️ No products found in localStorage');
             return;
@@ -22,14 +22,14 @@ export async function migrateProductsToFirebase() {
 
         // Check if products already exist in Firebase
         const existingProducts = await productService.getAll();
-        
+
         if (existingProducts.length > 0) {
             console.log(`✅ Firebase already has ${existingProducts.length} products`);
             const shouldMigrate = confirm(
                 `Firebase already has ${existingProducts.length} products.\n` +
                 `Do you want to add ${products.length} more products from localStorage?`
             );
-            
+
             if (!shouldMigrate) {
                 console.log('❌ Migration cancelled');
                 return;
@@ -38,7 +38,7 @@ export async function migrateProductsToFirebase() {
 
         // Upload products to Firebase
         console.log('⬆️ Uploading products to Firebase...');
-        
+
         let successCount = 0;
         let errorCount = 0;
 

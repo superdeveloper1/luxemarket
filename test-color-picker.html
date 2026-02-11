@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-container { margin-bottom: 20px; }
+        .preview-box { width: 100px; height: 100px; border: 2px solid #ccc; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Color Picker Display Mode Test</h1>
+    
+    <div class="test-container">
+        <h2>Testing generateColorCSS function</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        // Import the functions we need
+        import { generateColorCSS, DISPLAY_MODES } from './src/utils/colorCombinations.js';
+
+        const testResults = document.getElementById('test-results');
+        
+        // Test each display mode
+        Object.values(DISPLAY_MODES).forEach(mode => {
+            const sampleCombination = {
+                colors: [
+                    { name: 'red', hex: '#FF0000' },
+                    { name: 'blue', hex: '#0000FF' }
+                ],
+                mode: mode
+            };
+            
+            try {
+                const css = generateColorCSS(sampleCombination, {
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%'
+                });
+                
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <h3>${mode}</h3>
+                    <div style="${css.css}" class="${css.className}">
+                        ${css.innerHTML || ''}
+                    </div>
+                    <p>CSS: ${css.css}</p>
+                `;
+                testResults.appendChild(div);
+            } catch (error) {
+                const div = document.createElement('div');
+                div.innerHTML = `<h3>${mode} - ERROR</h3><p>${error.message}</p>`;
+                testResults.appendChild(div);
+            }
+        });
+    </script>
+</body>
+</html>

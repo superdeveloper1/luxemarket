@@ -1,4 +1,6 @@
 import React from 'react';
+import ThreeDViewer from './ThreeDViewer';
+import { parseColorCombination, generateColorCSS, DISPLAY_MODES } from '../utils/colorCombinations.js';
 
 function ProductPreview({ product, isVisible }) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
@@ -21,7 +23,7 @@ function ProductPreview({ product, isVisible }) {
     return null;
   }
 
-  // Get images for current color or default images - handle both simple and enhanced formats
+  // Build image list
   let currentImages = [];
   if (selectedColor && product.colors) {
     const colorObj = product.colors.find(c => c.name === selectedColor);
@@ -37,7 +39,22 @@ function ProductPreview({ product, isVisible }) {
     currentImages = [product.image];
   }
 
-  const currentImage = currentImages[currentImageIndex] || 'https://via.placeholder.com/400x400?text=No+Image';
+  // Build media array including model
+  const mediaItems = [...currentImages];
+  if (product.modelUrl || product.modelImage) {
+    mediaItems.push({
+      type: 'model',
+      url: product.modelUrl || '',
+      thumbnail: product.modelImage || currentImages[0] || 'https://via.placeholder.com/400x400?text=3D'
+    });
+  }
+
+  const currentMedia = mediaItems[currentImageIndex];
+  const isCurrentModel = currentMedia && typeof currentMedia === 'object' && currentMedia.type === 'model';
+
+  const displayImage = isCurrentModel
+    ? currentMedia.thumbnail
+    : (typeof currentMedia === 'string' ? currentMedia : currentMedia?.url) || 'https://via.placeholder.com/400x400?text=No+Image';
 
   const handleColorChange = (colorName) => {
     setSelectedColor(colorName);
@@ -45,14 +62,14 @@ function ProductPreview({ product, isVisible }) {
   };
 
   const nextImage = () => {
-    if (currentImages.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % currentImages.length);
+    if (mediaItems.length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % mediaItems.length);
     }
   };
 
   const prevImage = () => {
-    if (currentImages.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
+    if (mediaItems.length > 1) {
+      setCurrentImageIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
     }
   };
 
@@ -82,64 +99,79 @@ function ProductPreview({ product, isVisible }) {
         {/* Media Section */}
         <div className="space-y-4">
           {/* Main Image Display */}
-          <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 relative border-2 border-blue-200">
-            <img
-              src={currentImage}
-              alt={`${product.name} - ${selectedColor || 'default'}`}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/400x400?text=No+Image';
-              }}
-            />
+          <div className="aspect-square rounded-lg overflow-hidden bg-slate-50 relative border-2 border-blue-200">
+            {isCurrentModel ? (
+              <ThreeDViewer modelUrl={currentMedia.url} className="bg-slate-50" />
+            ) : (
+              <img
+                src={displayImage}
+                alt={`${product.name} - ${selectedColor || 'default'}`}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400x400?text=No+Image';
+                }}
+              />
+            )}
 
             {/* Navigation arrows - always visible */}
-            {currentImages.length > 1 && (
+            {mediaItems.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg z-10"
                 >
                   ←
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg z-10"
                 >
                   →
                 </button>
 
                 {/* Image counter */}
-                <div className="absolute top-3 right-3 bg-black bg-opacity-80 text-white text-lg px-4 py-2 rounded">
-                  {currentImageIndex + 1} / {currentImages.length}
+                <div className="absolute top-3 right-3 bg-black bg-opacity-80 text-white text-lg px-4 py-2 rounded z-10">
+                  {currentImageIndex + 1} / {mediaItems.length}
+                  {isCurrentModel && <span className="ml-2">🧊</span>}
                 </div>
               </>
             )}
           </div>
 
           {/* Thumbnails */}
-          {currentImages.length > 1 && (
+          {mediaItems.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {currentImages.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 ${index === currentImageIndex
-                    ? 'border-blue-500 shadow-lg'
-                    : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                >
-                  <img
-                    src={image}
-                    alt={`View ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
+              {mediaItems.map((media, index) => {
+                const isModel = typeof media === 'object' && media.type === 'model';
+                const thumbSrc = isModel ? media.thumbnail : (typeof media === 'string' ? media : media.url);
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => goToImage(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 relative ${index === currentImageIndex
+                      ? 'border-blue-500 shadow-lg'
+                      : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                  >
+                    <img
+                      src={thumbSrc}
+                      alt={`View ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {isModel && (
+                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                        <span className="text-white text-xs">🧊 3D</span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
 
           {/* Manual Test Buttons */}
-          {currentImages.length > 1 && (
+          {mediaItems.length > 1 && (
             <div className="flex gap-2 justify-center">
               <button onClick={prevImage} className="bg-red-500 text-white px-3 py-1 rounded text-sm">
                 ← PREV
@@ -181,42 +213,96 @@ function ProductPreview({ product, isVisible }) {
             )}
           </div>
 
-          {/* Simple Color Selection */}
+          {/* Enhanced Color Selection */}
           {product.colors && product.colors.length > 0 && (
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 Colors ({product.colors.length})
               </h3>
               <div className="space-y-2">
-                {product.colors.map((color, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleColorChange(color.name)}
-                    className={`w-full p-3 rounded-md border-2 text-left ${selectedColor === color.name
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-gray-400'
+                {product.colors.map((color, index) => {
+                  // Parse the color combination using the new system
+                  const combination = parseColorCombination(color.name);
+                  
+                  if (color.displayMode) {
+                    combination.mode = color.displayMode;
+                  }
+                  
+                  // Use stored hex values if available (overrides name parsing)
+                  if (color.hex) {
+                    if (Array.isArray(color.hex) && combination.colors.length === color.hex.length) {
+                        combination.colors.forEach((c, i) => { c.hex = color.hex[i]; });
+                    } else if (typeof color.hex === 'string' && combination.colors.length === 1) {
+                        combination.colors[0].hex = color.hex;
+                    }
+                  }
+                  
+                  if (!combination.isValid) {
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleColorChange(color.name)}
+                        className={`w-full p-3 rounded-md border-2 text-left ${selectedColor === color.name
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-400 bg-gray-200 flex items-center justify-center">
+                            <span className="text-xs text-gray-500">?</span>
+                          </div>
+                          <div>
+                            <div className="font-medium">{color.name}</div>
+                            <div className="text-sm text-gray-500">
+                              {(color.images || []).length} photos
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  }
+
+                  // Generate CSS for the color combination
+                  const css = generateColorCSS(combination, {
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    borderWidth: '2px',
+                    borderColor: selectedColor === color.name ? '#3b82f6' : '#9ca3af'
+                  });
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleColorChange(color.name)}
+                      className={`w-full p-3 rounded-md border-2 text-left transition-all ${
+                        selectedColor === color.name
+                          ? 'border-blue-500 bg-blue-50 shadow-md'
+                          : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                       }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-gray-400"
-                        style={{ backgroundColor: color.hex }}
-                      ></div>
-                      <div>
-                        <div className="font-medium">{color.name}</div>
-                        <div className="text-sm text-gray-500">
-                          {(color.images || []).length} photos
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          style={css.style}
+                          className={css.className}
+                          dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                        />
+                        <div>
+                          <div className="font-medium">{color.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {(color.images || []).length} photos • {combination.colors.length} color{combination.colors.length > 1 ? 's' : ''}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {/* Statistics */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
             <div className="text-center p-3 bg-blue-50 rounded">
               <div className="text-lg font-semibold text-blue-600">{currentImages.length}</div>
               <div className="text-sm text-gray-600">Images</div>
@@ -224,6 +310,10 @@ function ProductPreview({ product, isVisible }) {
             <div className="text-center p-3 bg-purple-50 rounded">
               <div className="text-lg font-semibold text-purple-600">{product.colors?.length || 0}</div>
               <div className="text-sm text-gray-600">Colors</div>
+            </div>
+            <div className="text-center p-3 bg-orange-50 rounded">
+              <div className="text-lg font-semibold text-orange-600">{(product.modelUrl || product.modelImage) ? 'Yes' : 'No'}</div>
+              <div className="text-sm text-gray-600">3D Model</div>
             </div>
           </div>
         </div>

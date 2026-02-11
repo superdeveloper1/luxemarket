@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Color Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-box { width: 100px; height: 100px; border: 2px solid #ccc; margin: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Simple Color Test</h1>
+    
+    <div id="test-container"></div>
+
+    <script>
+        // Simple test of the generateColorCSS function
+        function testGenerateColorCSS() {
+            // Mock the function for testing
+            const DISPLAY_MODES = {
+                SPLIT_VERTICAL: 'split-vertical',
+                SPLIT_HORIZONTAL: 'split-horizontal',
+                SPLIT_DIAGONAL: 'split-diagonal',
+                GRADIENT_LINEAR: 'gradient-linear',
+                GRADIENT_RADIAL: 'gradient-radial',
+                CHECKERBOARD: 'checkerboard',
+                CONCENTRIC: 'concentric',
+                SINGLE: 'single'
+            };
+
+            function generateColorCSS(colorCombination, options = {}) {
+                const { colors, mode } = colorCombination;
+                
+                if (!colors || colors.length === 0) {
+                    return { css: '', className: '' };
+                }
+
+                const {
+                    width = '100%',
+                    height = '100%',
+                    borderRadius = '4px',
+                    borderWidth = '2px',
+                    borderColor = '#ffffff'
+                } = options;
+
+                switch (mode) {
+                    case DISPLAY_MODES.SINGLE:
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background-color: ${colors[0].hex};
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-single'
+                        };
+
+                    case DISPLAY_MODES.SPLIT_VERTICAL:
+                        const verticalWidth = `${100 / colors.length}%`;
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                display: flex;
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-split-vertical',
+                            innerHTML: colors.map((color, index) => `
+                                <div style="
+                                    flex: 1;
+                                    width: ${verticalWidth};
+                                    background-color: ${color.hex};
+                                    border-right: ${index < colors.length - 1 ? `1px solid ${borderColor}` : 'none'};
+                                "></div>
+                            `).join('')
+                        };
+
+                    case DISPLAY_MODES.SPLIT_HORIZONTAL:
+                        const horizontalHeight = `${100 / colors.length}%`;
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                display: flex;
+                                flex-direction: column;
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-split-horizontal',
+                            innerHTML: colors.map((color, index) => `
+                                <div style="
+                                    flex: 1;
+                                    height: ${horizontalHeight};
+                                    background-color: ${color.hex};
+                                    border-bottom: ${index < colors.length - 1 ? `1px solid ${borderColor}` : 'none'};
+                                "></div>
+                            `).join('')
+                        };
+
+                    case DISPLAY_MODES.SPLIT_DIAGONAL:
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background: repeating-linear-gradient(
+                                    45deg,
+                                    ${colors.map((color, index) => `${color.hex} ${index * (100 / colors.length)}%, ${color.hex} ${(index + 1) * (100 / colors.length)}%`).join(', ')}
+                                );
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-split-diagonal'
+                        };
+
+                    case DISPLAY_MODES.GRADIENT_LINEAR:
+                        const linearColors = colors.map((color, index) => `${color.hex} ${(index / (colors.length - 1)) * 100}%`).join(', ');
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background: linear-gradient(90deg, ${linearColors});
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-gradient-linear'
+                        };
+
+                    case DISPLAY_MODES.GRADIENT_RADIAL:
+                        const radialColors = colors.map((color, index) => `${color.hex} ${(index / colors.length) * 100}%`).join(', ');
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background: radial-gradient(circle, ${radialColors});
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-gradient-radial'
+                        };
+
+                    case DISPLAY_MODES.CHECKERBOARD:
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background-image: 
+                                    ${colors.map((color, index) => `
+                                        linear-gradient(45deg, 
+                                            ${color.hex} 25%, 
+                                            transparent 25%, 
+                                            transparent 75%, 
+                                            ${color.hex} 75%
+                                        )
+                                    `).join(', ')};
+                                background-size: ${Math.max(20, 100 / Math.sqrt(colors.length))}px ${Math.max(20, 100 / Math.sqrt(colors.length))}px;
+                                background-position: ${colors.map((_, index) => `
+                                    ${index * 10}px ${index * 10}px
+                                `).join(', ')};
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-checkerboard'
+                        };
+
+                    case DISPLAY_MODES.CONCENTRIC:
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background: radial-gradient(circle, 
+                                    ${colors.map((color, index) => `${color.hex} ${(index / colors.length) * 100}%`).join(', ')}
+                                );
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-concentric'
+                        };
+
+                    default:
+                        return {
+                            css: `
+                                width: ${width};
+                                height: ${height};
+                                background-color: ${colors[0].hex};
+                                border-radius: ${borderRadius};
+                                border: ${borderWidth} solid ${borderColor};
+                                overflow: hidden;
+                            `,
+                            className: 'color-single'
+                        };
+                }
+            }
+
+            const testContainer = document.getElementById('test-container');
+            
+            // Test each display mode
+            Object.values(DISPLAY_MODES).forEach(mode => {
+                const sampleCombination = {
+                    colors: [
+                        { name: 'red', hex: '#FF0000' },
+                        { name: 'blue', hex: '#0000FF' }
+                    ],
+                    mode: mode
+                };
+                
+                try {
+                    const css = generateColorCSS(sampleCombination, {
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%'
+                    });
+                    
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <h3>${mode}</h3>
+                        <div style="${css.css}" class="${css.className}">
+                            ${css.innerHTML || ''}
+                        </div>
+                        <p>CSS: ${css.css}</p>
+                    `;
+                    testContainer.appendChild(div);
+                } catch (error) {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<h3 style="color: red">${mode} - ERROR</h3><p>${error.message}</p>`;
+                    testContainer.appendChild(div);
+                }
+            });
+        }
+
+        // Run the test
+        testGenerateColorCSS();
+    </script>
+</body>
+</html>
