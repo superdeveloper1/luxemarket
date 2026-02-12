@@ -5,7 +5,12 @@ function Footer() {
     const currentYear = new Date().getFullYear();
 
     const handleComingSoon = (e, feature) => {
-        if (e) e.preventDefault();
+        if (e && !feature.startsWith('#')) e.preventDefault();
+        // If it sends us to a hash link, don't show toast
+        if (feature.startsWith('#')) {
+            window.location.hash = feature;
+            return;
+        }
         showToast(`${feature} feature coming soon!`, 'info');
     };
 
@@ -28,7 +33,13 @@ function Footer() {
         },
         {
             title: "Help & Contact",
-            links: ["Seller Information Center", "Contact Us", "Resolution Center", "Returns", "Shipping"]
+            links: [
+                { name: "Seller Information Center", url: "#help?section=seller" },
+                { name: "Contact Us", url: "#help?section=contact" },
+                { name: "Resolution Center", url: "#help?section=contact" }, // Map to contact for now
+                { name: "Returns", url: "#help?section=returns" },
+                { name: "Shipping", url: "#help?section=shipping" }
+            ]
         }
     ];
 
@@ -41,13 +52,20 @@ function Footer() {
                         <div key={idx}>
                             <h3 className="font-bold text-gray-700 mb-4">{group.title}</h3>
                             <ul className="space-y-2">
-                                {group.links.map(link => (
-                                    <li key={link}>
-                                        <a href="#" onClick={(e) => handleComingSoon(e, link)} className="text-gray-600 hover:text-[var(--primary-color)] hover:underline transition-colors block">
-                                            {link}
-                                        </a>
-                                    </li>
-                                ))}
+                                {group.links.map(link => {
+                                    const isObject = typeof link === 'object';
+                                    const name = isObject ? link.name : link;
+                                    const url = isObject ? link.url : "#";
+                                    const clickHandler = isObject ? undefined : (e) => handleComingSoon(e, name);
+
+                                    return (
+                                        <li key={name}>
+                                            <a href={url} onClick={clickHandler} className="text-gray-600 hover:text-[var(--primary-color)] hover:underline transition-colors block">
+                                                {name}
+                                            </a>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                             {group.title === "Stay Connected" && (
                                 <div className="flex gap-3 mt-4">

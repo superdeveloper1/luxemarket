@@ -18,6 +18,7 @@ import { showToast } from '../utils/simpleToast.js';
 
 // ⭐ NEW: Import the working modal controller
 import ProductDetailWrapper from './common/ProductDetailWrapper.jsx';
+import HelpContact from './HelpContact.jsx';
 
 function FullApp() {
   // Firebase products are loaded via main.jsx, no need for fallback seeding
@@ -67,6 +68,8 @@ function FullApp() {
         setCurrentView('admin');
       } else if (hash === 'firebase') {
         setCurrentView('firebase');
+      } else if (hash === 'help') {
+        setCurrentView('help');
       } else {
         setCurrentView('home');
       }
@@ -183,6 +186,72 @@ function FullApp() {
     return (
       <ErrorBoundary>
         <FirebaseSetup />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentView === 'help') {
+    return (
+      <ErrorBoundary>
+        <div className="min-h-screen bg-gray-50">
+          <Header
+            cartCount={cartCount}
+            isMenuOpen={isMenuOpen}
+            setIsMenuOpen={setIsMenuOpen}
+            currentUser={currentUser}
+            onOpenAuth={handleOpenAuth}
+            onLogout={handleLogout}
+            onOpenCart={handleOpenCart}
+            onOpenWatchlist={handleOpenWatchlist}
+            onOpenAccountSummary={handleOpenAccountSummary}
+          />
+          <main>
+            <HelpContact />
+          </main>
+          <Footer />
+
+          {authModal.isOpen && (
+            <AuthModal
+              isOpen={authModal.isOpen}
+              isRegister={authModal.isRegister}
+              onClose={handleCloseAuth}
+              onLogin={handleLogin}
+              onRegister={handleRegister}
+            />
+          )}
+
+          {cartOpen && (
+            <Cart
+              isOpen={cartOpen}
+              onClose={handleCloseCart}
+              onCartUpdate={handleCartUpdate}
+              onCheckout={handleOpenCheckout}
+            />
+          )}
+
+          {checkoutOpen && (
+            <Checkout
+              isOpen={checkoutOpen}
+              onClose={handleCloseCheckout}
+              onOrderComplete={handleOrderComplete}
+            />
+          )}
+
+          {watchlistOpen && (
+            <Watchlist
+              isOpen={watchlistOpen}
+              onClose={handleCloseWatchlist}
+            />
+          )}
+
+          {accountSummaryOpen && (
+            <AccountSummary
+              isOpen={accountSummaryOpen}
+              onClose={handleCloseAccountSummary}
+              currentUser={currentUser}
+            />
+          )}
+        </div>
       </ErrorBoundary>
     );
   }

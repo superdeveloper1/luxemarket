@@ -202,7 +202,7 @@ function Header({ cartCount, isMenuOpen, setIsMenuOpen, currentUser, onOpenAuth,
                         >
                             Daily Deals
                         </button>
-                        <a href="#footer" className="hover:underline">Help & Contact</a>
+                        <a href="#help" className="hover:underline">Help & Contact</a>
                     </div>
                     <div className="flex items-center gap-6">
                         <a href="#" onClick={(e) => handleComingSoon(e, 'Shipping selection')} className="hover:underline">Ship to</a>
