@@ -7,6 +7,7 @@ function ColorManager({ colors, onChange }) {
   const [editingIndex, setEditingIndex] = React.useState(-1);
   const [editingHexIndex, setEditingHexIndex] = React.useState(-1);
   const [newColorName, setNewColorName] = React.useState('');
+  const [newColorHex, setNewColorHex] = React.useState('#000000');
   const [imageInput, setImageInput] = React.useState('');
   const [editingColor, setEditingColor] = React.useState(null);
   const [showColorPicker, setShowColorPicker] = React.useState(false);
@@ -35,7 +36,7 @@ function ColorManager({ colors, onChange }) {
   };
 
   const updateColor = (index, field, value) => {
-    setColorList(prev => prev.map((color, i) => 
+    setColorList(prev => prev.map((color, i) =>
       i === index ? { ...color, [field]: value } : color
     ));
   };
@@ -46,8 +47,8 @@ function ColorManager({ colors, onChange }) {
 
   const addImageToColor = (colorIndex) => {
     if (imageInput.trim()) {
-      setColorList(prev => prev.map((color, i) => 
-        i === colorIndex 
+      setColorList(prev => prev.map((color, i) =>
+        i === colorIndex
           ? { ...color, images: [...(color.images || []), imageInput.trim()] }
           : color
       ));
@@ -56,18 +57,34 @@ function ColorManager({ colors, onChange }) {
   };
 
   const removeImageFromColor = (colorIndex, imageIndex) => {
-    setColorList(prev => prev.map((color, i) => 
-      i === colorIndex 
+    setColorList(prev => prev.map((color, i) =>
+      i === colorIndex
         ? { ...color, images: color.images.filter((_, imgI) => imgI !== imageIndex) }
         : color
     ));
+  };
+
+  const handleManualAdd = () => {
+    if (!newColorName.trim()) {
+      alert('Please enter a color name');
+      return;
+    }
+
+    addColor({
+      name: newColorName.trim(),
+      hex: newColorHex,
+      displayMode: 'single'
+    });
+
+    setNewColorName('');
+    setNewColorHex('#000000');
   };
 
   // Handle editing existing color with ColorPicker
   const handleEditColor = (updatedColor) => {
     if (editingColor && editModalIndex >= 0) {
       // Update the existing color
-      setColorList(prev => prev.map((color, i) => 
+      setColorList(prev => prev.map((color, i) =>
         i === editModalIndex ? { ...color, ...updatedColor } : color
       ));
       setShowColorPicker(false);
@@ -83,10 +100,52 @@ function ColorManager({ colors, onChange }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">Product Colors</h3>
-        <ColorPicker 
+        <ColorPicker
           onColorSelect={addColor}
           selectedColor={null}
         />
+      </div>
+
+      {/* Quick Add Custom Color */}
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Add Custom Color</h4>
+        <div className="flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs text-gray-500 mb-1">Color Name</label>
+            <input
+              type="text"
+              value={newColorName}
+              onChange={(e) => setNewColorName(e.target.value)}
+              placeholder="e.g. Midnight Sparkle"
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Color Hex</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={newColorHex}
+                onChange={(e) => setNewColorHex(e.target.value)}
+                className="w-10 h-10 rounded border border-gray-300 cursor-pointer p-1 bg-white"
+              />
+              <input
+                type="text"
+                value={newColorHex}
+                onChange={(e) => setNewColorHex(e.target.value)}
+                className="w-24 px-2 py-2 border border-gray-300 rounded text-sm font-mono uppercase"
+                maxLength={7}
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleManualAdd}
+            className="btn btn-primary px-4 py-2 text-sm h-10"
+          >
+            Add Color
+          </button>
+        </div>
       </div>
 
       {/* Enhanced ColorPicker Modal for Editing */}
@@ -108,9 +167,9 @@ function ColorManager({ colors, onChange }) {
                 ×
               </button>
             </div>
-            
+
             <div className="border-t border-gray-200 pt-4">
-              <ColorPicker 
+              <ColorPicker
                 onColorSelect={handleEditColor}
                 selectedColor={editingColor}
               />
@@ -160,7 +219,7 @@ function ColorManager({ colors, onChange }) {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <div 
+                      <div
                         className="w-8 h-8 rounded-full border border-gray-300 cursor-pointer hover:ring-2 hover:ring-blue-300 transition-all"
                         style={{ backgroundColor: color.hex }}
                         onClick={() => {
@@ -183,11 +242,33 @@ function ColorManager({ colors, onChange }) {
                       </button>
                     </div>
                   )}
-                  
+
                   {/* Enhanced Color Preview with Combination Support */}
                   <div className="flex items-center gap-2">
                     {/* Parse and display color combination if it exists */}
+                    {/* Parse and display color combination if it exists */}
                     {(() => {
+                      // Check if it's explicitly a combination based on hex data (custom names)
+                      if (Array.isArray(color.hex) && color.hex.length > 1) {
+                        const combination = {
+                          colors: color.hex.map(h => ({ name: '', hex: h })),
+                          mode: color.displayMode || 'split-vertical',
+                          isValid: true
+                        };
+                        const css = generateColorCSS(combination, {
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%'
+                        });
+                        return (
+                          <div
+                            style={css.style}
+                            className={css.className}
+                            dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                          />
+                        );
+                      }
+
                       const combination = parseColorCombination(color.name);
                       if (color.displayMode) {
                         combination.mode = color.displayMode;
@@ -195,9 +276,9 @@ function ColorManager({ colors, onChange }) {
                       if (combination.isValid && combination.colors.length > 1) {
                         // Use stored hex values for combinations if available
                         if (color.hex && Array.isArray(color.hex) && color.hex.length === combination.colors.length) {
-                            combination.colors.forEach((c, i) => c.hex = color.hex[i]);
+                          combination.colors.forEach((c, i) => c.hex = color.hex[i]);
                         }
-                        
+
                         const css = generateColorCSS(combination, {
                           width: '24px',
                           height: '24px',
@@ -212,20 +293,20 @@ function ColorManager({ colors, onChange }) {
                         );
                       } else {
                         return (
-                          <div 
+                          <div
                             className="w-6 h-6 rounded-full border-2 border-gray-300"
                             style={{ backgroundColor: color.hex }}
                           ></div>
                         );
                       }
                     })()}
-                    
+
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-gray-900">{color.name}</span>
                       <span className="text-sm text-gray-500">{color.hex}</span>
                     </div>
                   </div>
-                  
+
                   {/* Color Name - Editable */}
                   {editingIndex === index ? (
                     <input
@@ -264,7 +345,7 @@ function ColorManager({ colors, onChange }) {
                     Images for {color.name} ({(color.images || []).length})
                   </label>
                 </div>
-                
+
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -303,7 +384,7 @@ function ColorManager({ colors, onChange }) {
                             e.target.src = 'https://via.placeholder.com/80x80?text=Error';
                           }}
                         />
-                        
+
                         {/* Delete button - larger and always visible on hover */}
                         <button
                           type="button"
@@ -313,7 +394,7 @@ function ColorManager({ colors, onChange }) {
                         >
                           🗑️
                         </button>
-                        
+
                         {/* Position indicator */}
                         <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center opacity-0 group-hover:opacity-100 transition-opacity rounded-b">
                           #{imgIndex + 1}
@@ -329,7 +410,7 @@ function ColorManager({ colors, onChange }) {
       )}
 
       <div className="text-xs text-gray-500 bg-blue-50 p-3 rounded">
-        <strong>Tip:</strong> Each color can have its own set of images. When customers select a color, 
+        <strong>Tip:</strong> Each color can have its own set of images. When customers select a color,
         they'll see the images specific to that color variant. Hover over images to see the delete button.
       </div>
     </div>

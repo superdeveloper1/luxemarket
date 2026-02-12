@@ -101,6 +101,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
   const [contrastInfo, setContrastInfo] = React.useState({ white: 0, black: 0 });
   const [showPaletteGenerator, setShowPaletteGenerator] = React.useState(false);
   const [generatedPalette, setGeneratedPalette] = React.useState([]);
+  const [comboColors, setComboColors] = React.useState([]); // State to hold combination colors explicitly
 
   // Check if EyeDropper API is supported
   React.useEffect(() => {
@@ -111,11 +112,41 @@ function ColorPicker({ onColorSelect, selectedColor }) {
   React.useEffect(() => {
     if (selectedColor) {
       // Determine if it's a combination or single color
-      if (Array.isArray(selectedColor.hex) || selectedColor.combination) {
+      if (Array.isArray(selectedColor.hex) || selectedColor.combination || (selectedColor.displayMode && selectedColor.displayMode !== 'single')) {
         setColorType('combination');
         setColorName(selectedColor.name || '');
         setCombinationMode(selectedColor.displayMode || 'split-vertical');
+
+        // Let the effect settling comboColors handle the rest
+        // But we need to set initial comboColors immediately to avoid flickering
+        let initialColors = [];
+        if (selectedColor.combination && selectedColor.combination.colors) {
+          initialColors = selectedColor.combination.colors;
+        } else if (Array.isArray(selectedColor.hex)) {
+          const combination = parseColorCombination(selectedColor.name || '');
+          if (combination.isValid && combination.colors.length === selectedColor.hex.length) {
+            initialColors = combination.colors.map((c, i) => ({ ...c, hex: selectedColor.hex[i] }));
+          } else {
+            initialColors = selectedColor.hex.map((h, i) => ({ name: `Color ${i + 1}`, hex: h }));
+          }
+        } else {
+          const combination = parseColorCombination(selectedColor.name || '');
+          if (combination.isValid) initialColors = combination.colors;
+        }
+        setComboColors(initialColors);
         setActiveComboIndex(0);
+
+        // Set custom color to first color of combination
+        if (initialColors.length > 0) {
+          setCustomColor(initialColors[0].hex);
+          const rgb = hexToRgb(initialColors[0].hex);
+          setRgbValues(rgb);
+          const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+          setHue(hsv.h);
+          setSaturation(hsv.s);
+          setBrightness(hsv.v);
+        }
+
       } else {
         setColorType('single');
         setCustomColor(selectedColor.hex || '#FF0000');
@@ -154,11 +185,11 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       setIsEyedropperActive(true);
       const eyeDropper = new window.EyeDropper();
       const result = await eyeDropper.open();
-      
+
       if (result && result.sRGBHex) {
         const hex = result.sRGBHex;
         setCustomColor(hex);
-        
+
         // Update RGB and HSV values
         const rgb = hexToRgb(hex);
         setRgbValues(rgb);
@@ -166,7 +197,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
         setHue(hsv.h);
         setSaturation(hsv.s);
         setBrightness(hsv.v);
-        
+
         setColorName(hex);
       }
     } catch (err) {
@@ -200,7 +231,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       document.body.style.cursor = 'default';
     };
   }, [isEyedropperActive]);
-  
+
   const canvasRef = React.useRef(null);
   const hueBarRef = React.useRef(null);
 
@@ -215,16 +246,16 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
     // Draw saturation-brightness gradient
     const baseColor = hsvToRgb(hue, 100, 100);
-    
+
     // Create horizontal gradient (saturation)
     for (let x = 0; x < width; x++) {
       const sat = (x / width) * 100;
-      
+
       // Create vertical gradient (brightness)
       for (let y = 0; y < height; y++) {
         const bright = 100 - (y / height) * 100;
         const rgb = hsvToRgb(hue, sat, bright);
-        
+
         ctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
         ctx.fillRect(x, y, 1, 1);
       }
@@ -233,6 +264,9 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
   // Update color from HSV with tone adjustment
   React.useEffect(() => {
+    // Only update if input mode is visual to prevent fighting with other inputs
+    if (inputMode !== 'visual') return;
+
     let adjustedBrightness = brightness;
     if (toneAdjustment !== 0) {
       // Adjust brightness based on tone adjustment (-100 to +100)
@@ -240,7 +274,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
     }
     const rgb = hsvToRgb(hue, saturation, adjustedBrightness);
     const newHex = rgbToHex(rgb.r, rgb.g, rgb.b);
-    
+
     if (newHex !== customColor) {
       setCustomColor(newHex);
     }
@@ -248,57 +282,74 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       if (prev.r === rgb.r && prev.g === rgb.g && prev.b === rgb.b) return prev;
       return rgb;
     });
-  }, [hue, saturation, brightness, toneAdjustment]);
+  }, [hue, saturation, brightness, toneAdjustment, inputMode]);
 
   // Sync picker with active combination color
   React.useEffect(() => {
     if (colorType === 'combination') {
-      const combination = parseColorCombination(colorName);
-      if (combination.isValid && combination.colors.length > 0) {
+      // Use comboColors state instead of parsing name every time
+      if (comboColors.length > 0) {
         let index = activeComboIndex;
-        if (index >= combination.colors.length) {
-           index = combination.colors.length - 1;
-           setActiveComboIndex(index);
+        if (index >= comboColors.length) {
+          index = comboColors.length - 1;
+          setActiveComboIndex(index);
         }
-        
-        const color = combination.colors[index];
+
+        const color = comboColors[index];
         if (color && color.hex.toLowerCase() !== customColor.toLowerCase()) {
-           setCustomColor(color.hex);
-           const rgb = hexToRgb(color.hex);
-           setRgbValues(rgb);
-           const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-           setHue(hsv.h);
-           setSaturation(hsv.s);
-           setBrightness(hsv.v);
+          setCustomColor(color.hex);
+          const rgb = hexToRgb(color.hex);
+          setRgbValues(rgb);
+          const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+          setHue(hsv.h);
+          setSaturation(hsv.s);
+          setBrightness(hsv.v);
         }
       }
     }
-  }, [colorName, activeComboIndex, colorType]);
+  }, [activeComboIndex, colorType, comboColors]); // Removed colorName dependency to break loop
 
   // Update combination when picker changes
   React.useEffect(() => {
-     if (colorType === 'combination') {
-        const combination = parseColorCombination(colorName);
-        if (combination.isValid && combination.colors.length > 0) {
-           const index = activeComboIndex >= combination.colors.length ? combination.colors.length - 1 : activeComboIndex;
-           const currentColor = combination.colors[index];
-           
-           if (currentColor && currentColor.hex.toLowerCase() !== customColor.toLowerCase()) {
-              const newColors = [...combination.colors];
-              newColors[index] = { ...newColors[index], hex: customColor, name: customColor };
-              const newColorString = newColors.map(c => c.name).join('/');
-              setColorName(newColorString);
-           }
+    if (colorType === 'combination' && comboColors.length > 0) {
+      const index = activeComboIndex >= comboColors.length ? comboColors.length - 1 : activeComboIndex;
+      const currentColor = comboColors[index];
+
+      // Only update if there is a real change to avoid loop
+      if (currentColor && currentColor.hex.toLowerCase() !== customColor.toLowerCase()) {
+        const newColors = [...comboColors];
+        // Ensure we don't accidentally rename if not needed
+        const newName = colorNameToHex(customColor) === customColor ? customColor : nearestColorName(customColor) || customColor;
+
+        newColors[index] = { ...newColors[index], hex: customColor, name: newName };
+
+        setComboColors(newColors);
+
+        // Name update logic
+        const oldGeneratedName = comboColors.map(c => c.name).join('/');
+        if (colorName === oldGeneratedName || !colorName) {
+          // Only auto-update name if it seems auto-generated
+          const newColorString = newColors.map(c => c.name).join('/');
+          if (newColorString !== colorName) {
+            setColorName(newColorString);
+          }
         }
-     }
-  }, [customColor]);
+      }
+    }
+  }, [customColor, colorType]); // Keep dependencies minimal
+
+  // Helper to find nearest color name for hex (simplified for this context)
+  const nearestColorName = (hex) => {
+    // This would ideally search the map, but for now we can just use the hex or keep existing name
+    return null;
+  };
 
   // Generate harmony colors
   React.useEffect(() => {
     if (showHarmony) {
       const rgb = hexToRgb(customColor);
       const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-      
+
       const harmonies = [
         { name: 'Complementary', hue: (hsv.h + 180) % 360 },
         { name: 'Split Comp 1', hue: (hsv.h + 150) % 360 },
@@ -316,7 +367,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
           hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b)
         };
       });
-      
+
       setHarmonyColors(newHarmonyColors);
     }
   }, [customColor, showHarmony]);
@@ -335,17 +386,17 @@ function ColorPicker({ onColorSelect, selectedColor }) {
     if (showPaletteGenerator) {
       const rgb = hexToRgb(customColor);
       const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-      
+
       const palette = [];
-      
+
       // Base
       palette.push({ name: 'Base', hex: customColor });
-      
+
       // Monochromatic (Tints & Shades)
       // Tint (Lighter/Less Saturated)
       let tintRgb = hsvToRgb(hsv.h, Math.max(0, hsv.s - 30), Math.min(100, hsv.v + 20));
       palette.push({ name: 'Tint', hex: rgbToHex(tintRgb.r, tintRgb.g, tintRgb.b) });
-      
+
       // Shade (Darker)
       let shadeRgb = hsvToRgb(hsv.h, hsv.s, Math.max(0, hsv.v - 30));
       palette.push({ name: 'Shade', hex: rgbToHex(shadeRgb.r, shadeRgb.g, shadeRgb.b) });
@@ -357,7 +408,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       // Complementary (Opposite)
       let compRgb = hsvToRgb((hsv.h + 180) % 360, hsv.s, hsv.v);
       palette.push({ name: 'Comp.', hex: rgbToHex(compRgb.r, compRgb.g, compRgb.b) });
-      
+
       setGeneratedPalette(palette);
     }
   }, [customColor, showPaletteGenerator]);
@@ -366,7 +417,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
   const updateHexFromRgb = (newRgb) => {
     const hex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
     setCustomColor(hex);
-    
+
     // Update HSV values
     const hsv = rgbToHsv(newRgb.r, newRgb.g, newRgb.b);
     setHue(hsv.h);
@@ -383,6 +434,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
   // Handle canvas click
   const handleCanvasClick = (e) => {
+    setInputMode('visual'); // Switch to visual mode on interaction
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -399,6 +451,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
   // Handle hue bar click
   const handleHueBarClick = (e) => {
+    setInputMode('visual'); // Switch to visual mode on interaction
     const bar = hueBarRef.current;
     if (!bar) return;
 
@@ -412,7 +465,19 @@ function ColorPicker({ onColorSelect, selectedColor }) {
   // Handle color name input
   const handleColorNameChange = (value) => {
     setColorName(value);
-    
+
+    // Attempt to parse new name into colors
+    // Only update comboColors if it's a structural change (valid parse)
+    // If user types "Custom", parse fails, we KEEP existing comboColors
+    if (colorType === 'combination') {
+      const combination = parseColorCombination(value);
+      if (combination.isValid && combination.colors.length > 0) {
+        // It's a valid standard combination, accept its colors
+        // But preserve hexes if names match? No, if user types "Red/Blue", they likely want Red and Blue.
+        setComboColors(combination.colors);
+      }
+    }
+
     // Get suggestions
     if (value.length > 0) {
       const suggestions = getColorSuggestions(value);
@@ -424,8 +489,13 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
   const handleColorNameSelect = (name) => {
     setColorName(name);
-    const hex = colorNameToHex(name);
-    setCustomColor(hex);
+    if (colorType === 'combination') {
+      const combination = parseColorCombination(name);
+      if (combination.isValid) setComboColors(combination.colors);
+    } else {
+      const hex = colorNameToHex(name);
+      setCustomColor(hex);
+    }
     setColorSuggestions([]);
   };
 
@@ -447,9 +517,35 @@ function ColorPicker({ onColorSelect, selectedColor }) {
   const handleCustomColorSelect = () => {
     let nameToUse = colorName;
     if (!nameToUse || nameToUse.trim() === '') {
-       nameToUse = prompt('Enter a name for this color:') || 'Custom Color';
+      nameToUse = prompt('Enter a name for this color:') || 'Custom Color';
     }
-    onColorSelect({ name: nameToUse, hex: customColor });
+
+    if (colorType === 'combination') {
+      if (comboColors.length > 0) {
+        onColorSelect({
+          name: nameToUse,
+          hex: comboColors.map(c => c.hex),
+          combination: { colors: comboColors, mode: combinationMode, isValid: true },
+          displayMode: combinationMode
+        });
+      } else {
+        // Fallback: try parsing name or alert
+        const combination = parseColorCombination(nameToUse);
+        if (combination.isValid) {
+          onColorSelect({
+            name: nameToUse,
+            hex: combination.colors.map(c => c.hex),
+            combination: combination,
+            displayMode: combinationMode
+          });
+        } else {
+          alert("Please add colors to the combination or select a valid name");
+          return;
+        }
+      }
+    } else {
+      onColorSelect({ name: nameToUse, hex: customColor });
+    }
     setIsOpen(false);
   };
 
@@ -466,14 +562,15 @@ function ColorPicker({ onColorSelect, selectedColor }) {
     const selectedColors = [];
     for (let i = 0; i < count; i++) {
       const randomColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-      selectedColors.push(randomColor.name);
+      selectedColors.push(randomColor); // Push full color obj
     }
-    const newColorName = selectedColors.join('/');
-    
+    const newColorName = selectedColors.map(c => c.name).join('/');
+
     const modes = DISPLAY_MODES ? Object.values(DISPLAY_MODES).filter(m => m !== 'single') : ['split-vertical', 'split-horizontal', 'gradient-linear', 'checkerboard'];
     const randomMode = modes[Math.floor(Math.random() * modes.length)];
-    
+
     setColorName(newColorName);
+    setComboColors(selectedColors); // Update colors
     setCombinationMode(randomMode);
   };
 
@@ -500,14 +597,14 @@ function ColorPicker({ onColorSelect, selectedColor }) {
         type: 'single'
       };
     } else {
-      const combination = parseColorCombination(colorName);
-      if (!combination.isValid) {
+      // Use comboColors for the preset
+      if (comboColors.length === 0) {
         alert('Invalid color combination');
         return;
       }
       newPreset = {
         name: colorName,
-        hex: combination.colors.map(c => c.hex),
+        hex: comboColors.map(c => c.hex),
         displayMode: combinationMode,
         type: 'combination'
       };
@@ -515,7 +612,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
     const existingIndex = savedPalettes.findIndex(p => p.name.toLowerCase() === newPreset.name.toLowerCase());
     let updated;
-    
+
     if (existingIndex >= 0) {
       if (!confirm(`A preset named "${newPreset.name}" already exists. Overwrite it?`)) return;
       updated = [...savedPalettes];
@@ -523,7 +620,7 @@ function ColorPicker({ onColorSelect, selectedColor }) {
     } else {
       updated = [...savedPalettes, newPreset];
     }
-    
+
     setSavedPalettes(updated);
     localStorage.setItem('luxemarket_color_presets', JSON.stringify(updated));
   };
@@ -544,14 +641,15 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       const combination = parseColorCombination(preset.name);
       // Use stored hex values to ensure custom colors are preserved
       if (Array.isArray(preset.hex) && combination.colors.length === preset.hex.length) {
-          combination.colors.forEach((c, i) => { c.hex = preset.hex[i]; });
+        combination.colors.forEach((c, i) => { c.hex = preset.hex[i]; });
       }
       onColorSelect({
         name: preset.name,
         hex: preset.hex,
-        combination: combination,
+        combination: { colors: preset.hex.map(h => ({ hex: h })), mode: preset.displayMode, isValid: true },
         displayMode: preset.displayMode
       });
+      setComboColors(preset.hex.map(h => ({ hex: h, name: '' }))); // Update local state for viewing
     }
     setIsOpen(false);
   };
@@ -565,18 +663,18 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       >
         <div className="w-6 h-6 rounded border border-gray-300 overflow-hidden">
           {selectedColor ? (
-             (Array.isArray(selectedColor.hex) || selectedColor.combination) ? (
-                <div
-                  style={generateColorCSS(selectedColor.combination || parseColorCombination(selectedColor.name), {
-                    width: '100%', height: '100%', mode: selectedColor.displayMode
-                  }).style}
-                  dangerouslySetInnerHTML={{ __html: generateColorCSS(selectedColor.combination || parseColorCombination(selectedColor.name), { mode: selectedColor.displayMode }).innerHTML }}
-                />
-             ) : (
-                <div style={{ backgroundColor: selectedColor.hex, width: '100%', height: '100%' }} />
-             )
+            (Array.isArray(selectedColor.hex) || selectedColor.combination) ? (
+              <div
+                style={generateColorCSS(selectedColor.combination || parseColorCombination(selectedColor.name), {
+                  width: '100%', height: '100%', mode: selectedColor.displayMode
+                }).style}
+                dangerouslySetInnerHTML={{ __html: generateColorCSS(selectedColor.combination || parseColorCombination(selectedColor.name), { mode: selectedColor.displayMode }).innerHTML }}
+              />
+            ) : (
+              <div style={{ backgroundColor: selectedColor.hex, width: '100%', height: '100%' }} />
+            )
           ) : (
-             <div className="bg-black w-full h-full" />
+            <div className="bg-black w-full h-full" />
           )}
         </div>
         <span className="text-sm">
@@ -588,108 +686,133 @@ function ColorPicker({ onColorSelect, selectedColor }) {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-25" onClick={() => setIsOpen(false)}>
           <div className="bg-white border border-gray-200 rounded-lg shadow-xl p-4 w-96 max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
-          {/* Color Type Selection */}
-          <div className="mb-4 border-b border-gray-200 pb-3">
-            <div className="flex gap-2 mb-2">
-              <button
-                type="button"
-                onClick={() => setColorType('single')}
-                className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                  colorType === 'single'
+            {/* Color Type Selection */}
+            <div className="mb-4 border-b border-gray-200 pb-3">
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setColorType('single')}
+                  className={`px-3 py-1 text-sm rounded-full border transition-colors ${colorType === 'single'
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                }`}
-              >
-                Single Color
-              </button>
-              <button
-                type="button"
-                onClick={() => setColorType('combination')}
-                className={`px-3 py-1 text-sm rounded-full border transition-colors ${
-                  colorType === 'combination'
+                    }`}
+                >
+                  Single Color
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setColorType('combination')}
+                  className={`px-3 py-1 text-sm rounded-full border transition-colors ${colorType === 'combination'
                     ? 'border-purple-500 bg-purple-50 text-purple-700'
                     : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                }`}
-              >
-                Color Combination
-              </button>
-            </div>
-          </div>
-
-          {/* Saved Presets Section */}
-          {savedPalettes.filter(p => p.type === colorType).length > 0 && (
-            <div className="mb-4 border-b border-gray-200 pb-3">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">My Saved Colors</h3>
-              <div className="grid grid-cols-5 gap-2">
-                {savedPalettes.filter(p => p.type === colorType).map((preset, index) => {
-                  // Find original index for deletion
-                  const originalIndex = savedPalettes.indexOf(preset);
-                  return (
-                    <div key={index} className="relative group">
-                      <button
-                        type="button"
-                        onClick={() => handlePresetSelect(preset)}
-                        className="w-8 h-8 rounded-full border border-gray-300 hover:border-gray-400 hover:scale-110 transition-all overflow-hidden p-0"
-                        title={preset.name}
-                      >
-                        {preset.type === 'single' ? (
-                          <div className="w-full h-full" style={{ backgroundColor: preset.hex }} />
-                        ) : (
-                          <div
-                            style={generateColorCSS({ colors: preset.hex.map(h => ({ hex: h })), mode: preset.displayMode }, { width: '100%', height: '100%' }).style}
-                            dangerouslySetInnerHTML={{ __html: generateColorCSS({ colors: preset.hex.map(h => ({ hex: h })), mode: preset.displayMode }).innerHTML }}
-                          />
-                        )}
-                      </button>
-                      <button
-                        onClick={(e) => deletePreset(e, originalIndex)}
-                        className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
-                        title="Delete preset"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Single Color Palette */}
-          {colorType === 'single' && (
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Color Palette</h3>
-              <div className="grid grid-cols-6 gap-2">
-                {colorPalette.map((color, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleColorSelect(color)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all color-picker-button ${
-                      selectedColor?.hex === color.hex 
-                        ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)]/20 scale-110' 
-                        : 'border-gray-300 hover:border-gray-400 hover:scale-110'
                     }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  />
-                ))}
+                >
+                  Color Combination
+                </button>
               </div>
             </div>
-          )}
 
-          {/* Color Combination Section */}
-          {colorType === 'combination' && (
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">Color Combinations</h3>
-              
-              {/* LIVE PREVIEW - Moved to top and made sticky */}
-              <div className="mb-3 p-3 bg-gray-50 rounded border border-gray-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-                 <span className="text-xs font-medium text-gray-600">Current Preview:</span>
-                 {(() => {
-                    const combination = parseColorCombination(colorName);
-                    if (combination.isValid) {
-                      combination.mode = combinationMode; // Apply current mode
+            {/* Color Name Input - Always Visible */}
+            <div className="mb-4 bg-gray-50 p-3 rounded-lg border border-gray-100">
+              <label className="block text-xs font-semibold text-gray-700 mb-1 uppercase tracking-wider">
+                Color Variant Name
+              </label>
+              <input
+                type="text"
+                value={colorName}
+                onChange={(e) => handleColorNameChange(e.target.value)}
+                placeholder="e.g., Midnight Blue, Space Gray..."
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white font-medium"
+              />
+              {colorSuggestions.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {colorSuggestions.slice(0, 5).map(suggestion => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => handleColorNameSelect(suggestion)}
+                      className="text-[10px] px-2 py-0.5 bg-white hover:bg-gray-100 rounded border border-gray-200 text-gray-600 transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Saved Presets Section */}
+            {savedPalettes.filter(p => p.type === colorType).length > 0 && (
+              <div className="mb-4 border-b border-gray-200 pb-3">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">My Saved Colors</h3>
+                <div className="grid grid-cols-5 gap-2">
+                  {savedPalettes.filter(p => p.type === colorType).map((preset, index) => {
+                    // Find original index for deletion
+                    const originalIndex = savedPalettes.indexOf(preset);
+                    return (
+                      <div key={index} className="relative group">
+                        <button
+                          type="button"
+                          onClick={() => handlePresetSelect(preset)}
+                          className="w-8 h-8 rounded-full border border-gray-300 hover:border-gray-400 hover:scale-110 transition-all overflow-hidden p-0"
+                          title={preset.name}
+                        >
+                          {preset.type === 'single' ? (
+                            <div className="w-full h-full" style={{ backgroundColor: preset.hex }} />
+                          ) : (
+                            <div
+                              style={generateColorCSS({ colors: preset.hex.map(h => ({ hex: h })), mode: preset.displayMode }, { width: '100%', height: '100%' }).style}
+                              dangerouslySetInnerHTML={{ __html: generateColorCSS({ colors: preset.hex.map(h => ({ hex: h })), mode: preset.displayMode }).innerHTML }}
+                            />
+                          )}
+                        </button>
+                        <button
+                          onClick={(e) => deletePreset(e, originalIndex)}
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+                          title="Delete preset"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Single Color Palette */}
+            {colorType === 'single' && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Color Palette</h3>
+                <div className="grid grid-cols-6 gap-2">
+                  {colorPalette.map((color, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleColorSelect(color)}
+                      className={`w-8 h-8 rounded-full border-2 transition-all color-picker-button ${selectedColor?.hex === color.hex
+                        ? 'border-[var(--primary-color)] ring-2 ring-[var(--primary-color)]/20 scale-110'
+                        : 'border-gray-300 hover:border-gray-400 hover:scale-110'
+                        }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Color Combination Section */}
+            {colorType === 'combination' && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2">Color Combinations</h3>
+
+                {/* LIVE PREVIEW - Moved to top and made sticky */}
+                <div className="mb-3 p-3 bg-gray-50 rounded border border-gray-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                  <span className="text-xs font-medium text-gray-600">Current Preview:</span>
+                  {(() => {
+                    // Use comboColors state for preview
+                    if (comboColors.length > 0) {
+                      const combination = { colors: comboColors, mode: combinationMode };
                       const css = generateColorCSS(combination, {
                         width: '48px',
                         height: '48px',
@@ -697,127 +820,66 @@ function ColorPicker({ onColorSelect, selectedColor }) {
                         borderWidth: '2px'
                       });
                       return (
-                         <div
-                           style={css.style}
-                           className={css.className}
-                           dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
-                           title={`${colorName} (${combinationMode})`}
-                         />
-                      );
-                    } else {
-                      return <span className="text-xs text-gray-400">Invalid combination</span>;
-                    }
-                 })()}
-              </div>
-
-              {/* Exotic Colors */}
-              <div className="mb-3">
-                <h4 className="text-xs font-medium text-gray-700 mb-2">Exotic Colors</h4>
-                <div className="grid grid-cols-4 gap-2">
-                  {EXOTIC_COMBINATIONS.map((combo, index) => {
-                    const css = generateColorCSS({ colors: combo.colors, mode: combo.mode }, {
-                      width: '100%',
-                      height: '32px',
-                      borderRadius: '4px'
-                    });
-
-                    return (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => {
-                          setColorName(combo.name);
-                          setCombinationMode(combo.mode);
-                          onColorSelect({
-                            name: combo.name,
-                            hex: combo.colors.map(c => c.hex),
-                            combination: { colors: combo.colors, mode: combo.mode, isValid: true },
-                            displayMode: combo.mode
-                          });
-                          setIsOpen(false);
-                        }}
-                        className="flex flex-col items-center gap-1 p-1 border border-gray-200 rounded hover:border-purple-400 hover:bg-purple-50 transition-all"
-                        title={combo.name}
-                      >
                         <div
                           style={css.style}
                           className={css.className}
                           dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                          title={`${colorName} (${combinationMode})`}
                         />
-                        <span className="text-[10px] text-gray-600 truncate w-full text-center">{combo.name}</span>
-                      </button>
-                    );
-                  })}
+                      );
+                    } else {
+                      return <span className="text-xs text-gray-400">Invalid combination</span>;
+                    }
+                  })()}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-5 gap-2 mb-3">
-                {COMMON_COMBINATIONS.map((combo, index) => {
-                  const colorName = combo.colors.join('/');
-                  const combination = parseColorCombination(colorName);
-                  const css = generateColorCSS(combination, {
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%'
-                  });
+                {/* Exotic Colors */}
+                <div className="mb-3">
+                  <h4 className="text-xs font-medium text-gray-700 mb-2">Exotic Colors</h4>
+                  <div className="grid grid-cols-4 gap-2">
+                    {EXOTIC_COMBINATIONS.map((combo, index) => {
+                      const css = generateColorCSS({ colors: combo.colors, mode: combo.mode }, {
+                        width: '100%',
+                        height: '32px',
+                        borderRadius: '4px'
+                      });
 
-                  return (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => {
-                        setColorName(colorName);
-                        const parsed = parseColorCombination(colorName);
-                        if (parsed.isValid) {
-                          onColorSelect({
-                            name: colorName,
-                            hex: parsed.colors.map(c => c.hex),
-                            combination: parsed,
-                            displayMode: combinationMode
-                          });
-                          setIsOpen(false);
-                        }
-                      }}
-                      className="w-8 h-8 border border-gray-300 rounded-full hover:border-gray-400 flex items-center justify-center p-0"
-                      title={combo.name}
-                    >
-                      <div
-                        style={css.style}
-                        className={css.className}
-                        dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Combination Mode Selection */}
-              <div className="mb-3">
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-medium text-gray-700">Display Mode</label>
-                  {(combinationMode === 'split-vertical' || combinationMode === 'split-horizontal') && (
-                    <button
-                      type="button"
-                      onClick={handleRotate}
-                      className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-blue-50 transition-colors"
-                      title="Rotate split orientation"
-                    >
-                      <span className="text-sm">↻</span> Rotate
-                    </button>
-                  )}
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => {
+                            setColorName(combo.name);
+                            setCombinationMode(combo.mode);
+                            setComboColors(combo.colors); // Update explicit colors
+                            onColorSelect({
+                              name: combo.name,
+                              hex: combo.colors.map(c => c.hex),
+                              combination: { colors: combo.colors, mode: combo.mode, isValid: true },
+                              displayMode: combo.mode
+                            });
+                            setIsOpen(false);
+                          }}
+                          className="flex flex-col items-center gap-1 p-1 border border-gray-200 rounded hover:border-purple-400 hover:bg-purple-50 transition-all"
+                          title={combo.name}
+                        >
+                          <div
+                            style={css.style}
+                            className={css.className}
+                            dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                          />
+                          <span className="text-[10px] text-gray-600 truncate w-full text-center">{combo.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.values(DISPLAY_MODES).map((mode) => {
-                    // Create a sample combination for preview with the specific mode
-                    const sampleCombination = {
-                      colors: [
-                        { name: 'red', hex: '#FF0000' },
-                        { name: 'blue', hex: '#0000FF' }
-                      ],
-                      mode: mode
-                    };
-                    
-                    const css = generateColorCSS(sampleCombination, {
+
+                <div className="grid grid-cols-5 gap-2 mb-3">
+                  {COMMON_COMBINATIONS.map((combo, index) => {
+                    const colorName = combo.colors.join('/');
+                    const combination = parseColorCombination(colorName);
+                    const css = generateColorCSS(combination, {
                       width: '32px',
                       height: '32px',
                       borderRadius: '50%'
@@ -825,119 +887,347 @@ function ColorPicker({ onColorSelect, selectedColor }) {
 
                     return (
                       <button
-                        key={mode}
+                        key={index}
                         type="button"
-                        onClick={() => setCombinationMode(mode)}
-                        className={`p-2 border rounded text-xs ${
-                          combinationMode === mode 
-                            ? 'border-purple-500 bg-purple-50' 
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
+                        onClick={() => {
+                          setColorName(colorName);
+                          const parsed = parseColorCombination(colorName);
+                          if (parsed.isValid) {
+                            setComboColors(parsed.colors);
+                            onColorSelect({
+                              name: colorName,
+                              hex: parsed.colors.map(c => c.hex),
+                              combination: parsed,
+                              displayMode: combinationMode
+                            });
+                            setIsOpen(false);
+                          }
+                        }}
+                        className="w-8 h-8 border border-gray-300 rounded-full hover:border-gray-400 flex items-center justify-center p-0"
+                        title={combo.name}
                       >
-                        <div className="w-8 h-8 rounded border border-gray-300 mb-1 mx-auto">
-                          <div
-                            style={css.style}
-                            className={css.className}
-                            dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">{mode.replace('-', ' ')}</div>
+                        <div
+                          style={css.style}
+                          className={css.className}
+                          dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                        />
                       </button>
                     );
                   })}
                 </div>
-              </div>
 
-              {/* Edit Individual Colors */}
-              <div className="mb-3">
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-medium text-gray-700">Edit Individual Colors</label>
-                  <button
-                    type="button"
-                    onClick={handleSwapColors}
-                    className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-blue-50 transition-colors"
-                    title="Reverse color order"
-                  >
-                    <span className="text-sm">⇄</span> Swap Order
-                  </button>
+                {/* Combination Mode Selection */}
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700">Display Mode</label>
+                    {(combinationMode === 'split-vertical' || combinationMode === 'split-horizontal') && (
+                      <button
+                        type="button"
+                        onClick={handleRotate}
+                        className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-blue-50 transition-colors"
+                        title="Rotate split orientation"
+                      >
+                        <span className="text-sm">↻</span> Rotate
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.values(DISPLAY_MODES).map((mode) => {
+                      // Create a sample combination for preview with the specific mode
+                      const sampleCombination = {
+                        colors: [
+                          { name: 'red', hex: '#FF0000' },
+                          { name: 'blue', hex: '#0000FF' }
+                        ],
+                        mode: mode
+                      };
+
+                      const css = generateColorCSS(sampleCombination, {
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%'
+                      });
+
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          onClick={() => setCombinationMode(mode)}
+                          className={`p-2 border rounded text-xs ${combinationMode === mode
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                        >
+                          <div className="w-8 h-8 rounded border border-gray-300 mb-1 mx-auto">
+                            <div
+                              style={css.style}
+                              className={css.className}
+                              dangerouslySetInnerHTML={css.innerHTML ? { __html: css.innerHTML } : undefined}
+                            />
+                          </div>
+                          <div className="text-xs text-gray-600 mt-1">{mode.replace('-', ' ')}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="flex gap-2 flex-wrap">
-                  {(() => {
-                    const combination = parseColorCombination(colorName);
-                    if (combination.isValid) {
-                      return combination.colors.map((color, idx) => (
+
+                {/* Edit Individual Colors */}
+                <div className="mb-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700">Edit Individual Colors</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newColors = [...comboColors].reverse();
+                        setComboColors(newColors);
+                        // Heuristic update name if generic?
+                        // setComboColors handles visual, allow name to stay or user manual update
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-blue-50 transition-colors"
+                      title="Reverse color order"
+                    >
+                      <span className="text-sm">⇄</span> Swap Order
+                    </button>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-2 flex-wrap">
+                      {comboColors.map((color, idx) => (
                         <button
                           key={idx}
                           type="button"
                           onClick={() => setActiveComboIndex(idx)}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            activeComboIndex === idx ? 'border-blue-500 ring-2 ring-blue-200 scale-110' : 'border-gray-300 hover:border-gray-400'
-                          }`}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${activeComboIndex === idx ? 'border-blue-500 ring-2 ring-blue-200 scale-110' : 'border-gray-300 hover:border-gray-400'
+                            }`}
                           style={{ backgroundColor: color.hex }}
-                          title={`Edit ${color.name}`}
+                          title={`Edit ${color.name || 'Color'}`}
                         />
-                      ));
-                    }
-                    return null;
-                  })()}
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Custom Combination Input */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-medium text-gray-700">Create Custom Combination</label>
+                    <button
+                      type="button"
+                      onClick={handleRandomCombination}
+                      className="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-purple-50 transition-colors"
+                      title="Generate random combination"
+                    >
+                      <span className="text-sm">🎲</span> Random
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={colorName}
+                      onChange={(e) => handleColorNameChange(e.target.value)}
+                      placeholder="e.g., black/orange, red/blue/green"
+                      className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={savePreset}
+                      className="btn btn-secondary text-sm px-3 py-1"
+                      title="Save to My Presets"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (comboColors.length > 0) {
+                          onColorSelect({
+                            name: colorName,
+                            hex: comboColors.map(c => c.hex),
+                            combination: { colors: comboColors, mode: combinationMode, isValid: true },
+                            displayMode: combinationMode
+                          });
+                          setIsOpen(false);
+                        } else {
+                          // Try parsing if empty
+                          const combination = parseColorCombination(colorName);
+                          if (combination.isValid) {
+                            onColorSelect({
+                              name: colorName,
+                              hex: combination.colors.map(c => c.hex),
+                              combination: combination,
+                              displayMode: combinationMode
+                            });
+                            setIsOpen(false);
+                          }
+                        }
+                      }}
+                      className="btn btn-primary text-sm px-3 py-1"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {/* Color Suggestions */}
+                  {colorSuggestions.length > 0 && (
+                    <div className="mt-2">
+                      <div className="text-xs text-gray-600 mb-1">Color suggestions:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {colorSuggestions.slice(0, 6).map((suggestion) => (
+                          <button
+                            key={suggestion}
+                            type="button"
+                            onClick={() => handleColorNameSelect(suggestion)}
+                            className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-gray-900">Custom Color</h3>
+                  {eyedropperSupported && (
+                    <button
+                      type="button"
+                      onClick={activateEyedropper}
+                      className={`p-1 rounded hover:bg-gray-100 ${isEyedropperActive ? 'text-blue-600' : 'text-gray-500'}`}
+                      title="Pick color from screen"
+                    >
+                      <div className="icon-eyedropper"></div>
+                    </button>
+                  )}
+                </div>
+                <div className="flex bg-gray-100 rounded-md p-1">
+                  {['visual', 'hex', 'rgb'].map(mode => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setInputMode(mode)}
+                      className={`px-2 py-1 text-xs rounded transition-colors uppercase ${inputMode === mode
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Custom Combination Input */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-medium text-gray-700">Create Custom Combination</label>
-                  <button
-                    type="button"
-                    onClick={handleRandomCombination}
-                    className="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1 px-2 py-0.5 rounded hover:bg-purple-50 transition-colors"
-                    title="Generate random combination"
-                  >
-                    <span className="text-sm">🎲</span> Random
-                  </button>
+              {/* Visual Picker */}
+              {inputMode === 'visual' && (
+                <div className="space-y-3">
+                  <div className="relative h-32 w-full rounded-lg overflow-hidden cursor-crosshair shadow-inner border border-gray-200">
+                    <canvas
+                      ref={canvasRef}
+                      width={350}
+                      height={128}
+                      onClick={handleCanvasClick}
+                      className="w-full h-full"
+                    />
+                    <div
+                      className="absolute w-3 h-3 border-2 border-white rounded-full shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
+                      style={{
+                        left: `${saturation}%`,
+                        top: `${100 - brightness}%`,
+                        backgroundColor: customColor
+                      }}
+                    />
+                  </div>
+                  <div className="relative h-4 w-full rounded-full overflow-hidden cursor-pointer shadow-inner border border-gray-200">
+                    <div
+                      ref={hueBarRef}
+                      className="w-full h-full"
+                      style={{
+                        background: 'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)'
+                      }}
+                      onClick={handleHueBarClick}
+                    />
+                    <div
+                      className="absolute top-0 bottom-0 w-1 bg-white border border-gray-400 pointer-events-none"
+                      style={{ left: `${(hue / 360) * 100}%` }}
+                    />
+                  </div>
                 </div>
+              )}
+
+              {/* Hex Input */}
+              {inputMode === 'hex' && (
                 <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">#</span>
+                    <input
+                      type="text"
+                      value={customColor.replace('#', '')}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const hex = '#' + val;
+                        setCustomColor(hex);
+                        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                          const rgb = hexToRgb(hex);
+                          setRgbValues(rgb);
+                          const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+                          setHue(hsv.h);
+                          setSaturation(hsv.s);
+                          setBrightness(hsv.v);
+                        }
+                      }}
+                      className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                      maxLength={7}
+                    />
+                  </div>
+                  <div
+                    className="w-10 h-10 rounded border border-gray-300"
+                    style={{ backgroundColor: customColor }}
+                  />
+                </div>
+              )}
+
+              {/* RGB Input */}
+              {inputMode === 'rgb' && (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    {['r', 'g', 'b'].map(channel => (
+                      <div key={channel} className="flex-1">
+                        <label className="block text-xs text-gray-500 uppercase mb-1">{channel}</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="255"
+                          value={rgbValues[channel]}
+                          onChange={(e) => handleRgbChange(channel, e.target.value)}
+                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div
+                    className="h-8 w-full rounded border border-gray-300"
+                    style={{ backgroundColor: customColor }}
+                  />
+                </div>
+              )}
+
+              {/* Name Input */}
+              {inputMode === 'name' && (
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={colorName}
                     onChange={(e) => handleColorNameChange(e.target.value)}
-                    placeholder="e.g., black/orange, red/blue/green"
-                    className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="e.g. Navy Blue"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <button
-                    type="button"
-                    onClick={savePreset}
-                    className="btn btn-secondary text-sm px-3 py-1"
-                    title="Save to My Presets"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const combination = parseColorCombination(colorName);
-                      if (combination.isValid) {
-                        onColorSelect({
-                          name: colorName,
-                          hex: combination.colors.map(c => c.hex),
-                          combination: combination,
-                          displayMode: combinationMode
-                        });
-                        setIsOpen(false);
-                      }
-                    }}
-                    className="btn btn-primary text-sm px-3 py-1"
-                  >
-                    Add
-                  </button>
-                </div>
-
-                {/* Color Suggestions */}
-                {colorSuggestions.length > 0 && (
-                  <div className="mt-2">
-                    <div className="text-xs text-gray-600 mb-1">Color suggestions:</div>
-                    <div className="flex flex-wrap gap-1">
-                      {colorSuggestions.slice(0, 6).map((suggestion) => (
+                  {colorSuggestions.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {colorSuggestions.slice(0, 5).map(suggestion => (
                         <button
                           key={suggestion}
                           type="button"
@@ -948,223 +1238,104 @@ function ColorPicker({ onColorSelect, selectedColor }) {
                         </button>
                       ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="border-t border-gray-200 pt-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-gray-900">Custom Color</h3>
-                {eyedropperSupported && (
-                  <button
-                    type="button"
-                    onClick={activateEyedropper}
-                    className={`p-1 rounded hover:bg-gray-100 ${isEyedropperActive ? 'text-blue-600' : 'text-gray-500'}`}
-                    title="Pick color from screen"
-                  >
-                    <div className="icon-eyedropper"></div>
-                  </button>
-                )}
-              </div>
-              <div className="flex bg-gray-100 rounded-md p-1">
-                {['visual', 'hex', 'rgb', 'name'].map(mode => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setInputMode(mode)}
-                    className={`px-2 py-1 text-xs rounded transition-colors uppercase ${
-                      inputMode === mode 
-                        ? 'bg-white text-gray-900 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {mode}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Visual Picker */}
-            {inputMode === 'visual' && (
-              <div className="space-y-3">
-                <div className="relative h-32 w-full rounded-lg overflow-hidden cursor-crosshair shadow-inner border border-gray-200">
-                  <canvas 
-                    ref={canvasRef} 
-                    width={350} 
-                    height={128}
-                    onClick={handleCanvasClick}
-                    className="w-full h-full"
-                  />
-                  <div 
-                    className="absolute w-3 h-3 border-2 border-white rounded-full shadow-sm pointer-events-none transform -translate-x-1/2 -translate-y-1/2"
-                    style={{ 
-                      left: `${saturation}%`, 
-                      top: `${100 - brightness}%`,
-                      backgroundColor: customColor
-                    }}
-                  />
+                  )}
                 </div>
-                <div className="relative h-4 w-full rounded-full overflow-hidden cursor-pointer shadow-inner border border-gray-200">
-                  <div 
-                    ref={hueBarRef}
-                    className="w-full h-full"
-                    style={{
-                      background: 'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)'
-                    }}
-                    onClick={handleHueBarClick}
-                  />
-                  <div 
-                    className="absolute top-0 bottom-0 w-1 bg-white border border-gray-400 pointer-events-none"
-                    style={{ left: `${(hue / 360) * 100}%` }}
-                  />
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Hex Input */}
-            {inputMode === 'hex' && (
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">#</span>
-                  <input
-                    type="text"
-                    value={customColor.replace('#', '')}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const hex = '#' + val;
-                      setCustomColor(hex);
-                      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-                        const rgb = hexToRgb(hex);
-                        setRgbValues(rgb);
-                        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-                        setHue(hsv.h);
-                        setSaturation(hsv.s);
-                        setBrightness(hsv.v);
-                      }
-                    }}
-                    className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-                    maxLength={7}
-                  />
-                </div>
-                <div 
-                  className="w-10 h-10 rounded border border-gray-300"
-                  style={{ backgroundColor: customColor }}
-                />
-              </div>
-            )}
-
-            {/* RGB Input */}
-            {inputMode === 'rgb' && (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  {['r', 'g', 'b'].map(channel => (
-                    <div key={channel} className="flex-1">
-                      <label className="block text-xs text-gray-500 uppercase mb-1">{channel}</label>
-                      <input
-                        type="number"
-                        min="0"
-                        max="255"
-                        value={rgbValues[channel]}
-                        onChange={(e) => handleRgbChange(channel, e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                      />
+              {/* Contrast Checker */}
+              <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200">
+                <div className="text-xs font-medium text-gray-700 mb-2">Contrast Checker (WCAG AA)</div>
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-2 flex-1">
+                    <div
+                      className="h-8 flex-1 rounded border flex items-center justify-center text-xs font-medium"
+                      style={{ backgroundColor: customColor, color: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)' }}
+                    >
+                      White Text
                     </div>
-                  ))}
+                    <div className="flex flex-col">
+                      <span className={`text-xs font-bold ${contrastInfo.white >= 4.5 ? 'text-green-600' : 'text-red-600'}`}>
+                        {contrastInfo.white >= 4.5 ? 'Pass' : 'Fail'}
+                      </span>
+                      <span className="text-[10px] text-gray-500">{contrastInfo.white.toFixed(2)}:1</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-1">
+                    <div
+                      className="h-8 flex-1 rounded border flex items-center justify-center text-xs font-medium"
+                      style={{ backgroundColor: customColor, color: '#000000', borderColor: 'rgba(0,0,0,0.1)' }}
+                    >
+                      Black Text
+                    </div>
+                    <div className="flex flex-col">
+                      <span className={`text-xs font-bold ${contrastInfo.black >= 4.5 ? 'text-green-600' : 'text-red-600'}`}>
+                        {contrastInfo.black >= 4.5 ? 'Pass' : 'Fail'}
+                      </span>
+                      <span className="text-[10px] text-gray-500">{contrastInfo.black.toFixed(2)}:1</span>
+                    </div>
+                  </div>
                 </div>
-                <div 
-                  className="h-8 w-full rounded border border-gray-300"
-                  style={{ backgroundColor: customColor }}
-                />
-              </div>
-            )}
-
-            {/* Name Input */}
-            {inputMode === 'name' && (
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  value={colorName}
-                  onChange={(e) => handleColorNameChange(e.target.value)}
-                  placeholder="e.g. Navy Blue"
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                {colorSuggestions.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {colorSuggestions.slice(0, 5).map(suggestion => (
-                      <button
-                        key={suggestion}
-                        type="button"
-                        onClick={() => handleColorNameSelect(suggestion)}
-                        className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
+                {contrastInfo.white < 4.5 && contrastInfo.black < 4.5 && (
+                  <div className="mt-2 text-orange-600 text-[10px] flex items-center gap-1">
+                    <span className="text-xs">⚠️</span> Warning: Low contrast with both black and white text.
                   </div>
                 )}
               </div>
-            )}
 
-            {/* Contrast Checker */}
-            <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200">
-               <div className="text-xs font-medium text-gray-700 mb-2">Contrast Checker (WCAG AA)</div>
-               <div className="flex gap-4">
-                 <div className="flex items-center gap-2 flex-1">
-                   <div 
-                     className="h-8 flex-1 rounded border flex items-center justify-center text-xs font-medium"
-                     style={{ backgroundColor: customColor, color: '#FFFFFF', borderColor: 'rgba(0,0,0,0.1)' }}
-                   >
-                     White Text
-                   </div>
-                   <div className="flex flex-col">
-                     <span className={`text-xs font-bold ${contrastInfo.white >= 4.5 ? 'text-green-600' : 'text-red-600'}`}>
-                       {contrastInfo.white >= 4.5 ? 'Pass' : 'Fail'}
-                     </span>
-                     <span className="text-[10px] text-gray-500">{contrastInfo.white.toFixed(2)}:1</span>
-                   </div>
-                 </div>
-                 <div className="flex items-center gap-2 flex-1">
-                   <div 
-                     className="h-8 flex-1 rounded border flex items-center justify-center text-xs font-medium"
-                     style={{ backgroundColor: customColor, color: '#000000', borderColor: 'rgba(0,0,0,0.1)' }}
-                   >
-                     Black Text
-                   </div>
-                   <div className="flex flex-col">
-                     <span className={`text-xs font-bold ${contrastInfo.black >= 4.5 ? 'text-green-600' : 'text-red-600'}`}>
-                       {contrastInfo.black >= 4.5 ? 'Pass' : 'Fail'}
-                     </span>
-                     <span className="text-[10px] text-gray-500">{contrastInfo.black.toFixed(2)}:1</span>
-                   </div>
-                 </div>
-               </div>
-               {contrastInfo.white < 4.5 && contrastInfo.black < 4.5 && (
-                 <div className="mt-2 text-orange-600 text-[10px] flex items-center gap-1">
-                   <span className="text-xs">⚠️</span> Warning: Low contrast with both black and white text.
-                 </div>
-               )}
-            </div>
+              {/* Harmony Suggestions */}
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowHarmony(!showHarmony)}
+                  className="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1 font-medium"
+                >
+                  <span className="text-sm">✨</span> {showHarmony ? 'Hide' : 'Show'} Harmony Suggestions
+                </button>
 
-            {/* Harmony Suggestions */}
-            <div className="mt-4 border-t border-gray-100 pt-3">
-               <button 
-                 type="button"
-                 onClick={() => setShowHarmony(!showHarmony)}
-                 className="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1 font-medium"
-               >
-                 <span className="text-sm">✨</span> {showHarmony ? 'Hide' : 'Show'} Harmony Suggestions
-               </button>
-               
-               {showHarmony && (
-                 <div className="mt-2">
+                {showHarmony && (
+                  <div className="mt-2">
                     <p className="text-[10px] text-gray-500 mb-2">Suggestions based on current color:</p>
                     <div className="flex flex-wrap gap-2">
-                        {harmonyColors.map((color, idx) => (
+                      {harmonyColors.map((color, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setCustomColor(color.hex);
+                            const rgb = hexToRgb(color.hex);
+                            setRgbValues(rgb);
+                            const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+                            setHue(hsv.h);
+                            setSaturation(hsv.s);
+                            setBrightness(hsv.v);
+                          }}
+                          className="w-8 h-8 rounded-full border border-gray-300 hover:scale-110 transition-transform shadow-sm"
+                          style={{ backgroundColor: color.hex }}
+                          title={`${color.name}: ${color.hex}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Palette Generator */}
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPaletteGenerator(!showPaletteGenerator)}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-medium"
+                >
+                  <span className="text-sm">🎨</span> {showPaletteGenerator ? 'Hide' : 'Show'} Palette Generator
+                </button>
+
+                {showPaletteGenerator && (
+                  <div className="mt-2">
+                    <p className="text-[10px] text-gray-500 mb-2">Generated scheme based on current color:</p>
+                    <div className="flex flex-wrap gap-3">
+                      {generatedPalette.map((color, idx) => (
+                        <div key={idx} className="flex flex-col items-center">
                           <button
-                            key={idx}
                             type="button"
                             onClick={() => {
                               setCustomColor(color.hex);
@@ -1179,81 +1350,44 @@ function ColorPicker({ onColorSelect, selectedColor }) {
                             style={{ backgroundColor: color.hex }}
                             title={`${color.name}: ${color.hex}`}
                           />
-                        ))}
+                          <span className="text-[9px] text-gray-500 mt-1">{color.name}</span>
+                        </div>
+                      ))}
                     </div>
-                 </div>
-               )}
+                  </div>
+                )}
+              </div>
+
+              {/* Add Button */}
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={savePreset}
+                  className="btn btn-secondary text-sm px-4 py-2"
+                  title="Save to My Presets"
+                >
+                  Save Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCustomColorSelect}
+                  className="btn btn-primary text-sm px-4 py-2"
+                >
+                  {colorType === 'combination' ? 'Add Combination' : 'Add Custom Color'}
+                </button>
+              </div>
             </div>
 
-            {/* Palette Generator */}
-            <div className="mt-4 border-t border-gray-100 pt-3">
-               <button 
-                 type="button"
-                 onClick={() => setShowPaletteGenerator(!showPaletteGenerator)}
-                 className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-medium"
-               >
-                 <span className="text-sm">🎨</span> {showPaletteGenerator ? 'Hide' : 'Show'} Palette Generator
-               </button>
-               
-               {showPaletteGenerator && (
-                 <div className="mt-2">
-                    <p className="text-[10px] text-gray-500 mb-2">Generated scheme based on current color:</p>
-                    <div className="flex flex-wrap gap-3">
-                        {generatedPalette.map((color, idx) => (
-                          <div key={idx} className="flex flex-col items-center">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setCustomColor(color.hex);
-                                  const rgb = hexToRgb(color.hex);
-                                  setRgbValues(rgb);
-                                  const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-                                  setHue(hsv.h);
-                                  setSaturation(hsv.s);
-                                  setBrightness(hsv.v);
-                                }}
-                                className="w-8 h-8 rounded-full border border-gray-300 hover:scale-110 transition-transform shadow-sm"
-                                style={{ backgroundColor: color.hex }}
-                                title={`${color.name}: ${color.hex}`}
-                              />
-                              <span className="text-[9px] text-gray-500 mt-1">{color.name}</span>
-                          </div>
-                        ))}
-                    </div>
-                 </div>
-               )}
-            </div>
-
-            {/* Add Button */}
-            <div className="mt-4 flex justify-end gap-2">
+            <div className="flex justify-end mt-4 pt-3 border-t border-gray-200">
               <button
                 type="button"
-                onClick={savePreset}
-                className="btn btn-secondary text-sm px-4 py-2"
-                title="Save to My Presets"
+                onClick={() => setIsOpen(false)}
+                className="btn btn-secondary text-sm px-4 py-1"
               >
-                Save Preset
-              </button>
-              <button
-                type="button"
-                onClick={handleCustomColorSelect}
-                className="btn btn-primary text-sm px-4 py-2"
-              >
-                Add Custom Color
+                Close
               </button>
             </div>
           </div>
-
-          <div className="flex justify-end mt-4 pt-3 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="btn btn-secondary text-sm px-4 py-1"
-            >
-              Close
-            </button>
-          </div>
-        </div>
         </div>
       )}
     </div>

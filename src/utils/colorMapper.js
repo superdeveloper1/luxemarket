@@ -13,7 +13,7 @@ const colorMap = {
     'yellow': '#FFFF00',
     'cyan': '#00FFFF',
     'magenta': '#FF00FF',
-    
+
     // Common colors
     'gray': '#808080',
     'grey': '#808080',
@@ -26,7 +26,7 @@ const colorMap = {
     'navy': '#000080',
     'fuchsia': '#FF00FF',
     'purple': '#800080',
-    
+
     // Extended colors
     'orange': '#FFA500',
     'pink': '#FFC0CB',
@@ -38,7 +38,7 @@ const colorMap = {
     'bronze': '#CD7F32',
     'copper': '#B87333',
     'brass': '#B5A642',
-    
+
     // Shades of red
     'crimson': '#DC143C',
     'scarlet': '#FF2400',
@@ -48,7 +48,7 @@ const colorMap = {
     'coral': '#FF7F50',
     'salmon': '#FA8072',
     'tomato': '#FF6347',
-    
+
     // Shades of blue
     'azure': '#007FFF',
     'cobalt': '#0047AB',
@@ -58,7 +58,7 @@ const colorMap = {
     'sky': '#87CEEB',
     'royal': '#4169E1',
     'midnight': '#191970',
-    
+
     // Shades of green
     'emerald': '#50C878',
     'jade': '#00A86B',
@@ -67,7 +67,7 @@ const colorMap = {
     'sage': '#9DC183',
     'olive': '#808000',
     'chartreuse': '#7FFF00',
-    
+
     // Shades of yellow/orange
     'amber': '#FFBF00',
     'mustard': '#FFDB58',
@@ -76,7 +76,7 @@ const colorMap = {
     'ivory': '#FFFFF0',
     'peach': '#FFE5B4',
     'apricot': '#FBCEB1',
-    
+
     // Shades of purple
     'violet': '#8F00FF',
     'lavender': '#E6E6FA',
@@ -84,7 +84,7 @@ const colorMap = {
     'mauve': '#E0B0FF',
     'lilac': '#C8A2C8',
     'orchid': '#DA70D6',
-    
+
     // Shades of brown
     'chocolate': '#D2691E',
     'coffee': '#6F4E37',
@@ -93,7 +93,7 @@ const colorMap = {
     'mahogany': '#C04000',
     'walnut': '#773F1A',
     'oak': '#806517',
-    
+
     // Shades of gray
     'charcoal': '#36454F',
     'slate': '#708090',
@@ -101,13 +101,13 @@ const colorMap = {
     'smoke': '#738276',
     'pearl': '#EAE0C8',
     'platinum': '#E5E4E2',
-    
+
     // Metallic
     'steel': '#71797E',
     'iron': '#4C4646',
     'titanium': '#878681',
     'chrome': '#C0C0C0',
-    
+
     // Nature colors
     'sand': '#C2B280',
     'stone': '#8D8D8D',
@@ -119,7 +119,7 @@ const colorMap = {
     'sky blue': '#87CEEB',
     'ocean': '#006994',
     'sea': '#2E8B57',
-    
+
     // Fashion colors
     'burgundy': '#800020',
     'wine': '#722F37',
@@ -131,6 +131,10 @@ const colorMap = {
     'denim': '#1560BD',
     'charcoal gray': '#36454F',
     'off white': '#FAF9F6',
+
+    // Wood & Natural materials
+    'acacia wood': '#6F4C3E',
+    'vanilla': '#F3E5AB',
 };
 
 /**
@@ -140,34 +144,34 @@ const colorMap = {
  */
 export function colorNameToHex(colorName) {
     if (!colorName) return '#000000';
-    
+
     // If already a hex code, return it
     if (colorName.startsWith('#')) {
         return colorName;
     }
-    
+
     // If RGB format, return as is
     if (colorName.startsWith('rgb')) {
         return colorName;
     }
-    
+
     // Convert to lowercase and trim
     const normalized = colorName.toLowerCase().trim();
-    
+
     // Check direct match
     if (colorMap[normalized]) {
         return colorMap[normalized];
     }
-    
+
     // Try to find partial match
-    const partialMatch = Object.keys(colorMap).find(key => 
+    const partialMatch = Object.keys(colorMap).find(key =>
         normalized.includes(key) || key.includes(normalized)
     );
-    
+
     if (partialMatch) {
         return colorMap[partialMatch];
     }
-    
+
     // Default to black if no match found
     console.warn(`Color "${colorName}" not found, using black`);
     return '#000000';
