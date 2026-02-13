@@ -63,6 +63,13 @@ function ProductCard({ product, onProductClick }) {
                     </div>
                 )}
 
+                {/* Video Badge */}
+                {product.videoUrl && (
+                    <div className="absolute top-2 right-12 bg-purple-600/90 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg z-10" title="Video Preview Available">
+                        📹
+                    </div>
+                )}
+
                 {/* Image Indicators - Show dots if multiple images */}
                 {productImages.length > 1 && (
                     <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">

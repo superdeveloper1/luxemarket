@@ -39,8 +39,17 @@ function ProductPreview({ product, isVisible }) {
     currentImages = [product.image];
   }
 
-  // Build media array including model
+  // Build media array including model and video
   const mediaItems = [...currentImages];
+
+  if (product.videoUrl) {
+    mediaItems.push({
+      type: 'video',
+      url: product.videoUrl,
+      thumbnail: currentImages[0] || 'https://via.placeholder.com/400x400?text=Video'
+    });
+  }
+
   if (product.modelUrl || product.modelImage) {
     mediaItems.push({
       type: 'model',
@@ -102,6 +111,13 @@ function ProductPreview({ product, isVisible }) {
           <div className="aspect-square rounded-lg overflow-hidden bg-slate-50 relative border-2 border-blue-200">
             {isCurrentModel ? (
               <ThreeDViewer modelUrl={currentMedia.url} className="bg-slate-50" />
+            ) : currentMedia && typeof currentMedia === 'object' && currentMedia.type === 'video' ? (
+              <video
+                src={currentMedia.url}
+                controls
+                className="w-full h-full object-cover"
+                poster={currentMedia.thumbnail}
+              />
             ) : (
               <img
                 src={displayImage}
@@ -132,6 +148,7 @@ function ProductPreview({ product, isVisible }) {
                 {/* Image counter */}
                 <div className="absolute top-3 right-3 bg-black bg-opacity-80 text-white text-lg px-4 py-2 rounded z-10">
                   {currentImageIndex + 1} / {mediaItems.length}
+                  {currentMedia && typeof currentMedia === 'object' && currentMedia.type === 'video' && <span className="ml-2">📹</span>}
                   {isCurrentModel && <span className="ml-2">🧊</span>}
                 </div>
               </>
@@ -159,11 +176,15 @@ function ProductPreview({ product, isVisible }) {
                       alt={`View ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
-                    {isModel && (
+                    {isModel ? (
                       <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
                         <span className="text-white text-xs">🧊 3D</span>
                       </div>
-                    )}
+                    ) : (typeof media === 'object' && media.type === 'video') ? (
+                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                        <span className="text-white text-xs">📹 Video</span>
+                      </div>
+                    ) : null}
                   </button>
                 );
               })}
@@ -223,20 +244,20 @@ function ProductPreview({ product, isVisible }) {
                 {product.colors.map((color, index) => {
                   // Parse the color combination using the new system
                   const combination = parseColorCombination(color.name);
-                  
+
                   if (color.displayMode) {
                     combination.mode = color.displayMode;
                   }
-                  
+
                   // Use stored hex values if available (overrides name parsing)
                   if (color.hex) {
                     if (Array.isArray(color.hex) && combination.colors.length === color.hex.length) {
-                        combination.colors.forEach((c, i) => { c.hex = color.hex[i]; });
+                      combination.colors.forEach((c, i) => { c.hex = color.hex[i]; });
                     } else if (typeof color.hex === 'string' && combination.colors.length === 1) {
-                        combination.colors[0].hex = color.hex;
+                      combination.colors[0].hex = color.hex;
                     }
                   }
-                  
+
                   if (!combination.isValid) {
                     return (
                       <button
@@ -275,11 +296,10 @@ function ProductPreview({ product, isVisible }) {
                     <button
                       key={index}
                       onClick={() => handleColorChange(color.name)}
-                      className={`w-full p-3 rounded-md border-2 text-left transition-all ${
-                        selectedColor === color.name
-                          ? 'border-blue-500 bg-blue-50 shadow-md'
-                          : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                      }`}
+                      className={`w-full p-3 rounded-md border-2 text-left transition-all ${selectedColor === color.name
+                        ? 'border-blue-500 bg-blue-50 shadow-md'
+                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div

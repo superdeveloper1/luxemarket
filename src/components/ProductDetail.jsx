@@ -307,7 +307,7 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                           {(isVideo || isModel) && (
                             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
                               <div className="w-6 h-6 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                                <span className="text-black text-xs">{isVideo ? '▶' : '🧊'}</span>
+                                <span className="text-black text-xs">{isVideo ? '📹' : '🧊'}</span>
                               </div>
                             </div>
                           )}
@@ -352,30 +352,29 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                       {product.colors.map((color, index) => {
                         // Parse the color combination using the new system
                         const combination = parseColorCombination(color.name);
-                        
+
                         if (color.displayMode) {
                           combination.mode = color.displayMode;
                         }
-                        
+
                         // Use stored hex values if available (overrides name parsing)
                         if (color.hex) {
                           if (Array.isArray(color.hex) && combination.colors.length === color.hex.length) {
-                              combination.colors.forEach((c, i) => { c.hex = color.hex[i]; });
+                            combination.colors.forEach((c, i) => { c.hex = color.hex[i]; });
                           } else if (typeof color.hex === 'string' && combination.colors.length === 1) {
-                              combination.colors[0].hex = color.hex;
+                            combination.colors[0].hex = color.hex;
                           }
                         }
-                        
+
                         if (!combination.isValid) {
                           return (
                             <button
                               key={index}
                               onClick={() => setSelectedColor(color.name)}
-                              className={`relative group ${
-                                selectedColor === color.name 
-                                  ? 'ring-2 ring-blue-500 scale-105' 
+                              className={`relative group ${selectedColor === color.name
+                                  ? 'ring-2 ring-blue-500 scale-105'
                                   : 'hover:scale-105'
-                              }`}
+                                }`}
                               title={color.name}
                             >
                               <div className="w-10 h-10 rounded-full border-2 border-gray-300 bg-gray-200 flex items-center justify-center">
@@ -401,11 +400,10 @@ function ProductDetail({ product, onClose, currentUser, onOpenAuth, onCartUpdate
                           <button
                             key={index}
                             onClick={() => setSelectedColor(color.name)}
-                            className={`relative group transition-all rounded-full ${
-                              selectedColor === color.name 
-                                ? 'ring-2 ring-blue-500 scale-105 shadow-lg' 
+                            className={`relative group transition-all rounded-full ${selectedColor === color.name
+                                ? 'ring-2 ring-blue-500 scale-105 shadow-lg'
                                 : 'hover:scale-105 hover:shadow-md'
-                            }`}
+                              }`}
                             title={`${color.name} (${combination.colors.length} color${combination.colors.length > 1 ? 's' : ''})`}
                           >
                             <div

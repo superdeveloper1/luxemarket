@@ -3,19 +3,19 @@
 // CRUD operations for products
 // ===============================
 
-import { 
-    collection, 
-    doc, 
-    getDocs, 
-    getDoc, 
-    addDoc, 
-    updateDoc, 
-    deleteDoc, 
-    query, 
-    where, 
+import {
+    collection,
+    doc,
+    getDocs,
+    getDoc,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    where,
     orderBy,
     limit,
-    serverTimestamp 
+    serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../config';
 
@@ -24,12 +24,14 @@ const COLLECTION = 'products';
 class ProductService {
     // Create
     async create(productData) {
+        // Strip ID if it exists in data, Firestore will generate its own
+        const { id, ...cleanData } = productData;
         const docRef = await addDoc(collection(db, COLLECTION), {
-            ...productData,
+            ...cleanData,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         });
-        return { id: docRef.id, ...productData };
+        return { id: docRef.id, ...cleanData };
     }
 
     // Read all
@@ -45,7 +47,7 @@ class ProductService {
     async getById(id) {
         const docRef = doc(db, COLLECTION, id);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
             return { id: docSnap.id, ...docSnap.data() };
         }
@@ -97,8 +99,8 @@ class ProductService {
         // This is a simple implementation - consider Algolia for production
         const products = await this.getAll();
         const lowerSearch = searchTerm.toLowerCase();
-        
-        return products.filter(product => 
+
+        return products.filter(product =>
             product.name.toLowerCase().includes(lowerSearch) ||
             product.description?.toLowerCase().includes(lowerSearch) ||
             product.category.toLowerCase().includes(lowerSearch)
@@ -108,8 +110,10 @@ class ProductService {
     // Update
     async update(id, updates) {
         const docRef = doc(db, COLLECTION, id);
+        // Strip ID from updates to prevent Firestore errors
+        const { id: _, ...cleanUpdates } = updates;
         await updateDoc(docRef, {
-            ...updates,
+            ...cleanUpdates,
             updatedAt: serverTimestamp()
         });
         return this.getById(id);

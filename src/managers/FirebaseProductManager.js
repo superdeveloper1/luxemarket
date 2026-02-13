@@ -86,6 +86,32 @@ const FirebaseProductManager = (() => {
         return cachedProducts.filter(p => p.dailyDeal === true);
     };
 
+    // Recursive utility to remove undefined and fix NaN for Firestore
+    const sanitizePayload = (data) => {
+        if (data === null || data === undefined) return null;
+
+        if (Array.isArray(data)) {
+            return data.map(v => sanitizePayload(v));
+        }
+
+        if (typeof data === 'object') {
+            const sanitized = {};
+            Object.keys(data).forEach(key => {
+                const value = data[key];
+                if (value !== undefined) {
+                    sanitized[key] = sanitizePayload(value);
+                }
+            });
+            return sanitized;
+        }
+
+        if (typeof data === 'number' && isNaN(data)) {
+            return 0;
+        }
+
+        return data;
+    };
+
     // Search products
     const search = async (query) => {
         if (!isInitialized) await init();
@@ -99,8 +125,10 @@ const FirebaseProductManager = (() => {
 
     // Add product
     const add = async (productData) => {
+        if (!isInitialized) await init();
         try {
-            const newProduct = await productService.create(productData);
+            const sanitized = sanitizePayload(productData);
+            const newProduct = await productService.create(sanitized);
             cachedProducts.push(newProduct);
             console.log('✅ Product added to Firebase:', newProduct.name);
             return newProduct;
@@ -112,25 +140,45 @@ const FirebaseProductManager = (() => {
 
     // Update product
     const update = async (id, updates) => {
+        if (!isInitialized) await init();
+
+        // 1. Find the product in cache - use robust comparison
+        const index = cachedProducts.findIndex(p => p.id?.toString() === id?.toString());
+        if (index === -1) {
+            console.error('❌ Product not found in cache:', id);
+            throw new Error('Product not found');
+        }
+
+        const originalProduct = cachedProducts[index];
+        const sanitizedUpdates = sanitizePayload(updates);
+
+        // 2. Optimistic update: Apply changes to cache immediately
+        const optimisticallyUpdatedProduct = { ...originalProduct, ...sanitizedUpdates };
+        cachedProducts[index] = optimisticallyUpdatedProduct;
+
+        // Notify listeners/UI immediately
+        console.log('⚡ Optimistic update applied for:', id);
+
         try {
-            const updated = await productService.update(id, updates);
-            const index = cachedProducts.findIndex(p => p.id === id);
-            if (index !== -1) {
-                cachedProducts[index] = updated;
-            }
-            console.log('✅ Product updated in Firebase:', id);
-            return updated;
+            // 3. Perform actual update
+            await productService.update(id.toString(), sanitizedUpdates);
+
+            console.log('✅ Product update confirmed by Firebase:', id);
+            return optimisticallyUpdatedProduct;
         } catch (error) {
-            console.error('❌ Failed to update product:', error);
+            // 4. Rollback on failure
+            console.error('❌ Failed to update product, rolling back:', error);
+            cachedProducts[index] = originalProduct;
             throw error;
         }
     };
 
     // Delete product
     const remove = async (id) => {
+        if (!isInitialized) await init();
         try {
-            await productService.delete(id);
-            cachedProducts = cachedProducts.filter(p => p.id !== id);
+            await productService.delete(id.toString());
+            cachedProducts = cachedProducts.filter(p => p.id?.toString() !== id?.toString());
             console.log('✅ Product deleted from Firebase:', id);
             return true;
         } catch (error) {
